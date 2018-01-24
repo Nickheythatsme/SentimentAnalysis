@@ -4,7 +4,7 @@
 using std::cout;
 using std::endl;
 
-string text = "this. is some text. I hope that is is formatted correctly. I know this is difficult but, I must do it!";
+string text = "this. is some text. I hope that it is formatted correctly. I know this is difficult but, I must do it!";
 
 
 int main()

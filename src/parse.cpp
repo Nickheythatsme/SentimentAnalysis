@@ -49,7 +49,10 @@ size_t parse::add_text(const string &text)
     return to_parse.length();
 }
 
-/* Change the default delimeters for this instance of the class */
+/* 
+ * Change the default delimeters for this 
+ * instance of the class 
+ */
 void parse::set_delimeters(const char *new_delims)
 {
     delims = new char[strlen(new_delims) + 1];
@@ -70,6 +73,7 @@ vector<string> parse::parse_text(const string &text)
 }
 
 /*
+ * STATIC
  * Parse the text
  * Returns:
  *  SUCCESS: number of words parsed
@@ -78,28 +82,25 @@ vector<string> parse::parse_text(const string &text)
 unsigned long parse::parse_text(vector<string> &words, const string &text, const char *delims)
 {
     char buff[1024];
-    int i = 0;
+    int i=0,j=0;
 
-    for(auto c : text)
+    for(i = 0; i < text.length(); ++i)
     {
-        if( test_char(c,delims) )
-        {
-            if(i > 2) {
-                buff[i] = '\0';
-                std::cout << buff << std::endl;
-                words.emplace_back(string(buff));
-            }
-            while(c && test_char(++c,delims))
-                ++c;
-            i = 0;
-            buff[i] = '\0';
+        if( test_char(text[i], delims) ){
+            buff[j] = '\0';
+            words.emplace_back(string(buff));
+            while(text[i] && test_char(text[i], delims))
+                ++i;
+            j = 0;
+            buff[j] = '\0';
         }
-        buff[i++] = c;
+        buff[j++] = text[i];
     }
     return words.size();
 }
 
 /*
+ * STATIC
  * Test whether a character is a delimiter
  * RETURNS:
  * 0 if it's NOT a delim,
