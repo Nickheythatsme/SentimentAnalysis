@@ -35,9 +35,5 @@ cmake-build-debug/
 # Sonarlint plugin
 # End of https://www.gitignore.io/api/clion
 data/
-.idea/codeStyleSettings.xml
-find.csv
 debug/
 release/
-.idea/codeStyles/Project.xml
-.idea/codeStyles/codeStyleConfig.xml
