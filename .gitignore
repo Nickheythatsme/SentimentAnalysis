@@ -1,0 +1,43 @@
+
+# Created by https://www.gitignore.io/api/clion
+
+### CLion ###
+# Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio and Webstorm
+# Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
+
+# User-specific stuff:
+.idea/**/workspace.xml
+.idea/dictionaries
+
+# Sensitive or high-churn files:
+# Gradle:
+# CMake
+cmake-build-debug/
+
+# Mongo Exp
+## File-based project format:
+## Plugin-specific files:
+
+# IntelliJ
+# mpeltonen/sbt-idea plugin
+# JIRA plugin
+# Cursive Clojure plugin
+# Ruby plugin and RubyMine
+# Crashlytics plugin (for Android Studio and IntelliJ)
+### CLion Patch ###
+# Comment Reason: https://github.com/joeblau/gitignore.io/issues/186#issuecomment-215987721
+
+# *.iml
+# modules.xml
+# .idea/misc.xml
+# *.ipr
+
+# Sonarlint plugin
+# End of https://www.gitignore.io/api/clion
+data/
+.idea/codeStyleSettings.xml
+find.csv
+debug/
+release/
+.idea/codeStyles/Project.xml
+.idea/codeStyles/codeStyleConfig.xml
