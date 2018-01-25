@@ -1,7 +1,8 @@
-cmake_minimum_required(VERSION 3.9)
+cmake_minimum_required(VERSION 3.5)
 project(SentimentAnalysis)
 
 set(CMAKE_CXX_STANDARD 14)
+message(${CMAKE_BUILD_TYPE})
 
 find_package(PythonLibs REQUIRED)
 include_directories(
