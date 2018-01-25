@@ -63,11 +63,11 @@ void parse::set_delimeters(const char *new_delims)
  * STATIC
  * Parse text without making a new class instance
  * Returns:
- * vector of parsed words.
+ * list of parsed words.
  */
-vector<string> parse::parse_text(const string &text)
+std::list<string> parse::parse_text(const string &text)
 {
-    vector<string> words;
+    std::list<string> words;
     parse_text(words, text, parse::default_delims);
     return words;
 }
@@ -79,7 +79,7 @@ vector<string> parse::parse_text(const string &text)
  *  SUCCESS: number of words parsed
  *  FAILURE: -1
  */
-unsigned long parse::parse_text(vector<string> &words, const string &text, const char *delims)
+unsigned long parse::parse_text(std::list<string> &words, const string &text, const char *delims)
 {
     char buff[1024];
     int i=0,j=0;

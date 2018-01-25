@@ -1,4 +1,5 @@
 #include <iostream>
+#include <map>
 #include "src/parse.h"
 
 using std::cout;
@@ -10,8 +11,6 @@ string text = "this. is some text. I hope that it is formatted correctly. I know
 int main()
 {
     auto words = parse::parse_text(text);
-    for(auto c : text)
-        cout << c << endl;
     for(auto a : words)
         cout << a << endl;
     return 0;
