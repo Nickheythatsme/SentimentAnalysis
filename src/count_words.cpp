@@ -35,12 +35,29 @@ count_words &count_words::operator=(const count_words &obj)
     return *this;
 }
 
-// TODO during implementation of word counting, use this code as reference:
 /*
-    std::map<string,int> m;
-    m["one"] = 1;
-    m["two"] = 2;
-    cout << m.count("three") << endl; // 0
-    cout << m.count("two") << endl;   // 1
-    m["two"] += 1;
-*/
+ * counts all the parsed words. ALSO causes parse class to parse all remaining text in the queue.
+ * Return number of distinct words in the queue
+ */
+size_t count_words::count()
+{
+    // Parse the rest of the words in the queue
+    auto word_list = parse_words();
+
+    for(auto const &a : word_list){
+        word_map[a] += 1;
+    }
+    return word_map.size();
+}
+
+/*
+ * Ostream integration, using the extraction operator.
+ * Returns a ref to the ostream object
+ */
+std::ostream& operator<<(std::ostream& out, const count_words &obj)
+{
+    for(auto const &a : obj.word_map){
+        out << "\"" << a.first << "\":" << a.second << std::endl;
+    }
+    return out;
+}

@@ -3,7 +3,6 @@
 //
 
 #include <cstring>
-#include <iostream>
 #include "parse.h"
 
 /* Default delimeters for parsing words */
@@ -16,7 +15,6 @@ parse::parse()
     std::lock_guard<mutex> g(queue_lock);
 
     delims = default_delims;
-    head = tail = nullptr;
 }
 
 // CONSTRUCTOR
@@ -25,9 +23,11 @@ parse::parse(const string &text)
     // Lock the queue 
     std::lock_guard<mutex> g(queue_lock);
 
+    // Set the delimeters
     delims   = default_delims;
-    head = new to_parse(text);
-    tail = head;
+
+    // Add the text to the queue
+    to_parse.emplace(clean(text));
 }
 
 // COPY CONSTRUCTOR
@@ -43,8 +43,11 @@ parse::parse(const parse &obj)
     else
         delims = default_delims;
 
+    // Copy queue
+    to_parse = obj.to_parse;
+
+    // Copy list of parsed words
     word_list = obj.word_list;
-    copy_LLL(obj.head, this -> head);
 }
 
 /* Add the words from obj.word_list and add the queue from obj.queue */
@@ -53,14 +56,13 @@ parse& parse::operator=(const parse &src)
     // Lock the queue
     std::lock_guard<mutex> g(queue_lock);
 
-    // Copy src's queue
-    remove_LLL(head);
-    delete head;
-    head = tail = nullptr;
-    copy_LLL(src.head, head);
+    // Copy queue
+    to_parse = src.to_parse;
 
+    // Copy list of parsed words
     word_list = src.word_list;
 
+    // Copy the delimeters
     if( src.delims != default_delims )
     {
         delims = new char[strlen(src.delims) + 1];
@@ -68,6 +70,7 @@ parse& parse::operator=(const parse &src)
     }
     else
         delims = default_delims;
+
     return *this;
 }
 
@@ -82,22 +85,20 @@ parse& operator+=(parse &dest, parse &src)
     // lock both unique_locks without deadlock
     // TODO handle exception where lock1 is aquired but lock2 is not
     std::lock(lock1, lock2);
-}
 
-/*
- * Copy the LLL queue of another parse object. The object's head ptr is
- * recursivelly copied to this head ptr.
- */
-void parse::copy_LLL(const struct to_parse *obj_head, struct to_parse *&head)
-{
-    if(!obj_head) 
+    // Copy the queue. CREATES NEW QUEUE
+    // TODO find a solution to copying queues so the we don't COPY, only ADD
+    auto temp_q = src.to_parse;
+    while(!dest.to_parse.empty())
     {
-        head = nullptr;
-        return;
+        temp_q.emplace( dest.to_parse.front() );
+        dest.to_parse.pop();
     }
-    head = new to_parse(obj_head -> text);
-    this -> tail = head; // Move the tail with the queue
-    return copy_LLL(obj_head -> next, head -> next);
+    dest.to_parse = temp_q;
+
+    // Copy the parsed word list
+    for(auto const &a : src.word_list)
+        dest.word_list.emplace_back(a);
 }
 
 // DESTRUCTOR
@@ -109,23 +110,10 @@ parse::~parse()
     if( delims != default_delims )
         delete [] delims;
 
-    // Clear the queue
-    remove_LLL(head);
-    delete head;
-    head = tail = nullptr;
+    word_list.clear();
 }
 
 /*
- * Remove the LLL of text to be parsed
- */
-void parse::remove_LLL(struct to_parse *&head)
-{
-    if(!head) return;
-    remove_LLL(head -> next);
-    delete head -> next;
-}
-
-/* 
  * Add text that will be parsed. Adds another node onto the queue
  */
 void parse::add_text(const string &text)
@@ -133,19 +121,8 @@ void parse::add_text(const string &text)
     // Lock the queue 
     std::lock_guard<mutex> g(queue_lock);
 
-    // CASE: queue is empty
-    if(!head)
-    {
-        head = new to_parse(text);
-        tail = head;
-    }
-
-    // CASE: queue is NOT empty
-    else
-    {
-        tail -> next = new to_parse(text);
-        tail = tail -> next;
-    }
+    // TESTED this does not make additional copies. Only one from the cleaned function.
+    to_parse.emplace( clean(text) );
 }
 
 /* 
@@ -159,26 +136,20 @@ void parse::set_delimeters(const char *new_delims)
 }
 
 /*
- * STATIC
  * Parse text without making a new class instance
  * Returns:
  * list of parsed words.
  */
-const std::list<string>& parse::parsed_words()
+const std::list<string>& parse::parse_words()
 {
     // Lock the queue 
     std::lock_guard<mutex> g(queue_lock);
 
-    // Only parse if we need to!
-    to_parse *temp = head;
-    while(head)
+    while(!to_parse.empty())
     {
-        parse_text(head -> text);
-        temp = head;
-        head = head -> next;
-        delete temp;
+        parse_text(to_parse.front());
+        to_parse.pop();
     }
-    tail = nullptr;
     return word_list;
 }
 
@@ -220,3 +191,27 @@ int parse::test_char(char c, const char *delims)
         ++delims;
     return *delims != '\0';
 }
+
+/*STATIC
+ * Lower all the characters in a string
+ */
+string& parse::lowerize(string &to_lower)
+{
+    for(auto &a : to_lower)
+        a = tolower(a);
+    return to_lower;
+}
+
+/*
+ * STATIC
+ * Make a copy and then clean the text.
+ * Returns a forward reference to the text
+ */
+string parse::clean(const string &text)
+{
+    string cleaned = text;
+
+    // Insert cleaning functions
+    return lowerize(cleaned);
+}
+
