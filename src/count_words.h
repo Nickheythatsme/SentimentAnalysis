@@ -11,14 +11,13 @@ class count_words : public parse
 {
 public:
     count_words(const count_words &obj);
-    count_words(const string &text);
+    explicit count_words(const string &text);
     count_words();
-    count_words& operator+=(const count_words &obj);
     count_words& operator=(const count_words &obj);
+    friend count_words& operator+=(count_words &dest, count_words &src);
 protected:
 private:
     // TODO we need functions to add parsed words to the word_map.
-    // TODO we need
     std::map<string, unsigned long> word_map;
 };
 

@@ -14,7 +14,8 @@ int main()
     parse parser(text);
     parser.add_text(text2);
     auto words = parser.parsed_words();
-    for(auto a : words)
+    for(auto const &a : words)
         cout << a << endl;
+    parser.add_text(text2);
     return 0;
 }

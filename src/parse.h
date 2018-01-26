@@ -13,8 +13,8 @@ using std::mutex;
 
 struct to_parse
 {
-    to_parse(const string &new_text) { text = new_text; next = NULL; }
-    ~to_parse() { }
+    explicit to_parse(const string &new_text) { text = new_text; next = nullptr; }
+    ~to_parse() = default;
     string text;
     to_parse *next;
 };
@@ -26,7 +26,7 @@ struct to_parse
 class parse {
 public:
     parse();
-    parse(const string &text);
+    explicit parse(const string &text);
     parse(const parse &obj);
     virtual ~parse();
     /* Add text to the to_parse string */
@@ -40,7 +40,7 @@ public:
      * FALSE if otherwise */
     bool finished_parsing() { return !head; }
     /* Add the words from obj.word_list and add the queue from obj.queue */
-    parse& operator=(parse &src);
+    parse& operator=(const parse &src);
     /* Copy the words from obj.word_list and add the queue from obj.queue */
     friend parse& operator+=(parse &dest, parse &src);
 protected:
@@ -51,7 +51,8 @@ private:
     /* Remove all the nodes in the queue */
     void remove_LLL(struct to_parse *&head);
     /* Commence the parsing of a text string, and add it to the word_list */
-    unsigned int parse_text(const string& text);
+    void parse_text(const string& text);
+    /* Test if a character is a delimiter */
     static int test_char(char c, const char *delims);
 
     static char default_delims[]; /* Default delimeters */

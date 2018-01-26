@@ -25,6 +25,16 @@ count_words::count_words(const count_words &obj) :
 
 }
 
+count_words& operator+=(count_words &dest, count_words &src)
+{
+    return dest;
+}
+
+count_words &count_words::operator=(const count_words &obj)
+{
+    return *this;
+}
+
 // TODO during implementation of word counting, use this code as reference:
 /*
     std::map<string,int> m;

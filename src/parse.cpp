@@ -16,7 +16,7 @@ parse::parse()
     std::lock_guard<mutex> g(queue_lock);
 
     delims = default_delims;
-    head = tail = NULL;
+    head = tail = nullptr;
 }
 
 // CONSTRUCTOR
@@ -47,17 +47,28 @@ parse::parse(const parse &obj)
     copy_LLL(obj.head, this -> head);
 }
 
-// TODO finish operator=
 /* Add the words from obj.word_list and add the queue from obj.queue */
-parse& parse::operator=(parse &src)
+parse& parse::operator=(const parse &src)
 {
-    // don't actually take the locks yet
-    std::unique_lock<std::mutex> lock1(src.queue_lock,   std::defer_lock);
-    std::unique_lock<std::mutex> lock2(this->queue_lock, std::defer_lock);
-              
-    // lock both unique_locks without deadlock
-    // TODO handle exception where lock1 is aquired but lock2 is not
-    std::lock(lock1, lock2);
+    // Lock the queue
+    std::lock_guard<mutex> g(queue_lock);
+
+    // Copy src's queue
+    remove_LLL(head);
+    delete head;
+    head = tail = nullptr;
+    copy_LLL(src.head, head);
+
+    word_list = src.word_list;
+
+    if( src.delims != default_delims )
+    {
+        delims = new char[strlen(src.delims) + 1];
+        strcpy(delims, src.delims);
+    }
+    else
+        delims = default_delims;
+    return *this;
 }
 
 // TODO finish operator+=
@@ -81,7 +92,7 @@ void parse::copy_LLL(const struct to_parse *obj_head, struct to_parse *&head)
 {
     if(!obj_head) 
     {
-        head = NULL;
+        head = nullptr;
         return;
     }
     head = new to_parse(obj_head -> text);
@@ -97,10 +108,11 @@ parse::~parse()
 
     if( delims != default_delims )
         delete [] delims;
-    head = tail = NULL;
 
     // Clear the queue
     remove_LLL(head);
+    delete head;
+    head = tail = nullptr;
 }
 
 /*
@@ -111,7 +123,6 @@ void parse::remove_LLL(struct to_parse *&head)
     if(!head) return;
     remove_LLL(head -> next);
     delete head -> next;
-    return;
 }
 
 /* 
@@ -167,7 +178,7 @@ const std::list<string>& parse::parsed_words()
         head = head -> next;
         delete temp;
     }
-    tail = NULL;
+    tail = nullptr;
     return word_list;
 }
 
@@ -177,10 +188,10 @@ const std::list<string>& parse::parsed_words()
  *  SUCCESS: number of words parsed
  *  FAILURE: -1
  */
-unsigned int parse::parse_text(const string& text)
+void parse::parse_text(const string& text)
 {
     char buff[1024];
-    int i=0, j=0;
+    auto i=0, j=0;
 
     for(i = 0; i < text.length(); ++i)
     {
@@ -194,7 +205,6 @@ unsigned int parse::parse_text(const string& text)
         }
         buff[j++] = text[i];
     }
-    return word_list.size();
 }
 
 /*
