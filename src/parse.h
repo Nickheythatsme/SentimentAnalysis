@@ -20,16 +20,14 @@ using std::mutex;
  */
 class parse {
 public:
+    /* Constructors/Destructors */
     parse();
     explicit parse(const string &text);
     parse(const parse &obj);
     virtual ~parse();
-    /* Add text to the to_parse string */
-    void add_text(const string &text);
 
-    /* Set the delimeters to another set.
-     * Possibly parsing based on periods or commas instead of any punctuation.*/
-    void set_delimeters(const char *delims);
+    /* Add text to the to_parse string */
+    virtual void add_text(const string &text);
 
     /* Returns a constant ref to the list of parsed words */
     const std::list<string>& parse_words();
@@ -43,7 +41,12 @@ public:
 
     /* Copy the words from obj.word_list and add the queue from obj.queue */
     friend parse& operator+=(parse &dest, parse &src);
+
 protected:
+    /* Set the delimeters to another set.
+     * Possibly parsing based on periods or commas instead of any punctuation.*/
+    void set_delimeters(const char *delims);
+
 private:
     /* Commence the parsing of a text string, and add it to the word_list */
     void parse_text(const string& text);
