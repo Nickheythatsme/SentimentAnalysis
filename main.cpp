@@ -16,9 +16,9 @@ string text2 = "This statically specifies what build type (configuration) will b
 auto read_file(char *fname, string &to_return)
 {
     std::ifstream in(fname);
-    std::streampos fsize;
+    auto fsize = 0l;
     char *buff;
-    if(!in) return 0;
+    if(!in) return fsize;
 
     // Get file length
     fsize = in.tellg();
@@ -27,17 +27,18 @@ auto read_file(char *fname, string &to_return)
     in.seekg(0, std::ios::beg);
 
     // Allocate the buffer
-    buff = new char[fsize+1];
+    buff = new char[fsize+1l];
     in.read(buff, fsize);
 
     to_return = string(buff);
-    return (int)fsize;
+    return fsize;
 }
 
 int main(int argc, char *argv[])
 {
     string f;
-    read_file(argv[1], f);
+    auto len = read_file(argv[1], f);
+    cout << "bytes read: " << len << endl;
     cout << f << endl;
 
     count_words counter(text);
