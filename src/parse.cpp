@@ -24,7 +24,7 @@ parse::parse(const string &text)
     std::lock_guard<mutex> g(queue_lock);
 
     // Set the delimeters
-    delims   = default_delims;
+    delims = default_delims;
 
     // Add the text to the queue
     to_parse.emplace(clean(text));
@@ -36,11 +36,10 @@ parse::parse(const parse &obj)
     // Lock the queue 
     std::lock_guard<mutex> g(queue_lock);
 
-    if( obj.delims != default_delims ) {
+    if (obj.delims != default_delims) {
         delims = new char[strlen(obj.delims) + 1];
         strcpy(delims, obj.delims);
-    }
-    else
+    } else
         delims = default_delims;
 
     // Copy queue
@@ -51,7 +50,7 @@ parse::parse(const parse &obj)
 }
 
 /* Add the words from obj.word_list and add the queue from obj.queue */
-parse& parse::operator=(const parse &src)
+parse &parse::operator=(const parse &src)
 {
     // Lock the queue
     std::lock_guard<mutex> g(queue_lock);
@@ -63,12 +62,10 @@ parse& parse::operator=(const parse &src)
     word_list = src.word_list;
 
     // Copy the delimeters
-    if( src.delims != default_delims )
-    {
+    if (src.delims != default_delims) {
         delims = new char[strlen(src.delims) + 1];
         strcpy(delims, src.delims);
-    }
-    else
+    } else
         delims = default_delims;
 
     return *this;
@@ -76,12 +73,12 @@ parse& parse::operator=(const parse &src)
 
 // TODO finish operator+=
 /* Copy the words from obj.word_list and add the queue from obj.queue */
-parse& operator+=(parse &dest, parse &src)
+parse &operator+=(parse &dest, parse &src)
 {
     // don't actually take the locks yet
-    std::unique_lock<std::mutex> lock1(dest.queue_lock,   std::defer_lock);
+    std::unique_lock<std::mutex> lock1(dest.queue_lock, std::defer_lock);
     std::unique_lock<std::mutex> lock2(src.queue_lock, std::defer_lock);
-              
+
     // lock both unique_locks without deadlock
     // TODO handle exception where lock1 is aquired but lock2 is not
     std::lock(lock1, lock2);
@@ -89,15 +86,14 @@ parse& operator+=(parse &dest, parse &src)
     // Copy the queue. CREATES NEW QUEUE
     // TODO find a solution to copying queues so the we don't COPY, only ADD
     auto temp_q = src.to_parse;
-    while(!dest.to_parse.empty())
-    {
-        temp_q.emplace( dest.to_parse.front() );
+    while (!dest.to_parse.empty()) {
+        temp_q.emplace(dest.to_parse.front());
         dest.to_parse.pop();
     }
     dest.to_parse = temp_q;
 
     // Copy the parsed word list
-    for(auto const &a : src.word_list)
+    for (auto const &a : src.word_list)
         dest.word_list.emplace_back(a);
 }
 
@@ -107,8 +103,8 @@ parse::~parse()
     // Lock the queue 
     std::lock_guard<mutex> g(queue_lock);
 
-    if( delims != default_delims )
-        delete [] delims;
+    if (delims != default_delims)
+        delete[] delims;
 
     word_list.clear();
 }
@@ -122,14 +118,14 @@ void parse::add_text(const string &text)
     std::lock_guard<mutex> g(queue_lock);
 
     // TESTED this does not make additional copies. Only one from the cleaned function.
-    to_parse.emplace( clean(text) );
+    to_parse.emplace(clean(text));
 }
 
 /* 
  * Change the default delimeters for this 
  * instance of the class 
  */
-void parse::set_delimeters(const char *new_delims)
+void parse::set_delimiters(const char *new_delims)
 {
     delims = new char[strlen(new_delims) + 1];
     strcpy(delims, new_delims);
@@ -140,13 +136,12 @@ void parse::set_delimeters(const char *new_delims)
  * Returns:
  * list of parsed words.
  */
-const std::list<string>& parse::parse_words()
+const std::list<string> &parse::parse_words()
 {
     // Lock the queue 
     std::lock_guard<mutex> g(queue_lock);
 
-    while(!to_parse.empty())
-    {
+    while (!to_parse.empty()) {
         parse_text(to_parse.front());
         to_parse.pop();
     }
@@ -159,17 +154,16 @@ const std::list<string>& parse::parse_words()
  *  SUCCESS: number of words parsed
  *  FAILURE: -1
  */
-void parse::parse_text(const string& text)
+void parse::parse_text(const string &text)
 {
     char buff[1024];
-    auto i=0, j=0;
+    auto i = 0, j = 0;
 
-    for(i = 0; i < text.length(); ++i)
-    {
-        if( test_char(text[i], delims) ){
+    for (i = 0; i < text.length(); ++i) {
+        if (test_char(text[i], delims)) {
             buff[j] = '\0';
             word_list.emplace_back(string(buff));
-            while(text[i] && test_char(text[i], delims))
+            while (text[i] && test_char(text[i], delims))
                 ++i;
             j = 0;
             buff[j] = '\0';
@@ -187,7 +181,7 @@ void parse::parse_text(const string& text)
  */
 int parse::test_char(char c, const char *delims)
 {
-    while(*delims && c != *delims)
+    while (*delims && c != *delims)
         ++delims;
     return *delims != '\0';
 }
@@ -195,10 +189,10 @@ int parse::test_char(char c, const char *delims)
 /*STATIC
  * Lower all the characters in a string
  */
-string& parse::lowerize(string &to_lower)
+string &parse::lowerize(string &to_lower)
 {
-    for(auto &a : to_lower)
-        a = tolower(a);
+    for (auto &a : to_lower)
+        a = (char) tolower(a);
     return to_lower;
 }
 

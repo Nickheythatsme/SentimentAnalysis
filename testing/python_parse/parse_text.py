@@ -35,7 +35,8 @@ class Window:
         return self.windows
 
 
-    def SplitWindows_(self, window, new_windows):
+    @staticmethod
+    def SplitWindows_(window, new_windows):
         """ Split the windows based on each word. """
         j = 0
         k = 0

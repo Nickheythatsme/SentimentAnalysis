@@ -15,12 +15,19 @@ using std::string;
  * and prev ptr.
  */
 
-struct word : public string
+struct word: public string
 {
-    word() : string() { next = prev = NULL; }
-    word(const string &obj) : string(obj) { next = prev = NULL; }
-    word(const word &obj)   : string(obj) { next = prev = NULL; }
-    ~word() {next = prev = NULL;}
+    word()
+        : string()
+    { next = prev = nullptr; }
+    explicit word(const string &obj)
+        : string(obj)
+    { next = prev = nullptr; }
+    word(const word &obj)
+        : string(obj)
+    { next = prev = nullptr; }
+    ~word()
+    { next = prev = nullptr; }
 
     word *next;
     word *prev;
@@ -28,45 +35,45 @@ struct word : public string
 
 class window
 {
-    public:
-        window();
-        window(const string *words, size_t len);
-        window(const window &obj);
-        ~window();
+public:
+    window();
+    window(const string *words, size_t len);
+    window(const window &obj);
+    ~window();
 
-        // Assignment operator
-        window& operator=(const window &src);
+    // Assignment operator
+    window &operator=(const window &src);
 
-        // Add words from another window to this window
-        window& operator+=(const window &to_add);
+    // Add words from another window to this window
+    window &operator+=(const window &to_add);
 
-        // Add a word to this window (at the end)
-        window& operator+=(const string &to_add);
+    // Add a word to this window (at the end)
+    window &operator+=(const string &to_add);
 
-        // Output all words to the ostream through the extraction operator
-        friend std::ostream& operator<<(std::ostream &out, const window &obj);
-        std::ostream& display_reverse(std::ostream &out, const word *head) const;
+    // Output all words to the ostream through the extraction operator
+    friend std::ostream &operator<<(std::ostream &out, const window &obj);
+    std::ostream &display_reverse(std::ostream &out, const word *head) const;
 
-        //TODO implement an iterator
-        
-        // Returns the number of words in the window
-        size_t size() const;
-    protected:
-        // Out put all words to the ostream, in order
-        std::ostream& display(std::ostream &out, const word *head) const;
-    private:
-        void add_word(const string &to_add);
-        void remove_all(word * head);
+    //TODO implement an iterator
 
-        // Copy all of the words in the DLL, recursively
-        size_t copy_DLL(const word *obj_head, word *&self_head, word *&self_tail);
+    // Returns the number of words in the window
+    size_t size() const;
+protected:
+    // Out put all words to the ostream, in order
+    std::ostream &display(std::ostream &out, const word *head) const;
+private:
+    void add_word(const string &to_add);
+    void remove_all(word *head);
 
-        // Tail and head pointers for the words in the window
-        word* head;
-        word* tail;
+    // Copy all of the words in the DLL, recursively
+    size_t copy_DLL(const word *obj_head, word *&self_head, word *&self_tail);
 
-        // The number of words in the window
-        size_t _size;
+    // Tail and head pointers for the words in the window
+    word *head;
+    word *tail;
+
+    // The number of words in the window
+    size_t _size;
 };
 
 #endif

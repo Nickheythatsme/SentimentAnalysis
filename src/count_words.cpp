@@ -5,27 +5,30 @@
 #include "count_words.h"
 
 // DEFAULT CONSTRUCTOR
-count_words::count_words() :
+count_words::count_words()
+    :
     parse()
 {
 
 }
 
 // CONSTRUCTOR
-count_words::count_words(const string &text) :
+count_words::count_words(const string &text)
+    :
     parse(text)
 {
 
 }
 
 // COPY CONSTRUCTOR
-count_words::count_words(const count_words &obj) :
+count_words::count_words(const count_words &obj)
+    :
     parse(obj)
 {
 
 }
 
-count_words& operator+=(count_words &dest, count_words &src)
+count_words &operator+=(count_words &dest, count_words &src)
 {
     return dest;
 }
@@ -44,7 +47,7 @@ size_t count_words::count()
     // Parse the rest of the words in the queue
     auto word_list = parse_words();
 
-    for(auto const &a : word_list){
+    for (auto const &a : word_list) {
         word_map[a] += 1;
     }
     return word_map.size();
@@ -54,9 +57,9 @@ size_t count_words::count()
  * Ostream integration, using the extraction operator.
  * Returns a ref to the ostream object
  */
-std::ostream& operator<<(std::ostream& out, const count_words &obj)
+std::ostream &operator<<(std::ostream &out, const count_words &obj)
 {
-    for(auto const &a : obj.word_map){
+    for (auto const &a : obj.word_map) {
         out << "\"" << a.first << "\":" << a.second << std::endl;
     }
     return out;
