@@ -30,7 +30,7 @@ class window
 {
     public:
         window();
-        window(string [] words, size_t len);
+        window(const string *words, size_t len);
         window(const window &obj);
         ~window();
 
@@ -38,13 +38,14 @@ class window
         window& operator=(const window &src);
 
         // Add words from another window to this window
-        friend window& operator+=(window &dest, const window &to_add);
+        window& operator+=(const window &to_add);
 
         // Add a word to this window (at the end)
-        friend window& operator+=(window &dest, const string &to_add);
+        window& operator+=(const string &to_add);
 
         // Output all words to the ostream through the extraction operator
         friend std::ostream& operator<<(std::ostream &out, const window &obj);
+        std::ostream& display_reverse(std::ostream &out, const word *head) const;
 
         //TODO implement an iterator
         
@@ -52,7 +53,7 @@ class window
         size_t size() const;
     protected:
         // Out put all words to the ostream, in order
-        std::ostream& window::display(std::ostream &out) const;
+        std::ostream& display(std::ostream &out, const word *head) const;
     private:
         void add_word(const string &to_add);
         void remove_all(word * head);

@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include "src/count_words.h"
+#include "src/window.h"
 
 using std::cout;
 using std::endl;
@@ -36,16 +37,22 @@ auto read_file(char *fname, string &to_return)
 
 int main(int argc, char *argv[])
 {
+    string words[] = {"this","is","a","small","but","important","window"};
+    size_t len = 7;
+    window win(words,len);
+    cout << win << endl;
+
+    /*
     string f;
     auto len = read_file(argv[1], f);
     cout << "bytes read: " << len << endl;
-    cout << f << endl;
 
     count_words counter(text);
     counter.add_text(text2);
     counter.count();
 
     cout << counter << endl;
+    */
 
     return 0;
 }
