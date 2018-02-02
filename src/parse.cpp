@@ -136,7 +136,7 @@ void parse::set_delimiters(const char *new_delims)
  * Returns:
  * list of parsed words.
  */
-const std::list<string> &parse::parse_words()
+const std::vector<string> &parse::parse_words()
 {
     // Lock the queue 
     std::lock_guard<mutex> g(queue_lock);
@@ -162,7 +162,8 @@ void parse::parse_text(const string &text)
     for (i = 0; i < text.length(); ++i) {
         if (test_char(text[i], delims)) {
             buff[j] = '\0';
-            word_list.emplace_back(string(buff));
+            if( j > 1 )
+                word_list.emplace_back(string(buff));
             while (text[i] && test_char(text[i], delims))
                 ++i;
             j = 0;

@@ -8,12 +8,14 @@
 
 #include <iostream>
 #include <string>
-#include <list>
+#include <vector>
 #include <mutex>
 #include <queue>
+
+#define MIN_CHAR 2 // Minimum number of characters before a word is added to the parsed list
+
 using std::string;
 using std::mutex;
-
 /*
  * Parse words from text. Does not format words into windows,
  * only separates based on spaces/punctuation
@@ -31,7 +33,7 @@ public:
     virtual void add_text(const string &text);
 
     /* Returns a constant ref to the list of parsed words */
-    const std::list<string> &parse_words();
+    const std::vector<string> &parse_words();
 
     /* Returns TRUE if there is nothing left to parse.
      * FALSE if otherwise */
@@ -69,7 +71,7 @@ private:
     mutex queue_lock;
 
     /* List of words that have been parsed */
-    std::list<string> word_list;
+    std::vector<string> word_list;
     std::queue<string> to_parse;
 };
 

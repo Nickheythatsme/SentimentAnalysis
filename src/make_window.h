@@ -9,7 +9,6 @@ public:
     make_window();
     make_window(const make_window &obj);
     ~make_window();
-    virtual void add_text(const string &text) override;
 protected:
 private:
 };

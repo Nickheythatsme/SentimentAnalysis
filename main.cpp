@@ -9,6 +9,10 @@ using std::endl;
 string text  = "this. is some text. I hope that it is formatted correctly. I know this is difficult but, I must do it!";
 string text2 = "This statically specifies what build type (configuration) will be built in this build tree. Possible values are empty, Debug, Release, RelWithDebInfo and MinSizeRel.";
 
+void test_window(const string &text)
+{
+};
+
 /*
  * Read the entirety of a file into to_return
  * returns 0 if failure/nothing read.
@@ -37,22 +41,17 @@ auto read_file(char *fname, string &to_return)
 
 int main(int argc, char *argv[])
 {
-    string words[] = {"this","is","a","small","but","important","window"};
-    size_t len = 7;
-    window win(words,len);
-    cout << win << endl;
-
-    /*
     string f;
     auto len = read_file(argv[1], f);
     cout << "bytes read: " << len << endl;
 
-    count_words counter(text);
-    counter.add_text(text2);
-    counter.count();
+    count_words counter(f);
+    counter.size();
 
-    cout << counter << endl;
-    */
+    //cout << counter << endl;
+
+    //test_window(text);
+    auto sorted = counter.top_bottom_words(1.0,1.0);
 
     return 0;
 }
