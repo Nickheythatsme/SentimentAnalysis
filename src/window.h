@@ -26,8 +26,6 @@ struct word: public string
     word(const word &obj)
         : string(obj)
     { next = prev = nullptr; }
-    ~word()
-    { next = prev = nullptr; }
 
     word *next;
     word *prev;
@@ -50,6 +48,12 @@ public:
     // Add a word to this window (at the end)
     window &operator+=(const string &to_add);
 
+    // Add two windows together to make a new window
+    friend window operator+(const window &obj1, const window &ob2);
+
+    // Add a window and a word together to make a new window
+    friend window operator+(const window &obj1, const string &ob2);
+
     // Output all words to the ostream through the extraction operator
     friend std::ostream &operator<<(std::ostream &out, const window &obj);
     std::ostream &display_reverse(std::ostream &out, const word *head) const;
@@ -62,11 +66,17 @@ protected:
     // Out put all words to the ostream, in order
     std::ostream &display(std::ostream &out, const word *head) const;
 private:
+    // Add a single string word to this window
     void add_word(const string &to_add);
+
+    // Remove all words in this window
     void remove_all(word *head);
 
     // Copy all of the words in the DLL, recursively
     size_t copy_DLL(const word *obj_head, word *&self_head, word *&self_tail);
+
+    // Recursively add words in a DLL to this window
+    void insert_DLL(const word *head);
 
     // Tail and head pointers for the words in the window
     word *head;

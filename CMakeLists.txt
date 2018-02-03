@@ -9,7 +9,15 @@ include_directories(
         ${PYTHON_INCLUDE_DIRS}
                     )
 
-set(SOURCES main.cpp src/parse.cpp src/parse.h src/count_words.cpp src/count_words.h src/window.cpp src/window.h)
+set(SOURCES
+        main.cpp
+        src/parse.cpp
+        src/parse.h
+        src/count_words.cpp
+        src/count_words.h
+        src/window.cpp
+        src/window.h
+        )
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 target_link_libraries(${PROJECT_NAME}

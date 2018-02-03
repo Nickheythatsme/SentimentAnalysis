@@ -57,6 +57,7 @@ window &window::operator=(const window &src)
 {
     remove_all(head);
     _size = copy_DLL(src.head, head, tail);
+    return *this;
 }
 
 // Add words from another window to this window
@@ -67,12 +68,18 @@ window &window::operator+=(const window &to_add)
     // Copy the DLL from to_add to a new DLL
     _size += copy_DLL(to_add.head, temp_head, temp_tail);
 
-    // Attach the new DLL to our DLL
-    this->tail->next = temp_head;
-    // Attach the prev ptr from temp_head to our DLL
-    temp_head->prev = this->tail;
-    // Move our tail to temp_tail
-    this->tail = temp_tail;
+    if(head) {
+        // Attach the new DLL to our DLL
+        this->tail->next = temp_head;
+        // Attach the prev ptr from temp_head to our DLL
+        temp_head->prev = this->tail;
+        // Move our tail to temp_tail
+        this->tail = temp_tail;
+    }
+    else{
+        head = temp_head;
+        tail = temp_tail;
+    }
 
     return *this;
 }
@@ -82,6 +89,22 @@ window &window::operator+=(const string &to_add)
 {
     this->add_word(to_add);
     return *this;
+}
+
+// Add two windows together to make a new window
+window operator+(const window &obj1, const window &obj2)
+{
+    window w(obj1);
+    w += obj2;
+    return w;
+}
+
+// Add a window and a word together to make a new window
+window operator+(const window &obj1, const string &obj2)
+{
+    window w(obj1);
+    w += obj2;
+    return w;
 }
 
 // Output all words to the ostream through the extraction operator

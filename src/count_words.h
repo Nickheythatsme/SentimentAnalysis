@@ -27,17 +27,21 @@ public:
     friend std::ostream &operator<<(std::ostream &out, const count_words &obj);
 
     // Return the number of words
-    size_t size();
+    size_t size() const;
 
     // Return the top x% and bottom y% words
-    std::list<string> top_bottom_words(double x, double y);
+    std::list<std::pair<string,unsigned long>> top_bottom_words(double top_per, double bottom_per);
 
-protected:
     // Sort the words based on their frequencies
-    std::list<string> sort_words() const;
-    bool compare_word_freq(const string &w1, const string &w2);
+    std::list<std::pair<string,unsigned long>> sort_words() const;
+protected:
+
+    // Compare the frequency of one word to another word
+    static bool compare_word_freq(const std::pair<string,unsigned long> &w1, const std::pair<string,unsigned long> &w2);
 private:
+    // Commence the frequency counting for the word_map
     std::map<string, unsigned long> word_map;
+    void _count_words();
 };
 
 

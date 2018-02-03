@@ -2,28 +2,28 @@
 #include <fstream>
 #include "src/count_words.h"
 #include "src/window.h"
+#include <glob.h>
+
 
 using std::cout;
 using std::endl;
 
-string text  = "this. is some text. I hope that it is formatted correctly. I know this is difficult but, I must do it!";
-string text2 = "This statically specifies what build type (configuration) will be built in this build tree. Possible values are empty, Debug, Release, RelWithDebInfo and MinSizeRel.";
+static const string text  = "this. is some text. I hope that it is formatted correctly. I know this is difficult but, I must do it!";
+static const string text2 = "This statically specifies what build type (configuration) will be built in this build tree. Possible values are empty, Debug, Release, RelWithDebInfo and MinSizeRel.";
 
-void test_window(const string &text)
-{
-};
-
+void test_window(const string &text);
+void test_count(const string &text);
 /*
  * Read the entirety of a file into to_return
  * returns 0 if failure/nothing read.
  * Or the filesize if success
  */
-auto read_file(char *fname, string &to_return)
+string read_file(char *fname)
 {
     std::ifstream in(fname);
-    auto fsize = 0l;
+    auto fsize = in.tellg();
     char *buff;
-    if(!in) return fsize;
+    if(!in) return string();
 
     // Get file length
     fsize = in.tellg();
@@ -32,26 +32,51 @@ auto read_file(char *fname, string &to_return)
     in.seekg(0, std::ios::beg);
 
     // Allocate the buffer
-    buff = new char[fsize+1l];
+    buff = new char[long(fsize)+1];
     in.read(buff, fsize);
 
-    to_return = string(buff);
-    return fsize;
+    return string(buff);
+}
+
+auto glob_files(char *dir_name)
+{
+    glob_t globbed;
+    glob(dir_name, GLOB_NOSORT, NULL, &globbed);
+    string f;
+
+    for(auto i = 0lu; i < globbed.gl_pathc; ++i)
+        f += read_file(globbed.gl_pathv[i]);
+    return f;
 }
 
 int main(int argc, char *argv[])
 {
-    string f;
-    auto len = read_file(argv[1], f);
-    cout << "bytes read: " << len << endl;
+    //auto f = read_file(argv[1]);
+    auto f = glob_files(argv[1]);
+    cout << "bytes read: " << f.size() << endl;
 
-    count_words counter(f);
+    test_window(f);
+    //test_count(f);
+    return 0;
+}
+
+void test_window(const string &text)
+{
+    window w1;
+    window w2;
+    parse p;
+    auto v = p(text);
+    for (auto &a : v)
+        cout << a << endl;
+}
+
+
+void test_count(const string &text)
+{
+
+    count_words counter(text);
     counter.size();
 
-    //cout << counter << endl;
-
-    //test_window(text);
     auto sorted = counter.top_bottom_words(1.0,1.0);
 
-    return 0;
 }

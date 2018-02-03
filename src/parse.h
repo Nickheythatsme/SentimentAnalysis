@@ -33,7 +33,7 @@ public:
     virtual void add_text(const string &text);
 
     /* Returns a constant ref to the list of parsed words */
-    const std::vector<string> &parse_words();
+    const std::vector<string>& operator()(const string &text);
 
     /* Returns TRUE if there is nothing left to parse.
      * FALSE if otherwise */
@@ -42,18 +42,14 @@ public:
 
     /* Add the words from obj.word_list and add the queue from obj.queue */
     parse &operator=(const parse &src);
-
-    /* Copy the words from obj.word_list and add the queue from obj.queue */
-    friend parse &operator+=(parse &dest, parse &src);
-
 protected:
     /* Set the delimiters to another set.
      * Possibly parsing based on periods or commas instead of any punctuation.*/
     void set_delimiters(const char *delims);
 
+    /* Returns a constant ref to the list of parsed words */
+    const std::vector<string> &parse_words();
 private:
-    /* Commence the parsing of a text string, and add it to the word_list */
-    void parse_text(const string &text);
 
     /* Test if a character is a delimiter */
     static int test_char(char c, const char *delims);
@@ -63,6 +59,10 @@ private:
 
     /* Make a copy and clean the text */
     static string clean(const string &to_clean);
+
+    /* Commence the parsing of a text string, and add it to the word_list */
+    void parse_text(const string &text);
+
 
     static char default_delims[]; /* Default delimeters */
     char *delims;

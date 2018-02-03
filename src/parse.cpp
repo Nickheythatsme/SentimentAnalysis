@@ -71,32 +71,6 @@ parse &parse::operator=(const parse &src)
     return *this;
 }
 
-// TODO finish operator+=
-/* Copy the words from obj.word_list and add the queue from obj.queue */
-parse &operator+=(parse &dest, parse &src)
-{
-    // don't actually take the locks yet
-    std::unique_lock<std::mutex> lock1(dest.queue_lock, std::defer_lock);
-    std::unique_lock<std::mutex> lock2(src.queue_lock, std::defer_lock);
-
-    // lock both unique_locks without deadlock
-    // TODO handle exception where lock1 is aquired but lock2 is not
-    std::lock(lock1, lock2);
-
-    // Copy the queue. CREATES NEW QUEUE
-    // TODO find a solution to copying queues so the we don't COPY, only ADD
-    auto temp_q = src.to_parse;
-    while (!dest.to_parse.empty()) {
-        temp_q.emplace(dest.to_parse.front());
-        dest.to_parse.pop();
-    }
-    dest.to_parse = temp_q;
-
-    // Copy the parsed word list
-    for (auto const &a : src.word_list)
-        dest.word_list.emplace_back(a);
-}
-
 // DESTRUCTOR
 parse::~parse()
 {
@@ -146,6 +120,12 @@ const std::vector<string> &parse::parse_words()
         to_parse.pop();
     }
     return word_list;
+}
+
+const std::vector<string>& parse::operator()(const string &text)
+{
+    this -> add_text(text);
+    return this -> parse_words();
 }
 
 /*
