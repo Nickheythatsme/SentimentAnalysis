@@ -17,6 +17,8 @@ set(SOURCES
         src/count_words.h
         src/window.cpp
         src/window.h
+        src/make_window.cpp
+        src/make_window.h
         )
 
 add_executable(${PROJECT_NAME} ${SOURCES})

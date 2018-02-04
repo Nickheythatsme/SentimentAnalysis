@@ -53,10 +53,11 @@ int main(int argc, char *argv[])
 {
     //auto f = read_file(argv[1]);
     auto f = glob_files(argv[1]);
+
     cout << "bytes read: " << f.size() << endl;
 
-    test_window(f);
-    //test_count(f);
+    //test_window(f);
+    test_count(f);
     return 0;
 }
 
@@ -75,8 +76,11 @@ void test_count(const string &text)
 {
 
     count_words counter(text);
-    counter.size();
 
-    auto sorted = counter.top_bottom_words(1.0,1.0);
+    auto sorted = counter.no_use_words(0.95, 0.05);
+    cout << "All words: " << counter.size() << endl
+         << "no use words: " << sorted.size() << endl;
+    //for (auto &a : sorted)
+    //    cout << a.first << '\t' << a.second << endl;
 
 }

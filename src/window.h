@@ -58,8 +58,6 @@ public:
     friend std::ostream &operator<<(std::ostream &out, const window &obj);
     std::ostream &display_reverse(std::ostream &out, const word *head) const;
 
-    //TODO implement an iterator
-
     // Returns the number of words in the window
     size_t size() const;
 protected:

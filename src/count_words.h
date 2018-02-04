@@ -30,18 +30,19 @@ public:
     size_t size() const;
 
     // Return the top x% and bottom y% words
-    std::list<std::pair<string,unsigned long>> top_bottom_words(double top_per, double bottom_per);
+    std::map<string, unsigned long> no_use_words(double top_per, double bottom_per);
 
+protected:
     // Sort the words based on their frequencies
     std::list<std::pair<string,unsigned long>> sort_words() const;
-protected:
 
     // Compare the frequency of one word to another word
     static bool compare_word_freq(const std::pair<string,unsigned long> &w1, const std::pair<string,unsigned long> &w2);
 private:
     // Commence the frequency counting for the word_map
-    std::map<string, unsigned long> word_map;
     void _count_words();
+
+    std::map<string, unsigned long> word_map;
 };
 
 

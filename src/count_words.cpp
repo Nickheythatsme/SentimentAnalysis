@@ -61,28 +61,24 @@ std::ostream &operator<<(std::ostream &out, const count_words &obj)
 }
 
 // Return the top x% and bottom y% words
-std::list<std::pair<string,unsigned long>> count_words::top_bottom_words(double top_per, double bottom_per)
+std::map<string,unsigned long> count_words::no_use_words(double top_per, double bottom_per)
 {
-    auto top_size    = long( word_map.size() * top_per);
-    auto bottom_size = long( word_map.size() * bottom_per);
-
     auto sorted_words = sort_words();
-    for(auto &a : sorted_words){
-        std::cout << a.first << '\t' << a.second << std:: endl;
-    }
+    std::map<string,unsigned long> no_use_words;
 
-    return sorted_words;
-}
+    auto top_size    = long(sorted_words.size() * top_per);
+    auto bottom_size = long(sorted_words.size() * bottom_per);
 
-// Commence the frequency counting for the word_map
-void count_words::_count_words()
-{
-    // Parse the rest of the words in the queue
-    auto word_list = parse_words();
+    // TODO this isn't working.
+    auto a = sorted_words.rbegin();
+    for(auto i = top_size; a != sorted_words.rend() && i < sorted_words.size(); ++i,++a)
+        no_use_words.insert(*a);
 
-    for (auto const &a : word_list) {
-        word_map[a] += 1;
-    }
+    auto b = sorted_words.begin();
+    for(auto i = 0; b != sorted_words.end() && i < bottom_size; ++i,++b)
+        no_use_words.insert(*b);
+
+    return no_use_words;
 }
 
 // Sort the words based on their frequencies
@@ -98,6 +94,18 @@ std::list<std::pair<string,unsigned long>> count_words::sort_words() const
 
     return sorted_words;
 }
+
+// Commence the frequency counting for the word_map
+void count_words::_count_words()
+{
+    // Parse the rest of the words in the queue
+    auto word_list = parse_words();
+
+    for (auto const &a : word_list) {
+        word_map[a] += 1;
+    }
+}
+
 
 // Compare the frequency of one word to another word
 // Sorting with this function meas the
