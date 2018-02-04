@@ -66,8 +66,8 @@ void test_window(const string &text)
     window w1;
     window w2;
     parse p;
-    auto v = p(text);
-    for (auto &a : v)
+    p.add_text(text);
+    for (auto &a : p)
         cout << a << endl;
 }
 
@@ -77,10 +77,9 @@ void test_count(const string &text)
 
     count_words counter(text);
 
-    auto sorted = counter.no_use_words(0.95, 0.05);
+    auto sorted = counter.no_use_words(0.99, 0.10);
     cout << "All words: " << counter.size() << endl
          << "no use words: " << sorted.size() << endl;
-    //for (auto &a : sorted)
-    //    cout << a.first << '\t' << a.second << endl;
-
+    for( auto const & a : sorted)
+        cout << a.first << '\t' << a.second << endl;
 }

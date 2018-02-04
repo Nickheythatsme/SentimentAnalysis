@@ -8,133 +8,84 @@
 /* Default delimeters for parsing words */
 char parse::default_delims[] = ".,;?! '\"[](){}“";
 
-// DEFAULT CONSTRUCTOR
-parse::parse()
-{
-    // Lock the queue 
-    std::lock_guard<mutex> g(queue_lock);
-
-    delims = default_delims;
-}
-
 // CONSTRUCTOR
-parse::parse(const string &text)
+parse::parse() noexcept : std::vector<string>()
 {
-    // Lock the queue 
-    std::lock_guard<mutex> g(queue_lock);
-
-    // Set the delimeters
-    delims = default_delims;
-
-    // Add the text to the queue
-    to_parse.emplace(clean(text));
+    delims = new char[strlen(default_delims) + 1];
+    strcpy(delims, default_delims);
 }
 
-// COPY CONSTRUCTOR
-parse::parse(const parse &obj)
+// CONSTRUCTOR with arguments
+parse::parse(const string &text) : std::vector<string>()
 {
-    // Lock the queue 
-    std::lock_guard<mutex> g(queue_lock);
-
-    if (obj.delims != default_delims) {
-        delims = new char[strlen(obj.delims) + 1];
-        strcpy(delims, obj.delims);
-    } else
-        delims = default_delims;
-
-    // Copy queue
-    to_parse = obj.to_parse;
-
-    // Copy list of parsed words
-    word_list = obj.word_list;
+    delims = new char[strlen(default_delims) + 1];
+    strcpy(delims, default_delims);
+    _parse(text);
 }
 
-/* Add the words from obj.word_list and add the queue from obj.queue */
-parse &parse::operator=(const parse &src)
+// CONSTRUCTOR with arguments
+parse::parse(const string &text, const char *new_delims) : std::vector<string>()
 {
-    // Lock the queue
-    std::lock_guard<mutex> g(queue_lock);
-
-    // Copy queue
-    to_parse = src.to_parse;
-
-    // Copy list of parsed words
-    word_list = src.word_list;
-
-    // Copy the delimeters
-    if (src.delims != default_delims) {
-        delims = new char[strlen(src.delims) + 1];
-        strcpy(delims, src.delims);
-    } else
-        delims = default_delims;
-
-    return *this;
+    delims = new char[strlen(new_delims) + 1];
+    strcpy(delims, new_delims);
+    _parse(text);
 }
 
-// DESTRUCTOR
-parse::~parse()
-{
-    // Lock the queue 
-    std::lock_guard<mutex> g(queue_lock);
-
-    if (delims != default_delims)
-        delete[] delims;
-
-    word_list.clear();
-}
-
-/*
- * Add text that will be parsed. Adds another node onto the queue
- */
-void parse::add_text(const string &text)
-{
-    // Lock the queue 
-    std::lock_guard<mutex> g(queue_lock);
-
-    // TESTED this does not make additional copies. Only one from the cleaned function.
-    to_parse.emplace(clean(text));
-}
-
-/* 
- * Change the default delimeters for this 
- * instance of the class 
- */
-void parse::set_delimiters(const char *new_delims)
+// CONSTRUCTOR with arguments
+parse::parse(const char *new_delims) : std::vector<string>()
 {
     delims = new char[strlen(new_delims) + 1];
     strcpy(delims, new_delims);
 }
 
-/*
- * Parse text without making a new class instance
- * Returns:
- * list of parsed words.
- */
-const std::vector<string> &parse::parse_words()
+// COPY CONSTRUCTOR
+parse::parse(const parse &obj) : std::vector<string>(obj)
 {
-    // Lock the queue 
-    std::lock_guard<mutex> g(queue_lock);
-
-    while (!to_parse.empty()) {
-        parse_text(to_parse.front());
-        to_parse.pop();
-    }
-    return word_list;
+    delims = new char[strlen(obj.delims) + 1];
+    strcpy(delims, obj.delims);
 }
 
-const std::vector<string>& parse::operator()(const string &text)
+// DESTRUCTOR
+parse::~parse()
 {
-    this -> add_text(text);
-    return this -> parse_words();
+    delete [] delims;
 }
 
 /*
- * Parse the text
- * Returns:
- *  SUCCESS: number of words parsed
- *  FAILURE: -1
+ * parse the text based on specified delimiters which DEFAULT to default_delims
+ * RETURNS vector of parsed words
  */
-void parse::parse_text(const string &text)
+parse& parse::add_text(const string &text)
+{
+    _parse(text);
+    return *this;
+}
+
+/*
+ * parse the text based on specified delimiters which DEFAULT to default_delims
+ * RETURNS vector of parsed words
+ */
+parse& parse::add_text(const std::vector<string> &texts)
+{
+    std::vector<string> words;
+    for (auto const &a : texts)
+        _parse(a);
+
+    return *this;
+}
+
+/* Change the delimiters for parsing */
+void parse::set_delimiters(const char* new_delims)
+{
+    delete [] delims;
+    delims = new char[strlen(new_delims) + 1];
+    strcpy(delims, new_delims);
+}
+
+/*
+ * Commence the parsing of a text string, and return a list of parsed words
+ */
+void parse::_parse(const string &text)
 {
     char buff[1024];
     auto i = 0, j = 0;
@@ -143,7 +94,7 @@ void parse::parse_text(const string &text)
         if (test_char(text[i], delims)) {
             buff[j] = '\0';
             if( j > 1 )
-                word_list.emplace_back(string(buff));
+                this->emplace_back(string(buff));
             while (text[i] && test_char(text[i], delims))
                 ++i;
             j = 0;
@@ -167,7 +118,8 @@ int parse::test_char(char c, const char *delims)
     return *delims != '\0';
 }
 
-/*STATIC
+/*
+ * STATIC
  * Lower all the characters in a string
  */
 string &parse::lowerize(string &to_lower)
