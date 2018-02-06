@@ -6,7 +6,7 @@
 
 // DEFAULT CONSTRUCTOR
 count_words::count_words() noexcept :
-    map<string, unsigned long>(),
+    map<string, uint>(),
     parser()
 {
     _count_words();
@@ -15,7 +15,7 @@ count_words::count_words() noexcept :
 
 // CONSTRUCTOR
 count_words::count_words(const string &text) noexcept :
-    map<string, unsigned long>(),
+    map<string, uint>(),
     parser(text)
 {
     _count_words();
@@ -23,7 +23,7 @@ count_words::count_words(const string &text) noexcept :
 
 // COPY CONSTRUCTOR
 count_words::count_words(const count_words &obj) noexcept :
-    map<string, unsigned long>(obj),
+    map<string, uint>(obj),
     parser(obj.parser)
 {
 }
@@ -51,10 +51,10 @@ std::ostream &operator<<(std::ostream &out, const count_words &obj)
 }
 
 // Return the top x% and bottom y% words
-std::map<string,unsigned long> count_words::no_use_words(double top_per, double bottom_per)
+std::map<string,uint> count_words::no_use_words(double top_per, double bottom_per)
 {
     auto sorted_words = sort();
-    std::map<string,unsigned long> no_use_words;
+    std::map<string,uint> no_use_words;
 
     auto top_size    = long(sorted_words.size() * top_per);
     auto bottom_size = long(sorted_words.size() * bottom_per);
@@ -72,9 +72,9 @@ std::map<string,unsigned long> count_words::no_use_words(double top_per, double 
 }
 
 // Sort the words based on their frequencies
-std::list<std::pair<string,unsigned long>> count_words::sort() const
+std::list<std::pair<string,uint>> count_words::sort() const
 {
-    std::list<std::pair<string,unsigned long>> sorted_words;
+    std::list<std::pair<string,uint>> sorted_words;
 
     for (auto const &a : *this){
         sorted_words.push_back(a);
@@ -97,7 +97,7 @@ void count_words::_count_words()
 // Sorting with this function meas the
 // MOST frequent words first
 // LEAST frequent words last
-bool count_words::compare_word_freq(const std::pair<string,unsigned long> &w1, const std::pair<string,unsigned long> &w2)
+bool count_words::compare_word_freq(const std::pair<string,uint> &w1, const std::pair<string,uint> &w2)
 {
     return w1.second > w2.second;
 }

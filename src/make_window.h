@@ -5,7 +5,7 @@
 #ifndef MAKE_WINDOW_
 #define MAKE_WINDOW_
 
-class make_window /*:public count_words*/
+class make_window : public count_words
 {
 public:
     make_window();
@@ -16,9 +16,8 @@ public:
     const std::vector<window>& operator()(const string &text);
 protected:
 private:
-
     /* make the windows from the text */
-    std::map<string, unsigned long> no_use_words;
+    std::map<string, uint> no_use_words;
     std::vector<window> windows;
 };
 

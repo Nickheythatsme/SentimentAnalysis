@@ -9,7 +9,7 @@
 #include <ostream>
 #include <list>
 
-class count_words: public std::map<string, unsigned long>
+class count_words: public std::map<string, uint>
 {
 public:
     count_words() noexcept;
@@ -27,14 +27,14 @@ public:
     friend std::ostream &operator<<(std::ostream &out, const count_words &obj);
 
     // Return the top x% and bottom y% words
-    std::map<string, unsigned long> no_use_words(double top_per, double bottom_per);
+    std::map<string, uint> no_use_words(double top_per, double bottom_per);
 
     // Sort the words based on their frequencies
-    std::list<std::pair<string,unsigned long>> sort() const;
+    std::list<std::pair<string,uint>> sort() const;
 protected:
 
     // Compare the frequency of one word to another word
-    static bool compare_word_freq(const std::pair<string,unsigned long> &w1, const std::pair<string,unsigned long> &w2);
+    static bool compare_word_freq(const std::pair<string,uint> &w1, const std::pair<string,uint> &w2);
 private:
     // Commence the frequency counting for the word_map
     void _count_words();
