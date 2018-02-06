@@ -1,4 +1,7 @@
 #include "make_window.h"
+
+uint make_window::window_len = 4;
+
 make_window::make_window()
 {
 
