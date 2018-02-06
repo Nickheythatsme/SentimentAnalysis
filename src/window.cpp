@@ -46,10 +46,19 @@ size_t window::copy_DLL(const word *obj_head, word *&self_head, word *&self_tail
     self_head->prev = self_tail;
 
     // Move tail up to the new node
-    self_tail->next = self_head;
+    self_tail = self_head;
 
     // Make the recursive call. 
     return copy_DLL(obj_head->next, self_head->next, self_tail->next) + 1;
+}
+
+/* Clear all the words in the DLL if they exist */
+void window::clear()
+{
+    remove_all(head);
+    delete head;
+    head = tail = nullptr;
+    _size = 0;
 }
 
 // Assignment operator
@@ -110,10 +119,7 @@ window operator+(const window &obj1, const string &obj2)
 // Output all words to the ostream through the extraction operator
 std::ostream &operator<<(std::ostream &out, const window &obj)
 {
-    // TODO remove when not debugging
-    obj.display(out, obj.head);
-    out << std::endl;
-    return obj.display_reverse(out, obj.tail);
+    return obj.display(out, obj.head);
 }
 
 // Output all words to the ostream object in order
@@ -124,16 +130,6 @@ std::ostream &window::display(std::ostream &out, const word *head) const
     if (head->next)
         out << ", ";
     return display(out, head->next);
-}
-
-// TODO remove when not debugging
-std::ostream &window::display_reverse(std::ostream &out, const word *head) const
-{
-    if (!head) return out;
-    out << *head;
-    if (head->prev)
-        out << ", ";
-    return display_reverse(out, head->prev);
 }
 
 // Returns the number of words in the window

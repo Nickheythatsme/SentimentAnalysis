@@ -6,21 +6,41 @@
 #include "parse.h"
 
 /* Default delimeters for parsing words */
-char parse::default_delims[] = ".,;?! '\"[](){}“";
+//char parse::default_delims[] = ".,;?! '\"[](){}<>";
+char parse::default_delims[] = ".,;?! '\"[](){}<>“";
 
 // CONSTRUCTOR
-parse::parse() noexcept : std::vector<string>()
+parse::parse() noexcept : 
+    std::vector<string>()
 {
     delims = new char[strlen(default_delims) + 1];
     strcpy(delims, default_delims);
 }
 
 // CONSTRUCTOR with arguments
-parse::parse(const string &text) : std::vector<string>()
+parse::parse(const string &text) : 
+    std::vector<string>()
 {
     delims = new char[strlen(default_delims) + 1];
     strcpy(delims, default_delims);
-    _parse(text);
+    this -> add_text(text);
+}
+
+// CONSTRUCTOR
+parse::parse(const std::vector<string> &texts) : 
+    std::vector<string>()
+{
+    delims = new char[strlen(default_delims) + 1];
+    strcpy(delims, default_delims);
+    this -> add_text(texts);
+}
+
+// CONSTRUCTOR
+parse::parse(const std::vector<string> &texts, const char *new_delims)
+{
+    delims = new char[strlen(default_delims) + 1];
+    strcpy(delims, default_delims);
+    this -> add_text(texts);
 }
 
 // CONSTRUCTOR with arguments
@@ -28,7 +48,7 @@ parse::parse(const string &text, const char *new_delims) : std::vector<string>()
 {
     delims = new char[strlen(new_delims) + 1];
     strcpy(delims, new_delims);
-    _parse(text);
+    this -> add_text(text);
 }
 
 // CONSTRUCTOR with arguments

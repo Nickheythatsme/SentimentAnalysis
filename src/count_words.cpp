@@ -9,7 +9,6 @@ count_words::count_words() noexcept :
     map<string, uint>(),
     parser()
 {
-    _count_words();
 
 }
 
@@ -21,21 +20,19 @@ count_words::count_words(const string &text) noexcept :
     _count_words();
 }
 
+// CONSTRUCTOR
+count_words::count_words(const std::vector<string> &words) noexcept :
+    map<string, uint>(),
+    parser(words)
+{
+    _count_words();
+}
+
 // COPY CONSTRUCTOR
 count_words::count_words(const count_words &obj) noexcept :
     map<string, uint>(obj),
     parser(obj.parser)
 {
-}
-
-count_words &operator+=(count_words &dest, count_words &src)
-{
-    return dest;
-}
-
-count_words &count_words::operator=(const count_words &obj)
-{
-    return *this;
 }
 
 /*
@@ -51,7 +48,7 @@ std::ostream &operator<<(std::ostream &out, const count_words &obj)
 }
 
 // Return the top x% and bottom y% words
-std::map<string,uint> count_words::no_use_words(double top_per, double bottom_per)
+std::map<string,uint> count_words::top_bottom(double top_per, double bottom_per)
 {
     auto sorted_words = sort();
     std::map<string,uint> no_use_words;

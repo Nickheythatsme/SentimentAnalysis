@@ -19,6 +19,8 @@ set(SOURCES
         src/window.h
         src/make_window.cpp
         src/make_window.h
+        src/support.h
+        src/support.cpp
         )
 
 add_executable(${PROJECT_NAME} ${SOURCES})

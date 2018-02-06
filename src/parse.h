@@ -25,6 +25,8 @@ public:
     parse() noexcept;
     explicit parse(const string &text);
     explicit parse(const string &text, const char *new_delims);
+    explicit parse(const std::vector<string> &text);
+    explicit parse(const std::vector<string> &text, const char *new_delims);
     explicit parse(const char *new_delims);
     parse(const parse &obj);
     virtual ~parse();

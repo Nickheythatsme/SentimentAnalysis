@@ -56,10 +56,12 @@ public:
 
     // Output all words to the ostream through the extraction operator
     friend std::ostream &operator<<(std::ostream &out, const window &obj);
-    std::ostream &display_reverse(std::ostream &out, const word *head) const;
 
     // Returns the number of words in the window
     size_t size() const;
+
+    /* Clear all the words in the DLL if they exist */
+    void clear();
 protected:
     // Out put all words to the ostream, in order
     std::ostream &display(std::ostream &out, const word *head) const;
