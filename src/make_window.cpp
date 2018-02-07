@@ -65,7 +65,6 @@ void make_window::_make_windows(const string &text)
         }
         if( temp_window.size() > 2 )
         {
-            std::cout << "Adding window: " << temp_window << std::endl;
             this -> emplace_back(temp_window);
         }
         temp_window.clear();
