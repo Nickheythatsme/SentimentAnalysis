@@ -1,8 +1,5 @@
 #include "support.h"
 
-// HTML tags that should be cleaned
-static const char *to_clean[2] = {"<br />","<br >"};
-
 /*
  * Read the entirety of a file into to_return
  * returns 0 if failure/nothing read.
@@ -46,17 +43,35 @@ std::vector<string> glob_files(const char *dir_name)
         files.emplace_back(read_file(globbed.gl_pathv[i]));
     return files;
 }
+// Lower all letters in a word to lowercase
+void lower(string &word)
+{
+    for(auto &c : word)
+        if ( c >= 65 && c <= 90 )
+            c += 32;
+}
 
-// Replace the HTML from the str
+// Replace the HTML from the str with periods
 void replace(string &str)
 {
+    for (auto a = 0lu; a < to_clean_count; ++a)
+    {
+        auto pos = str.find(to_clean[a]);
+        if( pos != string::npos )
+        {
+            auto len = strlen(to_clean[a]) + pos;
+            for (auto i = pos; i < len; ++i)
+            {
+                str[i] = '.';
+            }
+            replace(str);
+        }
+    }
 }
 
 // Clean the HTML from the aclImdb text data
-void clean_files(std::vector<string> &words)
+void clean(string &word)
 {
-    for(auto &a : words)
-    {
-        replace(a);
-    }
+    lower(word);
+    replace(word);
 }

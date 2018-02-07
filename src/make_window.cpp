@@ -12,7 +12,7 @@ make_window::make_window(const string &text) :
     std::vector<window>(),
     counter(text)
 {
-    no_use_words = counter.top_bottom(0.95,0.05);
+    no_use_words = counter.top_bottom(0.99,0.05);
     _make_windows(text); 
 }
 
@@ -52,6 +52,10 @@ make_window& make_window::operator()(const string &text)
 /* Make the windows from the text, and add it to the map */
 void make_window::_make_windows(const string &text)
 {
+    std::cout << "no use words: " << std::endl;
+    for( auto const &a : no_use_words )
+        std::cout << a.first << '\t' << a.second << std::endl;
+
     parse sentence_parser(text, SENTENCE_DELIMS);
     window temp_window;
 

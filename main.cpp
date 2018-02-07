@@ -16,6 +16,10 @@ int main(int argc, char *argv[])
 {
     auto f = glob_files(argv[1]);
 
+    // Clean text, lower capital letters
+    for(auto &a : f )
+        clean(a);
+
     cout << "Files read: " << f.size() << endl;
 
     //test_window(f);
@@ -32,12 +36,18 @@ void test_window(const std::vector<string> &files)
 
 void test_count(const std::vector<string> &files)
 {
+    count_words count(files);
+    auto sorted = count.sort();
+    for (auto const &a : sorted )
+        cout << a.first << ',' << a.second << endl;
 }
 
 void test_make_windows(const std::vector<string> &files)
 {
     cout << "First file: " << files[0] << endl;
     make_window maker(files);
+    /*
     for(auto const & a: maker)
         cout << "window: " << a << endl;
+    */
 }
