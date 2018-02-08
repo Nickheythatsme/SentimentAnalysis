@@ -12,15 +12,16 @@ make_window::make_window(const string &text) :
     std::vector<window>(),
     counter(text)
 {
-    no_use_words = counter.top_bottom(0.99,0.05);
+    no_use_words = counter.top_bottom(TOP_PER,BOTTOM_PER);
     _make_windows(text); 
 }
 
+// CONSTRUCTOR with arguments
 make_window::make_window(const std::vector<string> &words) :
     std::vector<window>(),
     counter(words)
 {
-    no_use_words = counter.top_bottom(0.95,0.05);
+    no_use_words = counter.top_bottom(TOP_PER,BOTTOM_PER);
     for( auto const &a : words)
         _make_windows(a); 
 }
@@ -44,9 +45,13 @@ void make_window::set_no_use_words(const std::map<string, uint>& new_words)
     no_use_words = new_words;
 }
 
+/* Make windows from the included text */
 make_window& make_window::operator()(const string &text)
 {
-    return *this;
+    this -> clear();
+    count_words counter(text);
+    no_use_words = text.top_bottom(TOP_PER, BOTTOM_PER);
+    _make_windows(text);
 }
 
 /* Make the windows from the text, and add it to the map */

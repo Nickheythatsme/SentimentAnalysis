@@ -5,6 +5,9 @@
 #ifndef MAKE_WINDOW_
 #define MAKE_WINDOW_
 
+#define TOP_PER    0.99
+#define BOTTOM_PER 0.05
+
 #define SENTENCE_DELIMS ".,?!"
 
 class make_window : public std::vector<window>
