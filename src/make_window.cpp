@@ -1,4 +1,5 @@
 #include "make_window.h"
+char make_window::SENTENCE_DELIMS[] = ".,?!";
 
 // CONSTRUCTOR
 make_window::make_window() :
