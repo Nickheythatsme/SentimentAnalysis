@@ -37,7 +37,6 @@ make_window::make_window(const make_window &obj) :
 // DESTRUCTOR
 make_window::~make_window()
 {
-
 }
 
 /* Set the no_use_words that should be excluded from the window making */
