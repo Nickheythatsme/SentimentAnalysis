@@ -1,30 +1,19 @@
 cmake_minimum_required(VERSION 3.5)
 project(SentimentAnalysis)
-
 set(CMAKE_CXX_STANDARD 14)
-message(${CMAKE_BUILD_TYPE})
 
-find_package(PythonLibs REQUIRED)
-include_directories(
-        ${PYTHON_INCLUDE_DIRS}
-                    )
+# Add the libraries and files from src
+add_subdirectory(src)
 
+# Define the sources for the executable
 set(SOURCES
-        main.cpp
-        src/parse.cpp
-        src/parse.h
-        src/count_words.cpp
-        src/count_words.h
-        src/window.cpp
-        src/window.h
-        src/make_window.cpp
-        src/make_window.h
-        src/support.h
-        src/support.cpp
-        )
+    main.cpp
+    )
 
+# Make the executable
 add_executable(${PROJECT_NAME} ${SOURCES})
+
+# Link the libraries to the executable
 target_link_libraries(${PROJECT_NAME}
-        ${Boost_LIBRARIES}
-        ${PYTHON_LIBRARIES}
-                )
+        vectorize
+        )
