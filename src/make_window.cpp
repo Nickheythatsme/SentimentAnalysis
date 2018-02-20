@@ -1,4 +1,5 @@
 #include "make_window.h"
+char make_window::SENTENCE_DELIMS[] = ".,?!";
 
 // CONSTRUCTOR
 make_window::make_window() :
@@ -36,7 +37,6 @@ make_window::make_window(const make_window &obj) :
 // DESTRUCTOR
 make_window::~make_window()
 {
-
 }
 
 /* Set the no_use_words that should be excluded from the window making */

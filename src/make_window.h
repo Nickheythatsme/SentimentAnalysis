@@ -8,7 +8,6 @@
 #define TOP_PER    0.99
 #define BOTTOM_PER 0.05
 
-#define SENTENCE_DELIMS ".,?!"
 
 class make_window : public std::vector<window>
 {
@@ -35,6 +34,7 @@ private:
 
     /* make the windows from the text */
     std::map<string, uint> no_use_words;
+    static char SENTENCE_DELIMS[];
 };
 
 #endif //MAKE_WINDOW

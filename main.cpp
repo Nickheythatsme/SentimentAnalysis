@@ -20,8 +20,6 @@ int main(int argc, char *argv[])
     for(auto &a : f )
         clean(a);
 
-    cout << "Files read: " << f.size() << endl;
-
     //test_window(f);
     //test_count(f);
     test_make_windows(f);

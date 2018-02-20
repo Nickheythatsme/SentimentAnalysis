@@ -7,7 +7,7 @@
 
 /* Default delimeters for parsing words */
 //char parse::default_delims[] = ".,;?! '\"[](){}<>";
-char parse::default_delims[] = ".,;?! '\"[](){}<>“";
+char parse::default_delims[] = ".,;?! '\"[](){}<>";
 
 // CONSTRUCTOR
 parse::parse() noexcept : 

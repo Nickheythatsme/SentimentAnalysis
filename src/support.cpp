@@ -52,7 +52,7 @@ void lower(string &word)
 }
 
 // Replace the HTML from the str with periods
-void replace(string &str)
+void replace_html(string &str)
 {
     for (auto a = 0lu; a < to_clean_count; ++a)
     {
@@ -64,8 +64,18 @@ void replace(string &str)
             {
                 str[i] = '.';
             }
-            replace(str);
+            replace_html(str);
         }
+    }
+}
+
+// Remove the non-ascii characters
+void replace_non_ascii(string &str)
+{
+    for (auto & a : str)
+    {
+        if (a < 32 || a > 126)
+            a = ' ';
     }
 }
 
@@ -73,5 +83,6 @@ void replace(string &str)
 void clean(string &word)
 {
     lower(word);
-    replace(word);
+    replace_html(word);
+    replace_non_ascii(word);
 }
