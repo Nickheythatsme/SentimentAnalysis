@@ -50,7 +50,7 @@ make_window& make_window::operator()(const string &text)
 {
     this -> clear();
     count_words counter(text);
-    no_use_words = text.top_bottom(TOP_PER, BOTTOM_PER);
+    no_use_words = counter.top_bottom(TOP_PER, BOTTOM_PER);
     _make_windows(text);
 }
 
