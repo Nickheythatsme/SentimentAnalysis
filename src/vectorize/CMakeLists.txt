@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.5)
 message("Including vectorize")
 
 # Define the library name
-set(LIBRARY_NAME ${LIBRARY_NAME})
+set(LIBRARY_NAME vectorize)
 
 # Define the sources to be added to the library
 set(SOURCES

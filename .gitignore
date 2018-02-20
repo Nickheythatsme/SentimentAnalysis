@@ -39,4 +39,3 @@ _Release/
 
 # Data folders that contain text for testing
 data/aclImdb/
-data/test/
