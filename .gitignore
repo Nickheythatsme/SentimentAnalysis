@@ -41,4 +41,4 @@ _Release/
 data/aclImdb/
 
 # VS studio stuff
-.vs\
+.vs/
