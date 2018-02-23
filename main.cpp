@@ -79,6 +79,11 @@ int parse_utf8(char *str, int len)
 
 int main(int argc, char *argv[])
 {
+	if (argc < 2)
+	{
+		cout << "Usage ./SentimentAnalysis [files]" << endl;
+		exit(EXIT_FAILURE);
+	}
     std::ifstream fin(argv[1]);
     int len;
     char *buff;

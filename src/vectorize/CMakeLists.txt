@@ -14,7 +14,7 @@ set(SOURCES
 
 
 # Create the library
-add_library(${LIBRARY_NAME} SHARED ${SOURCES})
+add_library(${LIBRARY_NAME} STATIC ${SOURCES})
 
 # Make sure the compiler can find include files for the library
 target_include_directories(${LIBRARY_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

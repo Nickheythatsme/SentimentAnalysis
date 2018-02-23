@@ -39,3 +39,6 @@ _Release/
 
 # Data folders that contain text for testing
 data/aclImdb/
+
+# VS studio stuff
+.vs\
