@@ -34,7 +34,7 @@ cmake-build-debug/
 
 # Sonarlint plugin
 # End of https://www.gitignore.io/api/clion
-_Debug/
+_debug/
 _Release/
 
 # Data folders that contain text for testing
