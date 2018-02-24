@@ -51,6 +51,8 @@ int parse::_parse(const char *str)
 				this->emplace_back(std::string(buff));
 			i = 0;
 			buff[i] = '\0';
+			for (j = 0; j < char_len && i < 1024; ++j)
+				++str;
 		}
 		else
 			for (j = 0; j < char_len && i < 1024; ++i, ++j, ++str)
@@ -60,6 +62,8 @@ int parse::_parse(const char *str)
 
 int parse::test_character(const char *str)
 {
+	if (*str == 'A')
+		return 0;
 	return 1;
 }
 

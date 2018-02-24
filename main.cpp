@@ -7,7 +7,7 @@
 
 #undef DEFAULT_PATH
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-#define DEFAULT_PATH "C:\\Users\\njgro\\Programming\\SentimentAnalysis\\data\\test\\UTF8\\sample.txt"
+#define DEFAULT_PATH "C:\\Users\\njgro\\Programming\\SentimentAnalysis\\data\\test\\UTF8\\small.txt"
 #else
 #define DEFAULT_PATH "../data/test/UTF8/sample.txt"
 #endif
@@ -120,6 +120,7 @@ int main(int argc, char *argv[])
 
     //cout << "Number of chars: " << parse_utf8(buff, strlen(buff) ) << endl;
 	parser(std::string(buff));
+	cout << "Size: " << parser.size() << endl;
 	for (auto const &a : parser)
 		cout << a << endl;
 	getchar();
