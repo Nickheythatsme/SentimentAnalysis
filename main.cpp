@@ -3,6 +3,7 @@
 #include <fstream>
 #include <cstdint>
 #include <string>
+#include <cstring>
 
 #undef DEFAULT_PATH
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
