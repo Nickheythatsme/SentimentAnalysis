@@ -9,7 +9,7 @@
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 #define DEFAULT_PATH "C:\\Users\\njgro\\Programming\\SentimentAnalysis\\data\\test\\UTF8\\sample.txt"
 #else
-#define DEFAULT_PATH "../data/test/UTF8/sample"
+#define DEFAULT_PATH "../data/test/UTF8/sample.txt"
 #endif
 
 using std::cout;
