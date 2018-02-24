@@ -4,12 +4,11 @@
 #include <cstdint>
 #include <string>
 
+#undef DEFAULT_PATH
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-// TODO put something meaningful here
-#define nothing 1
+#define DEFAULT_PATH "C:\\Users\\njgro\\Programming\\SentimentAnalysis\\data\\test\\UTF8\\sample.txt"
 #else
-// TODO put something meaningful here
-#define nothing 2
+#define DEFAULT_PATH "../data/test/UTF8/sample"
 #endif
 
 using std::cout;
@@ -107,7 +106,7 @@ int main(int argc, char *argv[])
 	//std::string path = get_path(argc, argv);
 	std::string path;
 	if (argc < 2)
-		path = "C:\\Users\\njgro\\Programming\\SentimentAnalysis\\data\\test\\UTF8\\sample.txt";
+		path = DEFAULT_PATH;
 	else
 		path = argv[1];
 	cout << path << endl;
