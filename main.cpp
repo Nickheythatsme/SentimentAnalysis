@@ -2,10 +2,19 @@
 #include <iostream>
 #include <fstream>
 #include <cstdint>
-#include <cstring>
+#include <string>
+
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+// TODO put something meaningful here
+#define nothing 1
+#else
+// TODO put something meaningful here
+#define nothing 2
+#endif
 
 using std::cout;
 using std::endl;
+using std::cin;
 
 /*
  * So for UTF-8 encoding:
@@ -25,6 +34,7 @@ using std::endl;
 int parse_utf8(char *str, int len)
 {
     int num_chars = 0;
+	int num_special_chars = 0;
     uint8_t byte;
 
     for (int i = 0; i < len && *str; ++i)
@@ -42,6 +52,7 @@ int parse_utf8(char *str, int len)
         // Two byte character
         else if (byte >= 0xc2 && byte <= 0xdf)
         {
+			++num_special_chars;
             for(int i = 0; i < 2; ++i)
             {
                 printf("%c",*str);
@@ -52,6 +63,7 @@ int parse_utf8(char *str, int len)
         // Three byte character
         else if (byte >= 0xe0 && byte <= 0xef)
         {
+			++num_special_chars;
             for(int i = 0; i < 3; ++i)
             {
                 printf("%c",*str);
@@ -62,6 +74,7 @@ int parse_utf8(char *str, int len)
         // Four byte character
         else if (byte >= 0xf0)
         {
+			++num_special_chars;
             for(int i = 0; i < 4; ++i)
             {
                 printf("%c",*str);
@@ -73,18 +86,32 @@ int parse_utf8(char *str, int len)
 
     }
     printf("\n");
+	printf("Special characters: %d\n", num_special_chars);
 
     return num_chars;
 }
 
+std::string get_path(int argc, char *argv[])
+{
+	if (argc == 2)
+		return std::string(argv[1]);
+	char buff[1024];
+	cout << "Enter path: ";
+	cin.get(buff, 1024, '\n');
+	cin.ignore(1024, '\n');
+	return std::string(buff);
+}
+
 int main(int argc, char *argv[])
 {
+	//std::string path = get_path(argc, argv);
+	std::string path;
 	if (argc < 2)
-	{
-		cout << "Usage ./SentimentAnalysis [files]" << endl;
-		exit(EXIT_FAILURE);
-	}
-    std::ifstream fin(argv[1]);
+		path = "C:\\Users\\njgro\\Programming\\SentimentAnalysis\\data\\test\\UTF8\\sample.txt";
+	else
+		path = argv[1];
+	cout << path << endl;
+    std::ifstream fin(path);
     int len;
     char *buff;
 
@@ -99,6 +126,7 @@ int main(int argc, char *argv[])
     fin.ignore(len, '\0');
 
     cout << "Number of chars: " << parse_utf8(buff, strlen(buff) ) << endl;
+	getchar();
 
     return 0;
 }
