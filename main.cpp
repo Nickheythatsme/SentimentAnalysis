@@ -87,7 +87,6 @@ int main(int argc, char *argv[])
     std::ifstream fin(argv[1]);
     int len;
     char *buff;
-
     fin.seekg (0, fin.end);
     len = fin.tellg();
     fin.seekg (0, fin.beg);
