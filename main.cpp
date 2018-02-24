@@ -123,6 +123,9 @@ int main(int argc, char *argv[])
 	cout << "Size: " << parser.size() << endl;
 	for (auto const &a : parser)
 		cout << a << endl;
+
+    delete [] buff;
+    buff = nullptr;
 	getchar();
 
     return 0;
