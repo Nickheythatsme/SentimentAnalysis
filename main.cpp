@@ -31,16 +31,18 @@ using std::cin;
  *  4 bytes  11110xxx
  */
 
+typedef unsigned char uchar_t;
+
 int parse_utf8(char *str, int len)
 {
     int num_chars = 0;
 	int num_special_chars = 0;
-    uint8_t byte;
+    uchar_t byte;
 
     for (int i = 0; i < len && *str; ++i)
     {
         // Parse individual characters
-        byte = (uint8_t) *str;
+        byte = (uchar_t) *str;
 
         // One byte character
         if (byte <= 0x7f)
@@ -91,29 +93,21 @@ int parse_utf8(char *str, int len)
     return num_chars;
 }
 
-std::string get_path(int argc, char *argv[])
-{
-	if (argc == 2)
-		return std::string(argv[1]);
-	char buff[1024];
-	cout << "Enter path: ";
-	cin.get(buff, 1024, '\n');
-	cin.ignore(1024, '\n');
-	return std::string(buff);
-}
-
 int main(int argc, char *argv[])
 {
-	//std::string path = get_path(argc, argv);
 	std::string path;
 	if (argc < 2)
 		path = DEFAULT_PATH;
 	else
 		path = argv[1];
-	cout << path << endl;
+	cout << "Loading: " << path << endl;
     std::ifstream fin(path);
+	if (!fin)
+		exit(EXIT_FAILURE);
     int len;
     char *buff;
+	parse parser;
+
     fin.seekg (0, fin.end);
     len = fin.tellg();
     fin.seekg (0, fin.beg);
@@ -124,7 +118,10 @@ int main(int argc, char *argv[])
     fin.get(buff, len, '\0');
     fin.ignore(len, '\0');
 
-    cout << "Number of chars: " << parse_utf8(buff, strlen(buff) ) << endl;
+    //cout << "Number of chars: " << parse_utf8(buff, strlen(buff) ) << endl;
+	parser(std::string(buff));
+	for (auto const &a : parser)
+		cout << a << endl;
 	getchar();
 
     return 0;
