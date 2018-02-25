@@ -3,7 +3,6 @@
 #include <cstring>
 #include <unistd.h>
 
-
 using namespace std;
 
 int char_len(signed char f)
@@ -47,18 +46,6 @@ char* next_char(char *buff, bool show)
 
 int char_cmp(const char *str, const char *to_test)
 {
-    int str_len = char_len(*str);
-    int to_test_len = char_len(*to_test);
-
-    if (str_len != to_test_len)
-        return 0;
-    for (;str_len >= 0; --str_len)
-    {
-        if (*str != *to_test)
-            return 0;
-        ++str;
-        ++to_test;
-    }
     return 1;
 }
 

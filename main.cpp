@@ -33,66 +33,6 @@ using std::cin;
 
 typedef unsigned char uchar_t;
 
-int parse_utf8(char *str, int len)
-{
-    int num_chars = 0;
-	int num_special_chars = 0;
-    uchar_t byte;
-
-    for (int i = 0; i < len && *str; ++i)
-    {
-        // Parse individual characters
-        byte = (uchar_t) *str;
-
-        // One byte character
-        if (byte <= 0x7f)
-        {
-            printf("%c",*str);
-            ++str;
-        }
-
-        // Two byte character
-        else if (byte >= 0xc2 && byte <= 0xdf)
-        {
-			++num_special_chars;
-            for(int i = 0; i < 2; ++i)
-            {
-                printf("%c",*str);
-                ++str;
-            }
-        }
-
-        // Three byte character
-        else if (byte >= 0xe0 && byte <= 0xef)
-        {
-			++num_special_chars;
-            for(int i = 0; i < 3; ++i)
-            {
-                printf("%c",*str);
-                ++str;
-            }
-        }
-
-        // Four byte character
-        else if (byte >= 0xf0)
-        {
-			++num_special_chars;
-            for(int i = 0; i < 4; ++i)
-            {
-                printf("%c",*str);
-                ++str;
-            }
-        }
-
-        num_chars += 1;
-
-    }
-    printf("\n");
-	printf("Special characters: %d\n", num_special_chars);
-
-    return num_chars;
-}
-
 int main(int argc, char *argv[])
 {
 	std::string path;
