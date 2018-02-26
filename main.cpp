@@ -1,9 +1,9 @@
 #include "parse.h"
 #include <iostream>
 #include <fstream>
-#include <cstdint>
 #include <string>
 #include <cstring>
+#include <memory>
 
 #undef DEFAULT_PATH
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
@@ -46,7 +46,6 @@ int main(int argc, char *argv[])
 		exit(EXIT_FAILURE);
     int len;
     char *buff;
-	parse parser;
 
     fin.seekg (0, fin.end);
     len = fin.tellg();
@@ -58,12 +57,9 @@ int main(int argc, char *argv[])
     fin.get(buff, len, '\0');
     fin.ignore(len, '\0');
 
-    //cout << "Number of chars: " << parse_utf8(buff, strlen(buff) ) << endl;
-	parser(std::string(buff));
-	cout << "Size: " << parser.size() << endl;
-	for (auto const &a : parser)
-		cout << a << endl;
-
+	std::unique_ptr<char[]> unique { new char[strlen(buff) + 1] };
+	strcpy(unique.get(), buff);
+	cout << unique.get() << endl;
     delete [] buff;
     buff = nullptr;
 	getchar();

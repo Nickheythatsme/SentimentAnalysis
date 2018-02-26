@@ -10,6 +10,8 @@ set(LIBRARY_NAME vectorize)
 set(SOURCES
     parse.h
     parse.cpp
+	utf8_str.h
+	utf8_str.cpp
     )
 
 
