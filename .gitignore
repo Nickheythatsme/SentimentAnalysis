@@ -42,3 +42,6 @@ data/aclImdb/
 
 # VS studio stuff
 .vs/
+
+# Vim sessions
+*.vim
