@@ -1,14 +1,18 @@
+#include <memory>
 #include <cstring>
 #include <ostream>
-#include <memory>
 
 #ifndef _VECTORIZE_UTF8_STR_
 #define _VECTORIZE_UTF8_STR_
+
+// Easily make a unique_ptr for a char array
+using unique_ptr_char = std::unique_ptr<char[]>;
 
 class utf8_str
 {
 public:
 	utf8_str();
+    utf8_str(const char* obj);
 	utf8_str(const utf8_str &obj);
 	utf8_str(utf8_str&& obj);
 	~utf8_str();
@@ -31,6 +35,12 @@ public:
 
 	// Assignment operator
 	utf8_str& operator=(const utf8_str &obj);
+
+    // Increment operator - used to move to the next character (may be multiple bytes)
+    // prefix
+    utf8_str& operator++();
+    // postfix
+    utf8_str operator++(int);
 protected:
 
 	// Display to ostream out object
@@ -46,7 +56,7 @@ private:
 	static std::ostream& display_char(std::ostream &out, const char *c);
 	static bool next_char(char *& f);
 
-	std::unique_ptr<char*> data;
+	unique_ptr_char data;
 };
 
 #endif //_VECTORIZE_UTF8_STR_

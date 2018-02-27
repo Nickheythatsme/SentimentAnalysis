@@ -4,10 +4,11 @@
 #include <string>
 #include <cstring>
 #include <memory>
+#include "utf8_str.h"
 
 #undef DEFAULT_PATH
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-#define DEFAULT_PATH "C:\\Users\\njgro\\Programming\\SentimentAnalysis\\data\\test\\UTF8\\small.txt"
+#define DEFAULT_PATH "C:\\Users\\njgro\\Programming\\SentimentAnalysis\\data\\test\\UTF8\\sample.txt"
 #else
 #define DEFAULT_PATH "../data/test/UTF8/sample.txt"
 #endif
@@ -33,6 +34,7 @@ using std::cin;
 
 typedef unsigned char uchar_t;
 
+void test_utf8_class(const char *o);
 int main(int argc, char *argv[])
 {
 	std::string path;
@@ -57,13 +59,17 @@ int main(int argc, char *argv[])
     fin.get(buff, len, '\0');
     fin.ignore(len, '\0');
 
-	std::unique_ptr<char[]> unique { new char[strlen(buff) + 1] };
-	strcpy(unique.get(), buff);
-	cout << unique.get() << endl;
+    cout << buff << endl;
+    test_utf8_class(buff);
+
     delete [] buff;
     buff = nullptr;
-	getchar();
 
     return 0;
 }
 
+void test_utf8_class(const char *o)
+{
+    utf8_str f("this!");
+    cout << f << endl;
+}
