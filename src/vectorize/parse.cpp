@@ -73,20 +73,17 @@ int parse::_parse(const char *str)
 }
 
 // TODO finish test_character function
-int parse::test_character(const char *str)
+int parse::test_character(const char *str, int len) const
 {
-	int len = character_length(*str);
-	for (int i = 0; i < len; ++i)
-		printf("%c", str[i]);
-
 	if (*str == 'A')
 		return 0;
 	return 1;
 }
 
 /*
-STATIC
-test the length of a character, returns the length of the UTF character*/
+ * STATIC
+ * test the length of a character, returns the length of the UTF character
+ */
 int parse::character_length(signed char f)
 {
 	int i = 0;

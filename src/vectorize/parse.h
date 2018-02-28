@@ -8,7 +8,7 @@
 #ifdef _DEBUG
 	#define DEBUG_MESSAGE(x) printf("%s\n",x)
 #endif
-#define default_delims ".?!†•€";
+#define default_delims ".?! "; //TODO add more delims
 #define MAX_LEN 1024
 #define MIN_LEN 2
 
@@ -25,7 +25,7 @@ public:
 protected:
 private:
 	int _parse(const char *str);
-	int test_character(const char *str);
+	int test_character(const char *str, int len) const;
 	static int character_length(signed char f);
 	std::string delims;
 };
