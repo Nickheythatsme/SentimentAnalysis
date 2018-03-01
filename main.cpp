@@ -4,13 +4,13 @@
 #include <string>
 #include <cstring>
 #include <memory>
-#include "utf8_str.h"
 
 #undef DEFAULT_PATH
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-#define DEFAULT_PATH "C:\\Users\\njgro\\Programming\\SentimentAnalysis\\data\\test\\UTF8\\sample.txt"
+	#define DEFAULT_PATH "C:\\Users\\njgro\\Programming\\SentimentAnalysis\\data\\test\\UTF8\\sample.txt"
+	#define WINPAUSE system("pause");
 #else
-#define DEFAULT_PATH "../data/test/UTF8/sample.txt"
+	#define DEFAULT_PATH "../data/test/UTF8/sample.txt"
 #endif
 
 using std::cout;
@@ -34,7 +34,8 @@ using std::cin;
 
 typedef unsigned char uchar_t;
 
-void test_utf8_class(const char *o);
+void test_parse(const char *str);
+
 int main(int argc, char *argv[])
 {
 	std::string path;
@@ -45,31 +46,45 @@ int main(int argc, char *argv[])
 	cout << "Loading: " << path << endl;
     std::ifstream fin(path);
 	if (!fin)
+	{
+		cout << "Error finding file: " << path << endl;
+		WINPAUSE
+		system("pause");
 		exit(EXIT_FAILURE);
+	}
     int len;
     char *buff;
 
+	// Determine file size
     fin.seekg (0, fin.end);
     len = fin.tellg();
     fin.seekg (0, fin.beg);
-
-    cout << len << endl;
+	// Allocate buff and read in file
     buff = new char[len + 1];
-
+	if (!buff)
+	{
+		cout << "Error allocating buffer" << endl;
+		WINPAUSE
+		exit(EXIT_FAILURE);
+	}
     fin.get(buff, len, '\0');
     fin.ignore(len, '\0');
+    cout << "Bytes read: " << len << endl;
 
-    cout << buff << endl;
-    test_utf8_class(buff);
+	test_parse(buff);
 
     delete [] buff;
     buff = nullptr;
 
+	WINPAUSE
     return 0;
 }
 
-void test_utf8_class(const char *o)
+void test_parse(const char *str)
 {
-    utf8_str f("this!");
-    cout << f << endl;
+	parse parser{};
+	cout << "Calling parser..." << endl;
+	parser(str);
+	for (auto &a : parser)
+		cout << a << endl;
 }

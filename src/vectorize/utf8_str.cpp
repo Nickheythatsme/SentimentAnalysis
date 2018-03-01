@@ -30,12 +30,15 @@ utf8_str::~utf8_str()
 // will be subracted from the end (so -1 is the end).
 char utf8_str::operator[](int x) const
 {
+	return '\0';
 }
 
-int char_len(unsigned char f)
+int char_len(signed char f)
 {
+	return -1;
 }
 
 std::ostream& display_char(std::ostream &out, const char *c)
 {
+	return out;
 }
