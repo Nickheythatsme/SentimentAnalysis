@@ -45,29 +45,26 @@ int parse::_parse(const char *str)
 {
 	int i=0, char_len;
 	char buff[MAX_LEN];
+	bool copied = false;
 
-	printf("_parse\n");
-	while (*str)
-	{
-		assert(i < 1024);
+
+	while (*str) {
 		char_len = character_length(*str);
-
-		if (!test_character(str) || i >= MAX_LEN)
+		if (test_character(str, char_len))
 		{
-			buff[i] = '\0';
-			if (i >= MIN_LEN)
-				this->emplace_back(std::string(buff));
-			i = 0;
-			buff[i] = '\0';
-
-			do {
-				++str;
-				--char_len;
-			} while (*str && char_len >= 0);
+			copy_character(str, buff, char_len, i);
+			++i;
+			copied = true;
 		}
 		else
-			for (; *str && char_len >= 0 && i < 1024; ++i, ++str, --char_len)
-				buff[i] = *str;
+		{
+			if (i > MIN_LEN)
+			{
+				this->emplace_back(std::string(buff));
+				i = 0;
+			}
+		}
+
 	}
 	return this->size();
 }
@@ -78,6 +75,21 @@ int parse::test_character(const char *str, int len) const
 	if (*str == 'A')
 		return 0;
 	return 1;
+}
+
+/*
+STATIC
+copies one UTF8 character into the buff
+checks the boundaries to make sure we don't go past buffer
+*/
+void parse::copy_character(const char *str, char *buff, int char_len, char buff_index)
+{
+	for (;char_len > 0 && buff_index < MAX_LEN && *str; --char_len)
+	{
+		*buff = *str;
+		++buff; ++str;
+	}
+	*buff = '\0';
 }
 
 /*

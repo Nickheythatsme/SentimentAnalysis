@@ -27,6 +27,7 @@ private:
 	int _parse(const char *str);
 	int test_character(const char *str, int len) const;
 	static int character_length(signed char f);
+	static void copy_character(const char *str, char *buff, int char_len, char buff_index);
 	std::string delims;
 };
 
