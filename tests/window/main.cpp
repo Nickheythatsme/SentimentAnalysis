@@ -1,6 +1,6 @@
 #include "window.h"
 #include "parse.h"
-#include "support.h"
+#include "../support.h"
 #include <fstream>
 #include <vector>
 
