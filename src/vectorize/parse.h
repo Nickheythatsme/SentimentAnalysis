@@ -35,9 +35,9 @@ class parse : public std::vector<std::string>
 {
 public:
 	parse();
-	parse(const char* delims);
+	explicit parse(const char* delims);
 	parse(const parse &obj);
-	parse(parse&& rhs);
+	explicit parse(parse&& rhs);
 	~parse() = default;
 	parse& operator()(const std::string &str);
 	parse& operator=(const parse &obj);

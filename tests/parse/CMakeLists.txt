@@ -2,7 +2,7 @@ set(EXEC_NAME parse)
 
 set(SOURCES
     main.cpp
-    )
+        )
 
 
 # Make the executable

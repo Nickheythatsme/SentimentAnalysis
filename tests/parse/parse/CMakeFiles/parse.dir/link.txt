@@ -1,1 +1,0 @@
-/usr/bin/c++      CMakeFiles/parse.dir/main.cpp.o  -o parse -lvectorize 

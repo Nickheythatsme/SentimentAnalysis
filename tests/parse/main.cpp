@@ -1,8 +1,5 @@
 #include "parse.h"
-#include <iostream>
 #include <fstream>
-#include <string>
-#include <cstring>
 
 #undef DEFAULT_PATH
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
@@ -71,13 +68,14 @@ long read_file(const char *filename, char *&buff)
 
 bool test_parse(const char* buff)
 {
-    parse parser;
+    char delims[] = " \n\t.,€";
+    parse parser {delims};
     parser(buff);
 
-    cout << "Parsed: " << parser.size() << " words" << endl;
     cout << "Words: " << endl;
     for (auto &a : parser)
-        cout << '\t' << a << endl;
+        cout << a << endl;
+    cout << "Parsed: " << parser.size() << " words" << endl;
     return true;
 }
 
