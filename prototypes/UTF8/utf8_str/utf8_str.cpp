@@ -1,6 +1,6 @@
 #include "utf8_str.h"
 
-class utf8_str : public
+class utf8_str
 {
     public:
         utf8_str();

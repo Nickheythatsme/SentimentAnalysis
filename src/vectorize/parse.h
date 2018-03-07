@@ -47,8 +47,6 @@ private:
     static char default_delims[];
 	int test_character(const char *str, int len) const;
 	static int character_length(signed char f);
-    static int next_character(char *&str);
-    static int next_character(char *&str, int len);
 	static void copy_character(const char *str, char *buff, int char_len, int &buff_index);
 	char *delims;
 };

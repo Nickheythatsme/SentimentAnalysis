@@ -85,7 +85,6 @@ int main(int argc, char *argv[])
 {
 	char *path;
     char *buff;
-    int len;
 
     // Assign the path
 	if (argc < 2)
@@ -95,7 +94,7 @@ int main(int argc, char *argv[])
 
     // Start reading in the file
 	cout << "Reading file: " << path << endl;
-    len = read_file(path, buff);
+    auto len = read_file(path, buff);
     if (len <= 0)
     {
         cout << "Error reading file: " << path << endl;
@@ -105,8 +104,10 @@ int main(int argc, char *argv[])
     cout << "Bytes read: " << len << endl;
 
     // Insert tests here
-    if (!test_parse(buff))
+    if (!test_parse(buff)) {
+        WINPAUSE;
         exit(EXIT_FAILURE);
+    }
 
     // Delete the path and the copied file contents
     if (path != argv[1])

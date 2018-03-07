@@ -1,5 +1,5 @@
 -Change character recognition from ASCII chars to UTF-8
     - Add new UTF-8 delims such as backwards apostrophe
     - Change the way we test for delims to include UTF-8 chars
-    - TEST parsing/testin delims in UTF-8 documents to test segfaults
+    - TEST parsing/testing delims in UTF-8 documents to test segfaults
     - More info here: https://stackoverflow.com/questions/17648966/handling-non-ascii-chars-in-c

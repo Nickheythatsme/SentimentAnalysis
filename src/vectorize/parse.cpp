@@ -48,11 +48,12 @@ parse& parse::operator()(const std::string &str)
 }
 
 /*
- * Assignment opertator
+ * Assignment operator
  */
-parse& parse:: operator=(const parse &obj)
+parse& parse::operator=(const parse &obj)
 {
-	this->std::vector<std::string>::operator=(obj);
+    //TODO infinite recursion here? This should not call parse's assignment operator, rather the parent of parse, vector
+    std::vector<std::string>::operator=(obj);
 
     delete [] delims;
     delims = new char[strlen(obj.delims) + 1];
@@ -121,7 +122,7 @@ int parse::test_character(const char *str, int len) const
         // Find the length of the current delimiter character
         int d_len = character_length(*d_str);
 
-        // Skip comparison if they're of differet lengths
+        // Skip comparison if they're of different lengths
         if (d_len == s_len)
         {
 
