@@ -41,25 +41,32 @@ bool get_path(char *&path, const char *message)
  * 0 or less than 0 if error
  * greater than 0 if success
  */
-int read_file(const char *filename, char *&buff)
+long read_file(const char *filename, char *&buff)
 {
-    int len;
     std::ifstream fin(filename);
 	if (!fin)
         return -1;
 
 	// Determine file size
     fin.seekg (0, fin.end);
-    len = fin.tellg();
+    auto len = fin.tellg();
     fin.seekg (0, fin.beg);
 
-	// Allocate buff and read in file
-    buff = new char[len + 1];
-	if (!buff)
+	// Allocate buffer
+    try {
+        buff = new char[len + 1];
+    }
+    catch(std::bad_alloc &alloc){
+        std::cerr << "Cannot allocate buffer for size: " << len << endl;
         return -1;
+    }
+
+    // Read in file
     fin.get(buff, len, '\0');
     fin.ignore(len, '\0');
-    return len;
+    fin.close();
+
+    return (long)len;
 }
 
 bool test_parse(const char* buff)
