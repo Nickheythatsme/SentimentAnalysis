@@ -66,6 +66,9 @@ def unzip_tar(file_location, extract_location):
     except KeyboardInterrupt:
         print("Keyboard interrupt. Stopping extraction")
         result = False
+    except Exception as e:
+        print("Uknown error" + str(e))
+        return False
     tarball.close()
     return result
 
