@@ -38,7 +38,7 @@ public:
 	explicit parse(const char* delims);
 	parse(const parse &obj);
 	explicit parse(parse&& rhs);
-	~parse() = default;
+	~parse();
 	parse& operator()(const std::string &str);
 	parse& operator=(const parse &obj);
 protected:

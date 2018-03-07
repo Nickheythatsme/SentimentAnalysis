@@ -33,8 +33,10 @@ bool get_path(char *&path, const char *message)
 long read_file(const char *filename, char *&buff)
 {
     std::ifstream fin(filename);
-    if (!fin)
+    if (!fin) {
+        std::cerr << "Error opening file: " << filename << endl;
         return -1;
+    }
 
     // Determine file size
     fin.seekg (0, fin.end);
@@ -46,7 +48,8 @@ long read_file(const char *filename, char *&buff)
         buff = new char[len + 1];
     }
     catch(std::bad_alloc &alloc){
-        std::cerr << "Cannot allocate buffer for size: " << len << endl;
+        std::cerr << "Cannot allocate buffer for size: " << len << endl
+                  << "Error: " << alloc.what() << endl;
         return -1;
     }
 

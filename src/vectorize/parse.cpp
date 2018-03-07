@@ -29,10 +29,18 @@ parse::parse(const parse &obj) :
 
 // Move constructor
 parse::parse(parse && rhs) :
-	std::vector<std::string>(rhs)
+	std::vector<std::string>(std::move(rhs))
 {
     delims = rhs.delims;
     rhs.delims = nullptr;
+}
+
+parse::~parse()
+{
+    if (delims) {
+        delete[] delims;
+        delims = nullptr;
+    }
 }
 
 
@@ -84,6 +92,7 @@ int parse::_parse(const char *str)
 			if (buff_index > MIN_LEN)
 			{
                 buff[buff_index] = '\0';
+                assert(buff[0] != '\0');
 				this->emplace_back(std::string(buff));
 			}
             buff_index = 0;

@@ -1,8 +1,9 @@
 //
 // Created by njgro on 3/7/2018.
 //
-
+#include <iostream>
 #include <fstream>
+#include <cstring>
 
 #undef DEFAULT_PATH
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
