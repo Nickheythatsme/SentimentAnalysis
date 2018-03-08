@@ -2,19 +2,15 @@
 #include "window.h"
 window::window()
 {
-
 }
 window::window(const window &obj)
 {
-
 }
 window::window(window &&rhs)
 {
-
 }
 window::~window()
 {
-
 }
 
 /*
