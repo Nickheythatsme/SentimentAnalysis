@@ -8,17 +8,17 @@
 /*
  * Parse the words and return the vector of parsed words
  */
-parse&& parse_words(const char *buff)
+parse parse_words(const char *buff)
 {
     char delims[] = " \n\t.,€";
     parse parser {delims};
     parser(buff);
-    return std::move(parser);
+    return parser;
 }
 
 bool test_window(const std::vector<std::string> &words)
 {
-// TODO add window testing here!
+    // TODO add window testing here!
     auto n1 = new node(words[0]);
     n1->insert_end(words[1]);
     cout << n1->std::string::c_str() << endl;
@@ -50,6 +50,7 @@ int main(int argc, char *argv[])
     }
     cout << "Bytes read: " << len << endl;
 
+    // Parse the words in the file
     parse words {parse_words(buff)};
     if (words.size() <= 1) {
         cout << "Error parsing words for file" << path << endl;
