@@ -40,7 +40,7 @@ long read_file(const char *filename, char *&buff)
 
     // Determine file size
     fin.seekg (0, fin.end);
-    auto len = fin.tellg();
+    auto len = (long) fin.tellg();
     fin.seekg (0, fin.beg);
 
     // Allocate buffer
@@ -60,3 +60,95 @@ long read_file(const char *filename, char *&buff)
 
     return (long)len;
 }
+
+/*
+ * Test the object to see if it can be copied successfully
+ */
+template <class T> bool test_copy(T &object)
+{
+    try{
+        {
+            T copier(object);
+        }
+    }
+    catch(std::bad_alloc &alloc){
+        cerr << "Error while copying: " << alloc.what() << endl;
+        return false;
+    }
+    catch(...){
+        cerr << "Unknown error while copying object" << endl;
+        return false;
+    }
+    return true;
+}
+
+/*
+ * Test the object to see if it can be moved successfully
+ */
+template <class T> bool test_move(T &object)
+{
+    try{
+        {
+            T copy(object);
+            T stealer(std::move(copy));
+        }
+    }
+    catch(std::bad_alloc &alloc){
+        cerr << "Error while moving: " << alloc.what() << endl;
+        return false;
+    }
+    catch(...){
+        cerr << "Unknown error while moving object" << endl;
+        return false;
+    }
+    return true;
+}
+
+/*
+ * Test the object to see if it can be assigned successfully
+ */
+template <class T> bool test_assignment(T &object)
+{
+    try{
+        {
+            T copy(object);
+            T assigner;
+            copy = assigner;
+        }
+    }
+    catch(std::bad_alloc &alloc){
+        cerr << "Error while assigning: " << alloc.what() << endl;
+        return false;
+    }
+    catch(...){
+        cerr << "Unknown error while assigning object" << endl;
+        return false;
+    }
+    return true;
+}
+
+/*
+ * Call the general testing fucntions
+ */
+template <class T> bool test_object(T &object)
+{
+    if (!test_copy<T>(object))
+    {
+        cerr << "Error copying object" << endl;
+        return false;
+    }
+
+    if (!test_move<T>(object))
+    {
+        cerr << "Error moving object" << endl;
+        return false;
+    }
+
+    if (!test_assignment<T>(object))
+    {
+        cerr << "Error assigning object" << endl;
+        return false;
+    }
+    return true;
+}
+

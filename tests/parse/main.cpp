@@ -1,8 +1,6 @@
 #include <fstream>
 #include <iostream>
-#include "../support.h"
 #include "test_parse.h"
-
 
 int main(int argc, char *argv[])
 {
@@ -28,14 +26,14 @@ int main(int argc, char *argv[])
     }
     cout << "Bytes read: " << len << endl;
 
-    // Insert tests here
+    /* Insert tests here */
     if (!test_parse(buff))
     {
         cout << "Error parsing words for file" << path << endl;
         WINPAUSE;
         exit(EXIT_FAILURE);
     }
-    // End of tests
+    /* End of tests */
 
     // Delete the path and the copied file contents
     delete [] path;
