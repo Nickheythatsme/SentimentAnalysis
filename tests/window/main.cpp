@@ -23,7 +23,7 @@ bool test_window(const std::vector<std::string> &words)
     n1->insert_end(words[1]);
     cout << n1->std::string::c_str() << endl;
     cout << n1->next()->std::string::c_str() << endl;
-    return false;
+    return true;
 }
 
 int main(int argc, char *argv[])
@@ -56,7 +56,6 @@ int main(int argc, char *argv[])
         WINPAUSE;
         exit(EXIT_FAILURE);
     }
-    cout << "HERE!" << endl;
 
     // Insert tests here
     if (!test_window(words)){

@@ -2,7 +2,6 @@ set(EXEC_NAME window)
 
 set(SOURCES
     main.cpp
-    ../support.cpp ../support.h
     )
 
 

@@ -1,19 +1,15 @@
-#include "parse.h"
 #include <iostream>
 #include <cstring>
+#include "parse.h"
 
-#ifndef PARSE_TEST
-#define PARSE_TEST
+#ifndef S_PARSE_TEST
+#define S_PARSE_TEST
 
-using std::endl;
-using std::cerr;
+#include "../support.h"
 
 bool test_parse(const char *text);
-bool test_parse_functionality(const char *text);
-bool test_copy(const char *text);
-bool test_move(const char *text);
-bool test_assignment(const char *text);
 
 
-#endif
+#include "test_parse.cpp"
+#endif //S_PARSE_TEST
 
