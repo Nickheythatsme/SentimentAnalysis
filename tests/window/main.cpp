@@ -34,19 +34,6 @@ parse parse_words(const char *buff)
     parse parser {delims};
     parser(buff);
     return parser;
-<<<<<<< HEAD
-=======
-}
-
-bool test_window(const std::vector<std::string> &words)
-{
-    // TODO add window testing here!
-    auto n1 = new node(words[0]);
-    n1->insert_end(words[1]);
-    cout << n1->std::string::c_str() << endl;
-    cout << n1->next()->std::string::c_str() << endl;
-    return true;
->>>>>>> 6081ec7877cc37bb97edf95a55f7483b0c12fcc6
 }
 
 int main(int argc, char *argv[])

@@ -1,5 +1,4 @@
 #include "window.h"
-<<<<<<< HEAD
 
 window::window() :
     s_vector()
@@ -9,26 +8,6 @@ window::window() :
 }
 window::window(const window &obj) :
     s_vector(obj)
-=======
-window::window()
-{
-}
-window::window(const window &obj)
-{
-}
-window::window(window &&rhs)
-{
-}
-window::~window()
-{
-}
-
-/*
- * NODE FUNCTIONS
- */
-// CONSTRUCTOR
-node::node()
->>>>>>> 6081ec7877cc37bb97edf95a55f7483b0c12fcc6
 {
     std::cout << "Copy Constructor!" << std::endl;
 }
