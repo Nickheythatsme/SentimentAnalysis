@@ -20,5 +20,5 @@ add_test(window_test_comment
     ${CMAKE_CURRENT_BINARY_DIR}/${EXEC_NAME}/${EXEC_NAME}
     ${CMAKE_CURRENT_SOURCE_DIR}/text_samples/comment.txt)
 add_test(window_test_sample 
-    ${CMAKE_CURRENT_BINARY_DIR}/${EXEC_NAME} 
+    ${CMAKE_CURRENT_BINARY_DIR}/${EXEC_NAME}/${EXEC_NAME}
     ${CMAKE_CURRENT_SOURCE_DIR}/text_samples/all.txt)

@@ -4,26 +4,36 @@
 #include <fstream>
 #include <vector>
 
+bool test_window(const std::vector<std::string> &words)
+{
+    window window1;
+    window window2;
+    window1 += words[0];
+    window2 += words[1];
+    window2 += words[1];
+
+
+    window1 += std::move(window2);
+    for (auto &a : window1)
+        cout << a << endl;
+
+    cout << endl << "size: " << window2.size() << endl;
+    for (auto &a : window2)
+        cout << a << endl;
+
+    return true;
+}
+
 
 /*
  * Parse the words and return the vector of parsed words
  */
-parse&& parse_words(const char *buff)
+parse parse_words(const char *buff)
 {
     char delims[] = " \n\t.,€";
     parse parser {delims};
     parser(buff);
-    return std::move(parser);
-}
-
-bool test_window(const std::vector<std::string> &words)
-{
-// TODO add window testing here!
-    auto n1 = new node(words[0]);
-    n1->insert_end(words[1]);
-    cout << n1->std::string::c_str() << endl;
-    cout << n1->next()->std::string::c_str() << endl;
-    return false;
+    return parser;
 }
 
 int main(int argc, char *argv[])
@@ -56,7 +66,6 @@ int main(int argc, char *argv[])
         WINPAUSE;
         exit(EXIT_FAILURE);
     }
-    cout << "HERE!" << endl;
 
     // Insert tests here
     if (!test_window(words)){
