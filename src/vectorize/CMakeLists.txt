@@ -14,7 +14,7 @@ set(SOURCES
     count_words.h
     window.cpp
     window.h
-    )
+        window_delims.cpp window_delims.h utf8_manip.cpp utf8_manip.h)
 
 
 # Create the library

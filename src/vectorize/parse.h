@@ -1,15 +1,11 @@
 #include <vector>
 #include <iostream>
 #include <string>
-#include <cstring>
 #include <cassert>
+#include "utf8_manip.h"
 
 #ifndef VECTORIZE_PARSE_
 #define VECTORIZE_PARSE_
-
-#ifdef _DEBUG
-	#define DEBUG_MESSAGE(x) printf("%s\n",x)
-#endif
 
 #define MAX_LEN 1024
 #define MIN_LEN 1
@@ -29,9 +25,9 @@
  *  4 bytes  11110xxx
  */
 
-typedef unsigned char uchar_t;
+using s_vector=std::vector<std::string>;
 
-class parse : public std::vector<std::string>
+class parse : public s_vector
 {
 public:
 	parse();
@@ -43,12 +39,11 @@ public:
 	parse& operator=(const parse &obj);
 protected:
 private:
-	int _parse(const char *str);
+    long _parse(const char *str);
+
     static char default_delims[];
-	int test_character(const char *str, int len) const;
-	static int character_length(signed char f);
-	static void copy_character(const char *str, char *buff, int char_len, int &buff_index);
 	char *delims;
+    utf8_manip manip;
 };
 
 #endif // VECTORIZE_PARSE_

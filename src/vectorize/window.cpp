@@ -19,42 +19,33 @@ window::window(window &&rhs) :
 window operator+(const window &lhs, const std::string &rhs)
 {
     window win(lhs);
-    win += rhs;
+    win.append(rhs);
     return win;
 }
 window operator+(const window &lhs, const window &rhs)
 {
     window win(lhs);
-    win += rhs;
-    return win;
+    return win.append(rhs);
 }
 window &window::operator+=(const std::string &obj)
 {
-    this->s_vector::emplace_back(obj);
-    return *this;
+    return append(obj);
 }
 window &window::operator+=(const window &obj)
 {
-    for (auto const &a : obj)
-        this->s_vector::emplace_back(a);
-    return *this;
+    return append(obj);
 }
 window& window::operator+=(window &&rhs)
 {
-    for(auto &a : rhs)
-        this->emplace_back(std::move(a));
-    rhs.clear();
-    return *this;
+    return append(rhs);
 }
 window &window::operator=(const window &obj)
 {
-    this->s_vector::operator=(obj);
-    return *this;
+    return assign(obj);
 }
 window &window::operator=(window &&rhs) noexcept
 {
-    this->s_vector::operator=(std::move(rhs));
-    return *this;
+    return assign(rhs);
 }
 
 
@@ -67,19 +58,28 @@ window& window::append(const std::string &obj)
     return *this;
 }
 
-window& window::assign(const window &obj)
+window& window::append(const window &obj)
+{
+    for (auto const &a: obj)
+        this->emplace_back(a);
+    return *this;
+}
+
+window& window::append(window &&rhs)
+{
+    for (auto &a : rhs)
+        this->emplace_back(std::move(a));
+    return *this;
+}
+
+window& window::assign(const window &obj) noexcept
 {
     this->s_vector::operator=(obj);
     return *this;
 }
 
-
-// Output to ostream
-std::ostream& window::display(std::ostream& out) const
+window& window::assign(window &&rhs)
 {
-    for (auto const &a : *this)
-    {
-        out << a << ", ";
-    }
-    return out;
+    this->s_vector::operator=(std::move(rhs));
+    return *this;
 }

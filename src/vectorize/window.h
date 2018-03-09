@@ -30,10 +30,10 @@ public:
 
 protected:
     window& append(const std::string &obj);
-    window& assign(const window &obj);
-
-    // Display to ostream object
-    std::ostream& display(std::ostream& out) const;
+    window& append(const window &obj);
+    window& append(window &&rhs);
+    window& assign(const window &obj) noexcept;
+    window& assign(window &&rhs);
 private:
 };
 
