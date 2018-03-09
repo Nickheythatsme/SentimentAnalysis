@@ -60,9 +60,15 @@ std::vector<window> window_delims::sentence_windows() const
         return std::vector<window>();
 }
 
-window window::make_window(window &win, int index) const
+window window_delims::make_window(window &win, int index) const
 {
-    if ()
+    if (index > delims.size())
+        return win;
+    win += this->s_vector::operator[]((unsigned long)index);
+    if (manip.test_character(delims[index].c_str(),sentence_delims))
+        return win;
+    return make_window(win, ++index);
+
 }
 std::vector<window> window_delims::full_windows(int len) const
 {

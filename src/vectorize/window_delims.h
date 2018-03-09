@@ -2,6 +2,7 @@
 // Created by njgro on 3/9/2018.
 //
 #include "window.h"
+#include "utf8_manip.h"
 
 #ifndef SENTIMENTANALYSIS_WINDOW_DELIMS_H
 #define SENTIMENTANALYSIS_WINDOW_DELIMS_H
@@ -30,6 +31,7 @@ protected:
 private:
     window delims;
     char *sentence_delims;
+    utf8_manip manip;
 
     window make_window(window &win, int index) const;
 };
