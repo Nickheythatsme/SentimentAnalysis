@@ -7,18 +7,10 @@
 bool test_window(const std::vector<std::string> &words)
 {
     window window1;
-    window window2;
-    window1 += words[0];
-    window2 += words[1];
-    window2 += words[1];
+    for (auto const &a : words)
+        window1 += a;
 
-
-    window1 += std::move(window2);
     for (auto &a : window1)
-        cout << a << endl;
-
-    cout << endl << "size: " << window2.size() << endl;
-    for (auto &a : window2)
         cout << a << endl;
 
     return true;

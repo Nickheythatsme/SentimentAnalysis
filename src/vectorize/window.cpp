@@ -57,3 +57,29 @@ window &window::operator=(window &&rhs) noexcept
     return *this;
 }
 
+
+/*
+ * Implementation for operators
+ */
+window& window::append(const std::string &obj)
+{
+    this->s_vector::emplace_back(obj);
+    return *this;
+}
+
+window& window::assign(const window &obj)
+{
+    this->s_vector::operator=(obj);
+    return *this;
+}
+
+
+// Output to ostream
+std::ostream& window::display(std::ostream& out) const
+{
+    for (auto const &a : *this)
+    {
+        out << a << ", ";
+    }
+    return out;
+}
