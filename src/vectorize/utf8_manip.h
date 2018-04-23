@@ -49,6 +49,9 @@ public:
 
     // Copy the character from str into buff but do NOT look up the char len again
     static int copy_character(const char *str, char *buff, int max_len, int char_len);
+
+    // Move the character string onto the next character
+    static const char* next_character(const char *str);
 protected:
 private:
 };

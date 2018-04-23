@@ -9,7 +9,6 @@
 
 bool test_parse(const char *text);
 
-
 #include "test_parse.cpp"
 #endif //S_PARSE_TEST
 

@@ -6,6 +6,9 @@ bool test_parse(const char *text)
 
     try{
         parser(text);
+        cout << "words: " << endl;
+        for (auto const &w : parser)
+            cout << w << endl;
     }
     catch(...)
     {

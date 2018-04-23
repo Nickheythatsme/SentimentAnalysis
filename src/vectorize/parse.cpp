@@ -35,6 +35,7 @@ parse::parse(parse && rhs) :
     rhs.delims = nullptr;
 }
 
+// DESTRUCTOR
 parse::~parse()
 {
     if (delims) {
@@ -74,50 +75,48 @@ parse& parse::operator=(const parse &obj)
 long parse::_parse(const char *str)
 {
 	int buff_index=0, char_len;
-	char buff[MAX_LEN];
+	char *buff = new char[MAX_LEN];
+    char* buff_head = buff;
+
 
 	while (*str) {
 		char_len = manip.character_length(*str);
-        if (!manip.test_character(str, delims, char_len))
+        if (!manip.test_character(str, delims, char_len) && char_len < MAX_LEN)
 		{
             manip.copy_character(str, buff, MAX_LEN-char_len, char_len);
+            auto increment = sizeof(char) * char_len;
 
-            /*
-
-            if (1 == char_len){
-                buff[buff_index] = *str;
-                ++str;
-                ++buff_index;
-            }
-            else
-                for (int i=0; i < char_len; ++i)
-                {
-                    buff[buff_index] = *str;
-                    ++str;
-                    ++buff_index;
-                }
-            */
+            // move to the next char
+            str += increment; 
+            buff += increment;
+            buff_index += 1;
 		}
         else
 		{
-			if (buff_index > MIN_LEN)
-				this->emplace_back(std::string(buff));
+            // Test the length of the word, add it if passed
+			if (buff_index > MIN_LEN) {
+                buff = '\0';
+				this->emplace_back(std::string(buff_head));
+            }
+            buff = buff_head;
             buff_index = 0;
 
             // Skip this character since we know it's bad
-            for (int i=0; i < char_len; ++i)
-                ++str;
+            str += sizeof(char) * char_len; // move to the next char
+
+            // Find the new char len
+            char_len = manip.character_length(*str);
 
             // Keep moving until we find a good character
             while(*str && manip.test_character(str, delims, char_len))
             {
-                char_len = manip.character_length(*str); //don't call this more than we need
-                for (int i=0; i < char_len; ++i)
-                    ++str;
+                str += sizeof(char) * char_len; // move to the next char
+                // Find the new char len
+                char_len = manip.character_length(*str);
             }
 		}
-
 	}
+    delete [] buff_head;
 	return (long) this->size();
 }
 

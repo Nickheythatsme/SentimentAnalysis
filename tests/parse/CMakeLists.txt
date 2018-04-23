@@ -12,4 +12,3 @@ add_executable(${EXEC_NAME} ${SOURCES})
 target_link_libraries(${EXEC_NAME}
     vectorize
     )
-

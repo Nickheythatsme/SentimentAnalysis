@@ -73,9 +73,10 @@ int utf8_manip::test_character(const char *str, const char *delims, int s_len)
 // wrapper for copy_character function
 int utf8_manip::copy_character(const char *str, char *buff, int max_len)
 {
-    int char_len = character_length(*str);
+    auto char_len = character_length(*str);
     return copy_character(str, buff, max_len, char_len);
 }
+
 // Copy a character of length char_len from str into buff.
 // Returns false if max_len > char_len
 int utf8_manip::copy_character(const char *str, char *buff, int max_len, int char_len)
@@ -90,4 +91,12 @@ int utf8_manip::copy_character(const char *str, char *buff, int max_len, int cha
     }
     *buff = '\0';
     return char_len;
+}
+
+// Move the character string onto the next character
+const char* utf8_manip::next_character(const char *str)
+{
+    auto len = character_length(*str);
+    // Add the character size times the number of characters to the pointer
+    return str + (sizeof(char) * len);
 }
