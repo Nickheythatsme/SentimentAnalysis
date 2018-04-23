@@ -8,8 +8,10 @@ int main(int argc, char *argv[])
     char *buff;
 
     // Assign the path
-	if (argc < 2)
+	if (argc < 2){
+        path = argv[1];
         get_path(path, "Enter filename: ");
+    }
 	else {
         path = new char[strlen(argv[1]) + 1];
         strcpy(path, argv[1]);

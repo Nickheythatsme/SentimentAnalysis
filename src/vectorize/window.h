@@ -28,10 +28,11 @@ public:
     window& operator=(const window &obj);
     window& operator=(window &&rhs) noexcept;
 
-protected:
+    /* append a new word onto this window */
     window& append(const std::string &obj);
     window& append(const window &obj);
     window& append(window &&rhs);
+protected:
     window& assign(const window &obj) noexcept;
     window& assign(window &&rhs);
 private:
