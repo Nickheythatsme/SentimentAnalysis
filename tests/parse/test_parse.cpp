@@ -6,9 +6,13 @@ bool test_parse(const char *text)
 
     try{
         parser(text);
-        cout << "words: " << endl;
-        for (auto const &w : parser)
-            cout << w << endl;
+        cout << "words parsed: " << parser.size() << endl;
+        cout << "First 5 words: " << endl;
+        auto len = (parser.size() >= 5) ? 5 : parser.size() - 1;
+        for(int i=0; i < len; ++i)
+        {
+            cout << '"' << parser[i] << '"' << endl;
+        }
     }
     catch(...)
     {

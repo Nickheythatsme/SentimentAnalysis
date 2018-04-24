@@ -152,3 +152,38 @@ template <class T> bool test_object(T &object)
     return true;
 }
 
+// This is used to wrap a bunch of text files
+text_package::text_package(const char *dir_path)
+{
+    globbed = new glob_t;
+    glob(dir_path, GLOB_NOSORT, nullptr, globbed);
+    load_files();
+}
+
+size_t text_package::load_files()
+{
+    char *buff;
+
+    for (int i=0; i < this->globbed->gl_pathc; ++i)
+    {
+        auto temp_bytes = read_file(globbed->gl_pathv[i], buff);
+        if (temp_bytes <= 0) 
+            cerr<<"Error loading file: " << globbed->gl_pathv[i] << endl;
+        else _bytes += temp_bytes;
+        this->emplace_back(buff);
+    }
+    return _bytes;
+}
+
+text_package::~text_package()
+{
+    globfree(globbed);
+    delete globbed;
+    globbed = nullptr;
+
+    for (auto &i : *this)
+    {
+        delete [] i;
+        i = nullptr;
+    }
+}
