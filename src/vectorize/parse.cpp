@@ -95,7 +95,7 @@ long parse::_parse(const char *str)
 		{
             // Test the length of the word, add it if passed
 			if (buff_index > MIN_LEN) {
-                buff = '\0';
+                *buff = '\0';
 				this->emplace_back(std::string(buff_head));
             }
             buff = buff_head;
@@ -111,6 +111,7 @@ long parse::_parse(const char *str)
             while(*str && manip.test_character(str, delims, char_len))
             {
                 str += sizeof(char) * char_len; // move to the next char
+
                 // Find the new char len
                 char_len = manip.character_length(*str);
             }

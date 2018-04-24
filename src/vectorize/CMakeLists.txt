@@ -8,13 +8,11 @@ set(LIBRARY_NAME vectorize)
 
 # Define the sources to be added to the library
 set(SOURCES
-    parse.h
-    parse.cpp
-    count_words.cpp
-    count_words.h
-    window.cpp
-    window.h
-        window_delims.cpp window_delims.h utf8_manip.cpp utf8_manip.h)
+    parse.cpp parse.h
+    count_words.cpp count_words.h
+    window.cpp window.h
+    utf8_manip.cpp utf8_manip.h
+    )
 
 
 # Create the library
