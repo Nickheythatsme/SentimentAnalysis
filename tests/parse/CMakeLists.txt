@@ -13,6 +13,7 @@ add_test(pase_regular
     ${CMAKE_CURRENT_SOURCE_DIR}/../text_samples/samples/*)
 
 # Link the libraries to the executable
-target_link_libraries(${EXEC_NAME}
+target_link_libraries(
+    ${EXEC_NAME}
     vectorize
     )

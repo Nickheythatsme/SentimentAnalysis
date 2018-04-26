@@ -23,7 +23,7 @@ struct test_err
     string name;
 };
 
-// Result of a test
+// Result of a test. Also formats the display
 struct test_result
 {
     test_result() = default;
