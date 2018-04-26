@@ -5,9 +5,9 @@
 std::ostream& operator<<(std::ostream& out, const test_result &rhs)
 {
     out << "Test name: " << rhs.name << endl
-        << "Passed: " << rhs.passed
-        << "\tIterations completed: " << rhs.iterations
-        << "\tAverage exec time: " << rhs.display_time(rhs.average)
+        << "Passed: " << rhs.passed << endl
+        << "\tIterations completed: " << rhs.iterations << endl
+        << "\tAverage exec time: " << rhs.display_time(rhs.average) << endl
         << "\tTotal exec time:   " << rhs.display_time(rhs.total);
     return out;
 }
@@ -23,13 +23,13 @@ string test_result::display_time(const std::chrono::duration<double> &t)
     string to_ret;
 
     if (hours < 10) to_ret.append("0");
-    else to_ret.append(std::to_string(hours) + ":");
+    to_ret.append(std::to_string(hours) + ":");
 
     if (minutes < 10) to_ret.append("0");
-    else to_ret.append(std::to_string(minutes) + ":");
+    to_ret.append(std::to_string(minutes) + ":");
 
     if (seconds < 10) to_ret.append("0"); 
-    else to_ret.append(std::to_string(seconds) + " ");
+    to_ret.append(std::to_string(seconds) + " ");
 
     to_ret.append(std::to_string(milliseconds) + "ms ");
     to_ret.append(std::to_string(microseconds) + "ms ");

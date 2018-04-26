@@ -1,4 +1,3 @@
-#include <vector>
 #include <chrono>
 #include <iostream>
 
@@ -37,8 +36,8 @@ struct test_result
     bool passed {false};
     string name {};
     size_t iterations {0};
-    std::chrono::duration<double> average {-1};
-    std::chrono::duration<double> total {-1};
+    std::chrono::duration<double> average {0};
+    std::chrono::duration<double> total {0};
 };
 
 struct configuration
@@ -74,7 +73,7 @@ class unit_test
         void set_func(const T &_func) {func = _func;}
 
         // Get test values
-        auto get_config() {return config;}
+        configuration& get_config() {return config;}
         auto get_obj()    { return obj; }
         auto get_data()   { return data; }
         auto get_name()   { return name; }
