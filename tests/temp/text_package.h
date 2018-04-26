@@ -4,11 +4,12 @@
 #include <iostream>
 #include <fstream>
 #include <cstring>
+#include <string>
 #include <vector>
 #include <glob.h>
 
-#ifndef SENTIMENTANALYSIS_SUPPORT_H
-#define SENTIMENTANALYSIS_SUPPORT_H
+#ifndef SENTIMENTANALYSIS_TEXT_PACKAGE_H
+#define SENTIMENTANALYSIS_TEXT_PACKAGE_H
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 #define WINPAUSE system("pause");
@@ -20,33 +21,26 @@ using std::cout;
 using std::cerr;
 using std::endl;
 using std::cin;
+using std::string;
 
 // This is used to wrap a bunch of text files
-class text_package : public std::vector<char *>
+class text_package : public std::vector<string>
 {
     public:
         text_package() = delete;
-        text_package(const char *dir_path);
+        text_package(const string &dirname);
         ~text_package();
         size_t bytes() {return _bytes;}
     private:
         size_t load_files();
+        size_t load_files(glob_t *globbed);
         static int glob_error(const char *path, int errno);
-        glob_t *globbed;
+        string dirname;
         size_t _bytes;
+
+        // General support functions to get the file contents
+        static long read_file(const string &filename, string &buff);
 };
 
-// General support functions to get the file contents
-bool get_path(char *&path, const char *message);
-long read_file(const char *filename, char *&buff);
 
-// General testing functions
-template <class T> bool test_object(T &object);
-template <class T> bool test_copy(T &object);
-template <class T> bool test_move(T &object);
-template <class T> bool test_assignment(T &object);
-
-
-
-#include "support.cpp"
 #endif //SENTIMENTANALYSIS_SUPPORT_H

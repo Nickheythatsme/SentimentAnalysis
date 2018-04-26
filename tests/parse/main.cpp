@@ -1,48 +1,27 @@
 #include <fstream>
 #include <iostream>
-#include "test_parse.h"
+#include <string>
+#include "../test_case.h"
+#include "parse.h"
+
+using namespace std;
+
+bool test_function(parse &parser, string &text)
+{
+    parser(text);
+    auto len = (parser.size() >= 5) ? 5 : parser.size() - 1;
+
+    cout << "words parsed: " << parser.size() << endl;
+    cout << "First " << len << " words: " << endl;
+    for(int i=0; i < len; ++i)
+    {
+        cout << '"' << parser[i] << '"' << endl;
+    }
+    return parser.size() > 0;
+}
 
 int main(int argc, char *argv[])
 {
-	char *path;
-    char *buff;
-
-    // Assign the path
-	if (argc < 2){
-        path = argv[1];
-        get_path(path, "Enter filename: ");
-    }
-	else {
-        path = new char[strlen(argv[1]) + 1];
-        strcpy(path, argv[1]);
-    }
-
-    // Start reading in the file
-	cout << "Reading file: " << path << endl;
-    auto len = read_file(path, buff);
-    if (len <= 0)
-    {
-        cout << "Error reading file: " << path << endl;
-        WINPAUSE;
-        exit(EXIT_FAILURE);
-    }
-    cout << "Bytes read: " << len << endl;
-
-    /* Insert tests here */
-    if (!test_parse(buff))
-    {
-        cout << "Error parsing words for file" << path << endl;
-        WINPAUSE;
-        exit(EXIT_FAILURE);
-    }
-    /* End of tests */
-
-    // Delete the path and the copied file contents
-    delete [] path;
-    path = nullptr;
-    delete [] buff;
-    buff = nullptr;
-
-	WINPAUSE
-    return 0;
+    unit_test<parse, string> unit(test_function, "testing! this is a test");
+    cout << unit.start() << endl;
 }
