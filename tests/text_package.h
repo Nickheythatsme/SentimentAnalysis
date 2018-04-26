@@ -23,6 +23,16 @@ using std::endl;
 using std::cin;
 using std::string;
 
+class text_package_error
+{
+    public:
+        text_package_error(const string &message, const string &dirname="", const string &filename="");
+        string message;
+        string dirname;
+        string filename;
+        friend std::ostream& operator<<(std::ostream& out, const text_package_error &rhs);
+};
+
 // This is used to wrap a bunch of text files
 class text_package : public std::vector<string>
 {

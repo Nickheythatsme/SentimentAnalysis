@@ -1,5 +1,19 @@
 #include "text_package.h"
 
+/* text_package_error implementation */
+text_package_error::text_package_error(const string &_message, const string &_dirname, const string &_filename) :
+    message(_message),
+    dirname(_dirname),
+    filename(_filename)
+{
+}
+std::ostream& operator<<(std::ostream& out, const text_package_error &rhs)
+{
+    out << "Packaging text error: " << rhs.message << endl
+        << "\tdirectory: " << rhs.dirname << endl
+        << "\tfilename: " << rhs.filename << endl;
+    return out;
+}
 
 /*
  * Read the whole contents of a file to the char*
@@ -10,10 +24,8 @@
 long read_file(const string &filename, string &buff)
 {
     std::ifstream fin(filename.c_str());
-    if (!fin) {
-        std::cerr << "Error opening file: " << filename << endl;
-        return -1;
-    }
+    if (!fin) 
+        throw text_package_error("error opening file", "", filename);
 
     // Determine file size
     fin.seekg (0, fin.end);
@@ -24,10 +36,10 @@ long read_file(const string &filename, string &buff)
     try {
         buff.reserve(len);
     }
-    catch(std::bad_alloc &alloc){
+    catch(std::bad_alloc &alloc) {
         std::cerr << "Cannot allocate buffer for size: " << len << endl
                   << "Error: " << alloc.what() << endl;
-        return -1;
+        throw text_package_error("Unable to make buffer size that large","",filename);
     }
 
     // Read in file
@@ -51,9 +63,12 @@ size_t text_package::load_files()
 {
     glob_t *globbed = new glob_t;
     glob(dirname.c_str(), GLOB_NOSORT, nullptr, globbed);
+    if (globbed->gl_pathc == 0)
+        throw text_package_error("No files found.", dirname, "NULL");
     load_files(globbed);
 }
 
+// Implmentation of the load files. Uses the filenames from glob and reads/loads files
 size_t text_package::load_files(glob_t *globbed)
 {
     string buff;
@@ -61,10 +76,11 @@ size_t text_package::load_files(glob_t *globbed)
     for (int i=0; i < globbed->gl_pathc; ++i)
     {
         auto temp_bytes = read_file(globbed->gl_pathv[i], buff);
-        if (temp_bytes <= 0) 
+        _bytes += temp_bytes;
+        if (temp_bytes <= 0) {
             cerr<<"Error loading file: " << globbed->gl_pathv[i] << endl;
-        else _bytes += temp_bytes;
-        emplace_back(buff);
+        }
+        else emplace_back(buff);
         buff.clear();
     }
     return _bytes;

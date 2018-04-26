@@ -2,6 +2,7 @@ set(EXEC_NAME parse)
 
 set(SOURCES
     main.cpp
+    ../text_package.cpp ../text_package.h
     )
 
 # Make the executable

@@ -30,8 +30,12 @@ bool test_long(parse &parser, text_package &p)
 
 int main(int argc, char *argv[])
 {
-    unit_test<parse, string> unit(test_function, "testing! this is a test");
+    unit_test<parse, string> unit(test_simple, "testing! this is a test");
     cout << unit.start() << endl;
 
-    unit_test<parse, text_package> unit2(test_long, );
+    if (argc == 2)
+        auto package = text_package(argv[1]);
+    else
+        cout << "Unable to perform long test (no directory given)" << endl;
+    // unit_test<parse, vector<string>> unit2(test_long, argv[1]);
 }
