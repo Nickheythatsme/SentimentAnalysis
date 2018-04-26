@@ -16,11 +16,13 @@ using std::endl;
 template<class T, class D>
 using custom_function = bool (*)(T &, D &);
 
-struct test_err
+class test_err
 {
+public:
     test_err(const string &_message, const string &_name) {message = _message; name = _name;}
     string message;
     string name;
+    friend std::ostream& operator<<(std::ostream &out, const test_err &rhs);
 };
 
 // Result of a test. Also formats the display
@@ -69,21 +71,18 @@ class unit_test
         void set_config(const configuration & _config) {config = _config;}
         void set_data(const D &_data) {data = _data;}
         void set_obj(const T &_obj) {obj = _obj;}
-        void set_name(const T &_name) {name = _name;}
         void set_func(const T &_func) {func = _func;}
 
         // Get test values
         configuration& get_config() {return config;}
         auto get_obj()    { return obj; }
         auto get_data()   { return data; }
-        auto get_name()   { return name; }
         auto get_result() { return result; }
     protected:
+        decltype(auto) commence_test(T &obj, D &data);
     private:
-        decltype(auto) commence_test();
         T obj;
         D data {};
-        string name {};
         custom_function<T,D> func;
         test_result result;
         configuration config;

@@ -21,7 +21,7 @@ std::ostream& operator<<(std::ostream& out, const text_package_error &rhs)
  * 0 or less than 0 if error
  * greater than 0 if success
  */
-long read_file(const string &filename, string &buff)
+long text_package::read_file(const string &filename, string &buff)
 {
     std::ifstream fin(filename.c_str());
     if (!fin) 

@@ -1,5 +1,14 @@
 #include "test_case.h"
 
+/* test_err implementation */
+std::ostream& operator<<(std::ostream &out, const test_err &rhs)
+{
+    out << "Test Error: " << endl
+        << "Name: " << rhs.name << endl
+        << "Message: " << rhs.message << endl;
+    return out;
+}
+
 /* test_result implementation */
 // output to a stream
 std::ostream& operator<<(std::ostream& out, const test_result &rhs)
@@ -79,13 +88,13 @@ unit_test<T,D>::unit_test(const custom_function<T,D> _func, const D &_data, cons
 // RETURNS the duration difference between end/start
 // THROWS test_err if a test failed
 template<class T, class D>
-decltype(auto) unit_test<T,D>::commence_test()
+decltype(auto) unit_test<T,D>::commence_test(T &obj, D &data)
 {
     auto start = std::chrono::steady_clock::now();
     bool passed = func(obj, data);
     auto end = std::chrono::steady_clock::now();
     if (!passed)
-        throw test_err("Test failed", name);
+        throw test_err("Test failed", config.name);
     return end - start;
 }
 
@@ -98,15 +107,17 @@ test_result unit_test<T,D>::start()
     try{
         for (int i=0; i < config.iterations; ++i)
         {
-            result.total += commence_test();
+            T obj_copy  {obj};
+            D data_copy {data};
+            result.total += commence_test(obj_copy, data_copy);
             ++result.iterations;
         }
-    }catch(const test_err &err){
-        std::cerr << "Testing error: " << err.name << ": " << err.message << endl;
+    } catch(const test_err &err){
+        std::cerr << err << endl;
         return result;
     }
     result.passed = true;
     result.average = result.total/result.iterations;
-    result.name = name;
+    result.name = config.name;
     return result;
 }
