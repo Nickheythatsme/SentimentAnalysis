@@ -14,7 +14,7 @@ std::ostream& operator<<(std::ostream &out, const test_err &rhs)
 std::ostream& operator<<(std::ostream& out, const test_result &rhs)
 {
     out << "Test name: " << rhs.name << endl
-        << "Passed: " << rhs.passed << endl
+        << "\tPassed: " << rhs.passed << endl
         << "\tIterations completed: " << rhs.iterations << endl
         << "\tAverage exec time: " << rhs.display_time(rhs.average) << endl
         << "\tTotal exec time:   " << rhs.display_time(rhs.total);

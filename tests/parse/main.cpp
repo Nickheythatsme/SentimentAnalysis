@@ -36,13 +36,21 @@ int main(int argc, char *argv[])
 
     if (argc == 2)
     {
-        auto package = text_package(argv[1]);
-        unit_test<parse, text_package> unit2(test_long, package);
-        unit2.get_config().iterations = 100;
-        unit2.get_config().name = "long parse";
-        cout << unit2.start() << endl;
+        try {
+            auto package = text_package(argv[1]);
+            cout << "Reading: " << package.size() << " files" << endl;
+            unit_test<parse, text_package> unit2(test_long, package);
+            unit2.get_config().iterations = 100;
+            unit2.get_config().name = "long parse";
+            cout << unit2.start() << endl;
+            cout << unit2.get_result().passed << endl;
+        }
+        catch(const text_package_error &err) {
+            cout << err << endl;
+        }
     }
     else
         cout << "Unable to perform long test (no directory given)" << endl;
     return 0;
 }
+
