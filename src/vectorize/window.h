@@ -5,6 +5,7 @@
 #ifndef SENTIMENTANALYSIS_VECTORIZE_WINDOW
 #define SENTIMENTANALYSIS_VECTORIZE_WINDOW
 
+// Shorthand for string vector
 using s_vector=std::vector<std::string>;
 
 class window : public s_vector

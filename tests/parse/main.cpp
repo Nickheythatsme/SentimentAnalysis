@@ -4,12 +4,13 @@
 #include "../test_case.h"
 #include "../text_package.h"
 #include "parse.h"
+#include "b_tree.h"
 
 using namespace std;
 
-bool test_simple(parse &parser, string &text)
+bool test_simple(parse &parser, nullptr_t &t)
 {
-    parser(text);
+    parser("testing! this is a test");
     auto len = (parser.size() >= 5) ? 5 : parser.size() - 1;
 
     cout << "words parsed: " << parser.size() << endl;
@@ -18,7 +19,7 @@ bool test_simple(parse &parser, string &text)
     {
         cout << '"' << parser[i] << '"' << endl;
     }
-    return parser.size() > 0;
+    return parser.size() == 5;
 }
 
 bool test_long(parse &parser, text_package &p)
@@ -30,9 +31,11 @@ bool test_long(parse &parser, text_package &p)
 
 int main(int argc, char *argv[])
 {
-    unit_test<parse, string> unit(test_simple, "testing! this is a test");
+    unit_test<parse, decltype(nullptr)> unit(test_simple, nullptr);
     unit.get_config().name = "test_simple";
-    cout << unit.start() << endl;
+    auto result =  unit.start();
+    if (result.passed)
+        cout << result << endl;
 
     if (argc == 2)
     {
@@ -42,11 +45,12 @@ int main(int argc, char *argv[])
             unit_test<parse, text_package> unit2(test_long, package);
             unit2.get_config().iterations = 100;
             unit2.get_config().name = "long parse";
-            cout << unit2.start() << endl;
-            cout << unit2.get_result().passed << endl;
+            auto result2 =  unit2.start();
+            if (result2.passed)
+                cout << result2 << endl;
         }
         catch(const text_package_error &err) {
-            cout << err << endl;
+            cerr << err << endl;
         }
     }
     else
