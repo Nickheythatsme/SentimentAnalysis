@@ -38,12 +38,11 @@ _debug/
 _Release/
 
 # Data folders that contain text for testing
-data/aclImdb/
+aclImdb*
 
 # VS studio stuff
-.vs/
+.vs
 
 # Vim sessions
 *.vim
-data/data/aclImdb_v1.tar.gz
 .idea/deployment.xml
