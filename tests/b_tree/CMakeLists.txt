@@ -5,6 +5,8 @@ set(SOURCES
     ../text_package.cpp ../text_package.h
     )
 
+find_package (Threads)
+
 # Make the executable
 add_executable(${EXEC_NAME} ${SOURCES})
 
@@ -19,4 +21,5 @@ include_directories(../../src/libs/new_b_tree)
 target_link_libraries(
         ${EXEC_NAME}
         vectorize
+        ${CMAKE_THREAD_LIBS_INIT}
         )
