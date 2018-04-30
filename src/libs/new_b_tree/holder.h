@@ -12,6 +12,14 @@ using std::endl;
 #ifndef SENTIMENTANALYSIS_HOLDER_H
 #define SENTIMENTANALYSIS_HOLDER_H
 
+template<class T>
+struct split_variables
+{
+    holder *lower_child;
+    holder *greater_child;
+    T middle_data;
+};
+
 // Holder class which holds data points. Each data point is a pair,
 // the first of the pair being the key and the second being the object itself.
 // This class sorts and manages it's data/children
@@ -25,11 +33,14 @@ public:
     holder(const holder<T>&obj);
     holder(holder<T> &&obj);
     ~holder();
+    holder<T>& holder<T>::operator=(const holder<T> &rhs);
+    holder<T>& holder<T>::operator=(holder<T> &&rhs);
     bool push(T &&obj);
     bool push(const T &obj);
     bool full() const {return data_count == B_SIZE;}
-    size_t compare(const T &to_test) const;
+    size_t compare(const T &&to_test) const;
     void clear();
+    split_variables split(T &&data);
 protected:
 private:
     // Data storing points
