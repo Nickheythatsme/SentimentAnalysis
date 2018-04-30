@@ -7,8 +7,22 @@
 #include <string>
 using namespace std;
 
+void test_atom(atomic_int &c)
+{
+    auto temp = c.load();
+    temp++;
+    c = temp;
+}
+
 int main(int argc, char *argv[])
 {
-    holder<string, int> holder1;
+    atomic_int c;
+    c.store(0);
+    for (int i = 0; i < 10; ++i)
+    {
+        thread t(test_atom, std::ref(c));
+        t.detach();
+    }
+    cout << c << endl;
 }
 

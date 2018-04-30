@@ -4,7 +4,6 @@
 #include "../test_case.h"
 #include "../text_package.h"
 #include "parse.h"
-#include "b_tree.h"
 
 using namespace std;
 

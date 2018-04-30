@@ -3,38 +3,41 @@
 //
 #include <utility>
 #include <mutex>
+#include <atomic>
+#include <iostream>
+
+using std::cout;
+using std::endl;
 
 #ifndef SENTIMENTANALYSIS_HOLDER_H
 #define SENTIMENTANALYSIS_HOLDER_H
 
-// function used to compare two keys.
-// RETURNS
-//      1 if lhs > rhs
-//      0 if lhs == rhs
-//      -1 if lhs < rhs
-template<class K, class D>
-using comparison = int (*)(const K& lhs, const K& rhs);
-
-template<class K, class D>
+// Holder class which holds data points. Each data point is a pair,
+// the first of the pair being the key and the second being the object itself.
+// This class sorts and manages it's data/children
+template<class T>
 class holder
 {
 public:
     holder();
-    holder(const holder<K,D> &obj);
-    holder(holder<K,D> &&obj);
+    explicit holder(const T& rhs);
+    explicit holder(T &&rhs);
+    holder(const holder<T>&obj);
+    holder(holder<T> &&obj);
     ~holder();
+    bool push(T &&obj);
+    bool push(const T &obj);
+    bool full() const {return data_count == B_SIZE;}
 protected:
 private:
     // Data storing points
-    std::pair<K,D> *data;
+    T *data;
     // How many data points are currently stored?
-    size_t data_count;
+    std::atomic<size_t> data_count {0};
     // Sort the currently store points
     void sort_points();
 
-    // Function to compare two keys
-    static comparison comp;
-    static const size_t H_SIZE {3};
+    static const size_t B_SIZE {3};
 };
 
 

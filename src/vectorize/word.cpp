@@ -45,7 +45,7 @@ int word::compare(const word &obj) const
 {
     const char *l = data;
     const char *r = obj.data;
-    auto char sum;
+    char sum;
 
     while(*l && *r)
     {
