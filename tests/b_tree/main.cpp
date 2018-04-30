@@ -5,6 +5,7 @@
 #include "holder.h"
 #include <iostream>
 #include <string>
+#include <thread>
 using namespace std;
 
 void test_atom(atomic_int &c)

@@ -33,7 +33,8 @@ private:
     // Data storing points
     T *data;
     // How many data points are currently stored?
-    std::atomic<size_t> data_count {0};
+    // std::atomic<size_t> data_count {0};
+    size_t data_count {0};
     // Sort the currently store points
     void sort_points();
 

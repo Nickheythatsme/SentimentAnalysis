@@ -41,11 +41,10 @@ holder<T>::holder(const holder<T> &obj) :
 template<class T>
 holder<T>::holder(holder<T> &&obj)
 {
-    data_count = obj.data_count.fetch();
+    data_count = obj.data_count;
     obj.data_count = 0;
-    data = new T[B_SIZE];
-    for (int i = 0; i < data_count; ++i)
-        data[i] = std::move(obj.data[i]);
+    data = obj.data;
+    obj.data = new T[B_SIZE];
 };
 
 // Destructor
