@@ -28,6 +28,8 @@ public:
     bool push(T &&obj);
     bool push(const T &obj);
     bool full() const {return data_count == B_SIZE;}
+    size_t compare(const T &to_test) const;
+    void clear();
 protected:
 private:
     // Data storing points
@@ -36,7 +38,7 @@ private:
     // std::atomic<size_t> data_count {0};
     size_t data_count {0};
     // Sort the currently store points
-    void sort_points();
+    static void sort_points(T *data, size_t len);
 
     static const size_t B_SIZE {3};
 };

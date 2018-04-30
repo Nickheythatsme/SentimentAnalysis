@@ -46,55 +46,51 @@ string test_result::display_time(const std::chrono::duration<double> &t)
     return to_ret;
 }
 
+/* configuration implementation */
+// Constructors with arguments
+template<class T, class D>
+configuration<T,D>::configuration(custom_function<T,D> _func, const D &_data) :
+    func(_func),
+    data(_data),
+    obj()
+{
+}
+
+template<class T, class D>
+configuration<T,D>::configuration(custom_function<T,D> _func, const D &_data, const T &_obj) :
+    func(_func),
+    data(_data),
+    obj(_obj)
+{
+}
+
 /* unit_test implementation */
 // Constructors
 template<class T, class D>
 unit_test<T,D>::unit_test(custom_function<T,D> _func, const D &_data) :
-    func(_func),
-    data(_data),
-    obj(),
-    config()
+    configuration<T,D>(_func, _data),
+    result()
 {
 }
 
 template<class T, class D>
 unit_test<T,D>::unit_test(custom_function<T,D> _func, const D &_data, const T& _obj) :
-    func(_func),
-    data(_data),
-    obj(_obj),
-    config()
+    configuration<T,D>(_func, _data, _obj),
+    result()
 {
 }
 
-template<class T, class D>
-unit_test<T,D>::unit_test(const custom_function<T,D> _func, const D &_data, const configuration &_config) :
-    func(_func),
-    data(_data),
-    obj(),
-    config(_config)
-{
-}
-
-template<class T, class D>
-unit_test<T,D>::unit_test(const custom_function<T,D> _func, const D &_data, const T &_obj, const configuration &_config) :
-    func(_func),
-    data(_data),
-    obj(_obj),
-    config(_config)
-{
-}
-
-// Commence one test. 
+// Commence one test.
 // RETURNS the duration difference between end/start
 // THROWS test_err if a test failed
 template<class T, class D>
 decltype(auto) unit_test<T,D>::commence_test(T &obj, D &data)
 {
     auto start = std::chrono::steady_clock::now();
-    bool passed = func(obj, data);
+    bool passed = this->func(this->obj, this->data);
     auto end = std::chrono::steady_clock::now();
     if (!passed)
-        throw test_err("Test failed", config.name);
+        throw test_err("Test failed", this->name);
     return end - start;
 }
 
@@ -102,14 +98,19 @@ decltype(auto) unit_test<T,D>::commence_test(T &obj, D &data)
 template<class T, class D>
 test_result unit_test<T,D>::start()
 {
-    test_result result;
+    result = test_result();
 
     try{
-        for (int i=0; i < config.iterations; ++i)
+        for (int i=0; i < this->iterations; ++i)
         {
-            T obj_copy  {obj};
-            D data_copy {data};
-            result.total += commence_test(obj_copy, data_copy);
+            if (this->copy_data)
+            {
+                T obj_copy(this->obj);
+                D data_copy(this->data);
+                result.total += commence_test(obj_copy, data_copy);
+            }
+            else
+                result.total += commence_test(this->obj, this->data);
             ++result.iterations;
         }
     } catch(const test_err &err){
@@ -118,6 +119,6 @@ test_result unit_test<T,D>::start()
     }
     result.passed = true;
     result.average = result.total/result.iterations;
-    result.name = config.name;
+    result.name = this->name;
     return result;
 }

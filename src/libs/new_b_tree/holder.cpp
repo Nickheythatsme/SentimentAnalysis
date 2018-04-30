@@ -60,7 +60,7 @@ bool holder<T>::push(T &&rhs)
 {
     if (data_count == B_SIZE) return false;
     data[data_count++] = std::move(rhs);
-    sort_points();
+    sort_points(data, data_count);
     return true;
 }
 
@@ -71,22 +71,42 @@ bool holder<T>::push(const T &rhs)
     return this->push(T(rhs));
 }
 
+// Compare the data in this array to to_test.
+// RETURNS the index of the first data which is greater than or equal to_test.
 template<class T>
-void holder<T>::sort_points()
+size_t holder<T>::compare(const T &to_test) const
+{
+    size_t i=0;
+    for (;i<data_count; ++i)
+        if (data[i] >= to_test)
+            return i;
+    return i;
+}
+
+// Sort an array of T objects
+template<class T>
+void holder<T>::sort_points(T *data, size_t len)
 {
     int i=0, j=0;
 
     /* Nested for loops are gross but so is the bubble sort */
-    for(; i < data_count; ++i) {
+    for(; i < len; ++i) {
         j = i;
-        for(; j < data_count; ++j) {
+        for(; j < len; ++j) {
             if(data[j] < data[i])
                 std::swap(data[j],data[i]);
         }
     }
 
     // TODO remove when not debugging
-    for (size_t i = 0; i < data_count; ++i)
-        cout << data[i].first << endl;
+    for (size_t i = 0; i < len; ++i)
+        cout << data[i] << endl;
     cout << endl;
+}
+
+// Clear every data point in the array (by setting data_count==0
+template<class T>
+void holder<T>::clear()
+{
+    data_count = 0;
 }

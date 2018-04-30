@@ -34,6 +34,7 @@ struct test_result
     ~test_result() = default;
     friend std::ostream& operator<<(std::ostream& out, const test_result &rhs);
     static string display_time(const std::chrono::duration<double> &t);
+    test_result&operator=(const test_result &_test_result) = default;
 
     bool passed {false};
     string name {};
@@ -42,50 +43,60 @@ struct test_result
     std::chrono::duration<double> total {0};
 };
 
-struct configuration
+// Configuration for a test, as well as the data and object if provided
+template<class T, class D>
+class configuration
 {
+public:
+    configuration() = delete;
+    explicit configuration(custom_function<T,D> _func, const D &_data);
+    explicit configuration(custom_function<T,D> _func, const D &_data, const T &_obj);
+    configuration(const configuration &obj) = default;
+    configuration(configuration &&obj) = default;
+    ~configuration() = default;
+    // Setters
+    void set_verbose(bool value=true) {verbose = value;}
+    void set_iterations(size_t _iterations) {iterations = _iterations;}
+    void set_name(string _name) {name = _name;}
+    void set_object(const T &_obj) {obj = _obj;}
+    void set_data(const D &_data) {data = _data;}
+    void set_copy_data(bool _copy_data) {copy_data=_copy_data;}
+    // Getters
+    auto get_name() const {return name;}
+    auto get_iterations() const {return iterations;}
+    auto get_verbose() const {return verbose;}
+    auto get_object() const {return obj;}
+    auto get_data() const {return data;}
+protected:
     string name {};
     bool verbose {true};
-    bool run_basic {true};
-    bool run_big_o {true};
-    bool run_iteration {true};
     size_t iterations {1};
+    D data {};
+    T obj;
+    custom_function<T,D> func;
+    bool copy_data {true};
+private:
 };
 
 // Configuration of a test case
 template<class T, class D>
-class unit_test
+class unit_test : public configuration<T,D>
 {
     public:
         unit_test() = delete;
         unit_test(custom_function<T,D> _func, const D &_data);
         unit_test(custom_function<T,D> _func, const D &_data, const T &obj);
-        unit_test(custom_function<T,D> _func, const D &_data, const configuration &config);
-        unit_test(custom_function<T,D> _func, const D &_data, const T &obj, const configuration &config);
         unit_test(const unit_test<T,D> &rhs) = default;
         unit_test(unit_test<T,D> &&rhs) = default;
         ~unit_test() = default;
         test_result start();
 
-        // Test unit_test
-        void set_config(const configuration & _config) {config = _config;}
-        void set_data(const D &_data) {data = _data;}
-        void set_obj(const T &_obj) {obj = _obj;}
-        void set_func(const T &_func) {func = _func;}
-
-        // Get test values
-        configuration& get_config() {return config;}
-        auto get_obj()    { return obj; }
-        auto get_data()   { return data; }
+        // Return the result of the test
         auto get_result() { return result; }
     protected:
         decltype(auto) commence_test(T &obj, D &data);
     private:
-        T obj;
-        D data {};
-        custom_function<T,D> func;
         test_result result;
-        configuration config;
 };
 
 #include "test_case.cpp"
