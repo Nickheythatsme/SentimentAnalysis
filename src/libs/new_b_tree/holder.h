@@ -12,9 +12,12 @@ using std::endl;
 #ifndef SENTIMENTANALYSIS_HOLDER_H
 #define SENTIMENTANALYSIS_HOLDER_H
 
+// Forward declaration of holder class
 template<class T>
 class holder;
 
+// In a b_tree we need to be able to split and push up the middle data point.
+// This struct aids that
 template<class T>
 struct split_variables
 {
@@ -23,9 +26,11 @@ struct split_variables
     T middle_data;
 };
 
-// Holder class which holds data points. Each data point is a pair,
-// the first of the pair being the key and the second being the object itself.
-// This class sorts and manages it's data/children
+/*
+ * Holder class which holds data points. Each data point is a pair,
+ * the first of the pair being the key and the second being the object itself.
+ * This class sorts and manages it's data/children
+ */
 template<class T>
 class holder
 {
