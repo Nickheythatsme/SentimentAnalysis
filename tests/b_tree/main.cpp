@@ -41,17 +41,6 @@ bool split_test(holder<int> &a_holder, nullptr_t &n)
         {
             auto s = a_holder.split(int(i));
 
-            // Display the results of the split
-            cout << "Lesser child data: ";
-            for (int i=0; i < s.lesser_child->data_count; ++i)
-                cout << s.lesser_child -> data[i] << ", ";
-
-            cout << endl << "Middle data point: " << s.middle_data << endl;
-
-            cout << "Greater child data: ";
-            for (int i=0; i < s.greater_child->data_count; ++i)
-                cout << s.greater_child -> data[i] << ", ";
-            cout << endl << endl;
         }
         else
             a_holder.push(i);
@@ -71,4 +60,3 @@ int main(int argc, char *argv[])
     split_testing.set_name("split test");
     cout << split_testing.start() << endl;
 }
-

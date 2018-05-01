@@ -12,6 +12,9 @@ using std::endl;
 #ifndef SENTIMENTANALYSIS_HOLDER_H
 #define SENTIMENTANALYSIS_HOLDER_H
 
+// Debug flag which displays the results of splits, etc
+#define _DEBUG
+
 // Forward declaration of holder class
 template<class T>
 class holder;
@@ -52,9 +55,6 @@ public:
     bool push(T &&obj);
     bool push(const T &obj);
 
-    // Find an data point which matches obj, then return it.
-    const T& find(const T &obj) const;
-
     // Return true if B_SIZE == data_count (we're full)
     bool full() const {return data_count == B_SIZE;}
 
@@ -70,8 +70,10 @@ public:
 
     // B_SIZE, how many data points can a node hold?
     static const size_t B_SIZE {3};
-//protected:
-//private:
+protected:
+    // Find an data point which matches obj, then return it.
+    T& find(const T &obj) const;
+private:
     // Data storing points
     T *data;
     // How many data points are currently stored?

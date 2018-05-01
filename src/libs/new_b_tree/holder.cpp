@@ -129,8 +129,6 @@ void holder<T>::clear()
     data_count = 0;
 }
 
-
-// TODO this is broken...
 // Split this holder into two, based on the sorted data
 template<class T>
 split_variables<T> holder<T>::split(T &&new_t)
@@ -159,5 +157,19 @@ split_variables<T> holder<T>::split(T &&new_t)
     // i is @ the middle index here, we need to go to the end
     for (++i; i < B_SIZE+1; ++i)
         split_vars.greater_child->push(std::move(all_data[i]));
+
+#ifdef _DEBUG
+        // Display the results of the split
+        cout << "Lesser child data: ";
+        for (int i=0; i < split_vars.lesser_child->data_count; ++i)
+            cout << split_vars.lesser_child -> data[i] << ", ";
+
+        cout << endl << "Middle data point: " << split_vars.middle_data << endl;
+
+        cout << "Greater child data: ";
+        for (int i=0; i < split_vars.greater_child->data_count; ++i)
+            cout << split_vars.greater_child -> data[i] << ", ";
+        cout << endl << endl;
+#endif
     return split_vars;
 }
