@@ -133,17 +133,31 @@ void holder<T>::clear()
 
 // Split this holder into two, based on the sorted data
 template<class T>
-split_variables holder<T>::split(T &&new_t)
+split_variables<T> holder<T>::split(T &&new_t)
 {
-    split_variables split_vars;
-    split_vars.greater_child = new holder<T>();
-    auto new_index = this->compare(new_t);
+    // Make a new array one size larger than B_SIZE
+    auto all_data = new T[B_SIZE+1];
 
-    for (size_t i=0; i < B_SIZE/2; ++i)
-    {
-        if (i == new_index)
-        {
-            split_vars.lower_child->push(new_t);
-        }
-    }
+    // Copy our data into it, plus the new_t object
+    int i=0;
+    for (; i < B_SIZE; ++i)
+        all_data[i] = std::move(data[i]);
+    all_data[i] = std::move(new_t);
+
+    // Sort the new array
+    holder<T>::sort_points(all_data, B_SIZE+1);
+
+    // Create the split_vars object
+    split_variables<T> split_vars;
+    split_vars.middle_data = all_data[(B_SIZE)/2];
+    split_vars.greater_child = new holder<T>();
+    split_vars.lesser_child = this;
+    split_vars.lesser_child.data = 0;
+
+    for (i=0; i<B_SIZE/2; ++i)
+        split_vars.lesser_child.push(std::move(all_data[i]));
+    // i is @ the middle index here, we need to go to the end
+    for (++i; i < B_SIZE+1; ++i)
+        split_vars.greater_child.push(std::move(all_data[i]));
+    return split_vars;
 }

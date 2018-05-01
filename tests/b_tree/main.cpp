@@ -12,6 +12,7 @@ using namespace std;
 const int T_SIZE = 10;
 
 
+/* Testing thread safety */
 bool thread_safe_func(holder<int> &a_holder)
 {
     for(int i=0; i < 10; ++i)
@@ -32,10 +33,22 @@ bool thread_safe(holder<int> &a_holder, nullptr_t &n)
     return true;
 }
 
+bool split_test(holder<int> &a_holder, nullptr_t &n)
+{
+    for (int i=0; i < 10; ++i)
+        a_holder.push(i);
+}
+
+
+
 int main(int argc, char *argv[])
 {
-    unit_test<holder<int>,nullptr_t> t(thread_safe, nullptr);
-    t.start();
-    cout << t.get_result() << endl;
+    unit_test<holder<int>,nullptr_t> thread_safety(thread_safe, nullptr);
+    thread_safety.set_name("Thread safety");
+    thread_safety.start();
+    cout << thread_safety.get_result() << endl;
+
+    unit_test<holder<int>,nullptr_t> split_test(split_test, );
+
 }
 
