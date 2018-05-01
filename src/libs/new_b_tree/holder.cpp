@@ -152,11 +152,12 @@ split_variables<T> holder<T>::split(T &&new_t)
     split_vars.middle_data = all_data[(B_SIZE)/2];
     split_vars.greater_child = new holder<T>();
     split_vars.lesser_child = this;
-    split_vars.lesser_child->data = 0;
+    split_vars.lesser_child->data_count = 0;
 
     for (i=0; i<B_SIZE/2; ++i)
         split_vars.lesser_child->push(std::move(all_data[i]));
     // i is @ the middle index here, we need to go to the end
     for (++i; i < B_SIZE+1; ++i)
+        split_vars.greater_child->push(std::move(all_data[i]));
     return split_vars;
 }

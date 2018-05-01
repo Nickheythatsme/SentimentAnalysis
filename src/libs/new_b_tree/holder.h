@@ -49,8 +49,9 @@ public:
     size_t compare(const T &&to_test) const;
     void clear();
     split_variables<T> split(T &&data);
-protected:
-private:
+    static const size_t B_SIZE {3};
+//protected:
+//private:
     // Data storing points
     T *data;
     // How many data points are currently stored?
@@ -58,8 +59,6 @@ private:
     size_t data_count {0};
     // Sort the currently store points
     static void sort_points(T *data, size_t len);
-
-    static const size_t B_SIZE {3};
 };
 
 
