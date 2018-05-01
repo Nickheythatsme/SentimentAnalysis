@@ -11,7 +11,6 @@ using namespace std;
 
 const int T_SIZE = 10;
 
-
 /* Testing thread safety */
 bool thread_safe_func(holder<int> &a_holder)
 {
@@ -36,9 +35,16 @@ bool thread_safe(holder<int> &a_holder, nullptr_t &n)
 bool split_test(holder<int> &a_holder, nullptr_t &n)
 {
     for (int i=0; i < 10; ++i)
-        a_holder.push(i);
+    {
+        if (a_holder.full())
+        {
+            auto s = a_holder.split(int(i));
+            cout << s.middle_data << endl;
+        }
+        else
+            a_holder.push(i);
+    }
 }
-
 
 
 int main(int argc, char *argv[])
@@ -48,7 +54,9 @@ int main(int argc, char *argv[])
     thread_safety.start();
     cout << thread_safety.get_result() << endl;
 
-    unit_test<holder<int>,nullptr_t> split_test(split_test, );
+    unit_test<holder<int>,nullptr_t> split_testing(split_test, nullptr);
+    split_testing.set_name("split test");
+    cout << split_testing.start() << endl;
 
 }
 
