@@ -5,81 +5,81 @@
 #include "holder.h"
 
 // Constructor
-template<class T>
-holder<T>::holder()
+template<typename K, typename D>
+holder<K,D>::holder()
 {
-    data = new T[B_SIZE];
+    data = new d_point<K,D>[B_SIZE];
 };
 
 // Constructor with arguments
-template<class T>
-holder<T>::holder(const T &rhs) :
+template<typename K, typename D>
+holder<K,D>::holder(const d_point<K,D> &rhs) :
     data_count(1)
 {
-    data = new T[B_SIZE];
+    data = new d_point<K,D>[B_SIZE];
     data[0] = rhs;
 }
 // Move constructor of ONE data point
-template<class T>
-holder<T>::holder(T &&rhs) :
+template<typename K, typename D>
+holder<K,D>::holder(d_point<K,D> &&rhs) :
     data_count(1)
 {
-    data = new T[B_SIZE];
+    data = new d_point<K,D>[B_SIZE];
     data[0] = std::move(rhs);
 }
 
 // Copy constructor
-template<class T>
-holder<T>::holder(const holder<T> &obj) :
+template<typename K, typename D>
+holder<K,D>::holder(const holder<K,D> &obj) :
     data_count(obj.data_count)
 {
-    data = new T[B_SIZE];
+    data = new d_point<K,D>[B_SIZE];
     for (int i = 0; i < data_count; ++i)
         data[i] = obj.data[i];
 }
 
 // Move constructor of another holder object
-template<class T>
-holder<T>::holder(holder<T> &&obj)
+template<typename K, typename D>
+holder<K,D>::holder(holder<K,D> &&obj)
 {
     data = obj.data;
-    obj.data = new T[B_SIZE];
+    obj.data = new d_point<K,D>[B_SIZE];
     data_count = obj.data_count;
     obj.data_count = 0;
 }
 
 // Destructor
-template<class T>
-holder<T>::~holder()
+template<typename K, typename D>
+holder<K,D>::~holder()
 {
     delete [] data;
 };
 
 // Assignment operator
-template<class T>
-holder<T>& holder<T>::operator=(const holder<T> &rhs)
+template<typename K, typename D>
+holder<K,D>& holder<K,D>::operator=(const holder<K,D> &rhs)
 {
     delete [] data;
-    data = new T[B_SIZE];
+    data = new d_point<K,D>[B_SIZE];
     data_count = rhs.data_count;
     for (int i=0; i < data_count; ++i)
         data[i] = rhs.data;
 }
 
 // Assignment move operator
-template<class T>
-holder<T>& holder<T>::operator=(holder<T> &&rhs)
+template<typename K, typename D>
+holder<K,D>& holder<K,D>::operator=(holder<K,D> &&rhs)
 {
     delete [] data;
     data = rhs.data;
-    rhs.data = new T[B_SIZE];
+    rhs.data = new d_point<K,D>[B_SIZE];
     data_count = rhs.data_count;
     rhs.data_count = 0;
 }
 
-// Push another T obj into the array.
-template<class T>
-bool holder<T>::push(T &&rhs)
+// Push another d_point<K,D> obj into the array.
+template<typename K, typename D>
+bool holder<K,D>::push(d_point<K,D> && rhs)
 {
     if (data_count == B_SIZE) return false;
     data[data_count++] = std::move(rhs);
@@ -88,16 +88,16 @@ bool holder<T>::push(T &&rhs)
 }
 
 // Push another copy of an object into the array.
-template<class T>
-bool holder<T>::push(const T &rhs)
+template<typename K, typename D>
+bool holder<K,D>::push(const d_point<K,D> &rhs)
 {
-    return this->push(T(rhs));
+    return this->push(d_point<K,D>(rhs));
 }
 
 // Compare the data in this array to to_test.
 // RETURNS the index of the first data which is greater than or equal to_test.
-template<class T>
-size_t holder<T>::compare(const T &&to_test) const
+template<typename K, typename D>
+size_t holder<K,D>::compare(const d_point<K,D> &&to_test) const
 {
     size_t i=0;
     for (;i<data_count; ++i)
@@ -106,9 +106,9 @@ size_t holder<T>::compare(const T &&to_test) const
     return i;
 }
 
-// Sort an array of T objects
-template<class T>
-void holder<T>::sort_points(T *data, size_t len)
+// Sort an array of d_point objects
+template<typename K, typename D>
+void holder<K,D>::sort_points(d_point<K,D> *data, size_t len)
 {
     int i=0, j=0;
 
@@ -116,25 +116,25 @@ void holder<T>::sort_points(T *data, size_t len)
     for(; i < len; ++i) {
         j = i;
         for(; j < len; ++j) {
-            if(data[j] < data[i])
-                std::swap(data[j],data[i]);
+            if(data[j].first < data[i].first)
+                data[j].swap(data[i]);
         }
     }
 }
 
 // Clear every data point in the array (by setting data_count==0
-template<class T>
-void holder<T>::clear()
+template<typename K, typename D>
+void holder<K,D>::clear()
 {
     data_count = 0;
 }
 
 // Split this holder into two, based on the sorted data
-template<class T>
-split_variables<T> holder<T>::split(T &&new_t)
+template<typename K, typename D>
+split_variables<K,D> holder<K,D>::split(d_point<K,D> &&new_t)
 {
     // Make a new array one size larger than B_SIZE
-    auto all_data = new T[B_SIZE+1];
+    auto all_data = new d_point<K,D>[B_SIZE+1];
 
     // Copy our data into it, plus the new_t object
     int i=0;
@@ -143,12 +143,12 @@ split_variables<T> holder<T>::split(T &&new_t)
     all_data[i] = std::move(new_t);
 
     // Sort the new array
-    holder<T>::sort_points(all_data, B_SIZE+1);
+    holder<K,D>::sort_points(all_data, B_SIZE+1);
 
     // Create the split_vars object
-    split_variables<T> split_vars;
+    split_variables<K,D> split_vars;
     split_vars.middle_data = all_data[(B_SIZE)/2];
-    split_vars.greater_child = new holder<T>();
+    split_vars.greater_child = new holder<K,D>();
     split_vars.lesser_child = this;
     split_vars.lesser_child->data_count = 0;
 
@@ -162,14 +162,19 @@ split_variables<T> holder<T>::split(T &&new_t)
         // Display the results of the split
         cout << "Lesser child data: ";
         for (int i=0; i < split_vars.lesser_child->data_count; ++i)
-            cout << split_vars.lesser_child -> data[i] << ", ";
+            cout << "("
+                << split_vars.lesser_child -> data[i].first << ", "
+                << split_vars.lesser_child -> data[i].first << "), ";
 
         cout << endl << "Middle data point: " << split_vars.middle_data << endl;
 
         cout << "Greater child data: ";
         for (int i=0; i < split_vars.greater_child->data_count; ++i)
-            cout << split_vars.greater_child -> data[i] << ", ";
+            cout << "("
+                << split_vars.greater_child -> data[i].first << ", "
+                << split_vars.greater_child -> data[i].first << "), ";
         cout << endl << endl;
 #endif
+
     return split_vars;
 }
