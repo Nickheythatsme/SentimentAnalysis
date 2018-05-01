@@ -35,20 +35,40 @@ template<class T>
 class holder
 {
 public:
+    // Constructors/Destructor
     holder();
     explicit holder(const T& rhs);
     explicit holder(T &&rhs);
     holder(const holder<T>&obj);
     holder(holder<T> &&obj);
     ~holder();
+
+    // Assignment operator for another holder object
     holder<T>& operator=(const holder<T> &rhs);
+    // Assignment operator to move an object
     holder<T>& operator=(holder<T> &&rhs);
+
+    // Push another data point into this node
     bool push(T &&obj);
     bool push(const T &obj);
+
+    // Find an data point which matches obj, then return it.
+    const T& find(const T &obj) const;
+
+    // Return true if B_SIZE == data_count (we're full)
     bool full() const {return data_count == B_SIZE;}
+
+    // Compare an incoming data point to the data in our array. 
+    // Return the index of the first data_point which is greater than to_test
     size_t compare(const T &&to_test) const;
+
+    // Set data_count to 0
     void clear();
+
+    // Split thsi node, returning a split_varaibles struct with the split nodes
     split_variables<T> split(T &&data);
+
+    // B_SIZE, how many data points can a node hold?
     static const size_t B_SIZE {3};
 //protected:
 //private:

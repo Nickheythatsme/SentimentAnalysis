@@ -13,18 +13,20 @@ class example
         int x;
 };
 
-
 template<class T>
 decltype(auto) func(T &&obj)
 {
-}
-
-template<class T>
-decltype(auto) func(T &&obj)
-{
-    cout << "\tIs lvalue? " << std::is_lvalue_reference<T>{} << endl;
+    cout << "\tIs lvalue? " << std::is_lvalue_reference<decltype(obj)>{} << endl;
     return obj;
 }
+
+template<class T>
+decltype(auto) func_const_obj(const T& obj)
+{
+    cout << "\tIs lvalue? " << std::is_lvalue_reference<decltype(obj)>{} << endl;
+    return obj;
+}
+
 
 int main(int argc, char *argv[])
 {
@@ -46,12 +48,10 @@ int main(int argc, char *argv[])
         auto c = std::forward<example>(example());
         func(c);
     }
-
     {
-        cout << endl << "***Passing const obj to non-const function with variable return type" << endl;
+        cout << endl << "****Passing const obj and rvalue to const T& obj" << endl;
         const example e;
-        func2(e);
+        func_const_obj(e);
+        const example catcher2 = func_const_obj(example());
     }
-
-
 }
