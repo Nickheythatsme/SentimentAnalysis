@@ -64,7 +64,7 @@ configuration<T,D>::configuration(custom_function<T,D> _func, const D &_data, co
 {
 }
 
-/* unit_test implementation */
+/* Unit test implementation */
 // Constructors
 template<class T, class D>
 unit_test<T,D>::unit_test(custom_function<T,D> _func, const D &_data) :
@@ -98,6 +98,7 @@ decltype(auto) unit_test<T,D>::commence_test(T &obj, D &data)
 template<class T, class D>
 test_result unit_test<T,D>::start()
 {
+    logging logger(this->name.c_str(), this->verbose);
     result = test_result();
 
     try{
@@ -122,3 +123,36 @@ test_result unit_test<T,D>::start()
     result.name = this->name;
     return result;
 }
+
+// Enable logging of test results (re-route cout, cerr)
+logging::logging(const string &_file_name, bool verbose)
+{
+    if (verbose) return;
+    auto file_name(_file_name);
+    for (auto &c : file_name)
+        if (' ' == c)
+            c = '_';
+    file_name = file_name + ".log";
+    out_file.open(file_name.c_str());
+        default_cout = std::cout.rdbuf(out_file.rdbuf());
+}
+
+logging::~logging()
+{
+    // revert cout
+    if (default_cout)
+    {
+        std::cout.rdbuf(default_cout);
+        default_cout = nullptr;
+    }
+
+    // close out_file
+    if (out_file.is_open())
+        out_file.close();
+}
+
+/*
+string file_name {}; // defaults to {name}.log
+std::streambuf *default_cout {nullptr;} // default cout buffer
+std::ofstream out_file;
+*/

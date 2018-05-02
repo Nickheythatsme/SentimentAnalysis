@@ -1,5 +1,6 @@
 #include <chrono>
 #include <iostream>
+#include <fstream>
 
 #ifndef SENTIMENTANALYSIS_TEST_CASE_H
 #define SENTIMENTANALYSIS_TEST_CASE_H
@@ -12,6 +13,7 @@
 
 using std::string;
 using std::endl;
+
 // Defining a pointer to a function so the user may add their own test functions
 template<class T, class D>
 using custom_function = bool (*)(T &, D &);
@@ -55,12 +57,36 @@ public:
     configuration(configuration &&obj) = default;
     ~configuration() = default;
     // Setters
-    void set_verbose(bool value=true) {verbose = value;}
-    void set_iterations(size_t _iterations) {iterations = _iterations;}
-    void set_name(string _name) {name = _name;}
-    void set_object(const T &_obj) {obj = _obj;}
-    void set_data(const D &_data) {data = _data;}
-    void set_copy_data(bool _copy_data) {copy_data=_copy_data;}
+    configuration<T,D>& set_verbose(bool value=true) 
+    {
+        verbose = value; 
+        return *this;
+    }
+    configuration<T,D>& set_iterations(size_t _iterations) 
+    {
+        iterations = _iterations; 
+        return *this;
+    }
+    configuration<T,D>& set_name(string _name) 
+    {
+        name = _name;
+        return *this;
+    }
+    configuration<T,D>& set_object(const T &_obj) 
+    {
+        obj = _obj;
+        return *this;
+    }
+    configuration<T,D>& set_data(const D &_data) 
+    {
+        data = _data;
+        return *this;
+    }
+    configuration<T,D>& set_copy_data(bool _copy_data) 
+    {
+        copy_data=_copy_data;
+        return *this;
+    }
     // Getters
     auto get_name() const {return name;}
     auto get_iterations() const {return iterations;}
@@ -68,7 +94,7 @@ public:
     auto get_object() const {return obj;}
     auto get_data() const {return data;}
 protected:
-    string name {};
+    string name {"test"};
     bool verbose {true};
     size_t iterations {1};
     D data {};
@@ -76,6 +102,24 @@ protected:
     custom_function<T,D> func;
     bool copy_data {true};
 private:
+};
+
+// Enable logging of test results (re-route cout, cerr)
+// Give this class a test name and it_will_fileize_it.log
+class logging
+{
+    public:
+        logging() = delete;
+        logging(const logging &rhs) = delete;
+        logging(logging &&rhs) = delete;
+        explicit logging(const string &test_name, bool verbose=false);
+        ~logging();
+    private:
+        string file_name {}; // defaults to {name}.log
+        void set_cout();
+        void revert_cout();
+        std::streambuf *default_cout {nullptr}; // default cout buffer
+        std::ofstream out_file;
 };
 
 // Configuration of a test case

@@ -1,0 +1,6 @@
+#include "test_case.h"
+
+#ifndef SENTIMENT_ANALYSIS_TEST_CASE_
+#define SENTIMENT_ANALYSIS_TEST_CASE_
+
+#endif // SENTIMENT_ANALYSIS_TEST_CASE_

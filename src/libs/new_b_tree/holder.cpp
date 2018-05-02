@@ -147,7 +147,7 @@ split_variables<K,D> holder<K,D>::split(d_point<K,D> &&new_t)
 
     // Create the split_vars object
     split_variables<K,D> split_vars;
-    split_vars.middle_data = all_data[(B_SIZE)/2];
+    split_vars.middle_data = std::move(all_data[(B_SIZE)/2]);
     split_vars.greater_child = new holder<K,D>();
     split_vars.lesser_child = this;
     split_vars.lesser_child->data_count = 0;
@@ -158,7 +158,7 @@ split_variables<K,D> holder<K,D>::split(d_point<K,D> &&new_t)
     for (++i; i < B_SIZE+1; ++i)
         split_vars.greater_child->push(std::move(all_data[i]));
 
-#ifdef _DEBUG
+#ifdef DEBUG
         // Display the results of the split
         cout << "Lesser child data: ";
         for (int i=0; i < split_vars.lesser_child->data_count; ++i)
@@ -166,7 +166,10 @@ split_variables<K,D> holder<K,D>::split(d_point<K,D> &&new_t)
                 << split_vars.lesser_child -> data[i].first << ", "
                 << split_vars.lesser_child -> data[i].first << "), ";
 
-        cout << endl << "Middle data point: " << split_vars.middle_data << endl;
+        cout << endl << "Middle data point: (" 
+             << split_vars.middle_data.first << ", "
+             << split_vars.middle_data.first << ")"
+             << endl;
 
         cout << "Greater child data: ";
         for (int i=0; i < split_vars.greater_child->data_count; ++i)
@@ -174,7 +177,7 @@ split_variables<K,D> holder<K,D>::split(d_point<K,D> &&new_t)
                 << split_vars.greater_child -> data[i].first << ", "
                 << split_vars.greater_child -> data[i].first << "), ";
         cout << endl << endl;
-#endif
+#endif // DEBUG
 
     return split_vars;
 }

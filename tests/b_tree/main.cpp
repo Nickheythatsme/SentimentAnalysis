@@ -7,23 +7,27 @@
 #include <iostream>
 #include <string>
 #include <thread>
+#include <unistd.h>
 using namespace std;
 
-const int T_SIZE = 10;
+const int T_SIZE = 4;
 
 /* Testing thread safety */
-/*
-bool thread_safe_func(holder<int> &a_holder)
+bool thread_safe_func(holder<int,int> &a_holder)
 {
-    for(int i=0; i < 10; ++i)
+    for(int i=0; i < 1000; ++i)
     {
+        usleep(rand() % 5);
         if(a_holder.full())
-            a_holder.clear();
-        a_holder.push(rand() % 100);
+        {
+            auto s = a_holder.split(std::make_pair(rand() % 100, rand() % 100));
+        }
+        else
+            a_holder.push(std::make_pair(rand() % 100, rand() % 100));
     }
 }
 
-bool thread_safe(holder<int> &a_holder, nullptr_t &n)
+bool thread_safe(holder<int,int> &a_holder, nullptr_t &n)
 {
     thread threads[T_SIZE];
     for (auto &a_thread : threads)
@@ -32,13 +36,11 @@ bool thread_safe(holder<int> &a_holder, nullptr_t &n)
         a_thread.join();
     return true;
 }
-*/
 
 // Test split and output the results
-/*
 bool split_test(holder<int,int> &a_holder, nullptr_t &n)
 {
-    for (int i=0; i < 10; ++i)
+    for (int i=0; i < 100; ++i)
     {
         auto p = std::pair<int, int>(i,i);
         if (a_holder.full())
@@ -51,22 +53,18 @@ bool split_test(holder<int,int> &a_holder, nullptr_t &n)
     }
     return true;
 }
-*/
 
 int main(int argc, char *argv[])
 {
-    /*
-    unit_test<holder<int>,nullptr_t> thread_safety(thread_safe, nullptr);
+    unit_test<holder<int,int>,nullptr_t> thread_safety(thread_safe, nullptr);
     thread_safety.set_name("Thread safety");
+    thread_safety.set_verbose(false);
     thread_safety.start();
     cout << thread_safety.get_result() << endl;
-    */
 
-    /*
     unit_test<holder<int,int>, nullptr_t> split_testing(split_test, nullptr);
-    split_testing.set_name("split test");
-    cout << split_testing.start() << endl;
-    */
-    holder<int,int> hold;
-    hold.push(std::make_pair(1,1));
+    split_testing.set_name("split test")
+        .set_verbose(false);
+    split_testing.start();
+    cout << split_testing.get_result() << endl;
 }

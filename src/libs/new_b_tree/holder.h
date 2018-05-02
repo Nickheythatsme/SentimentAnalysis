@@ -11,9 +11,9 @@ using std::endl;
 
 #ifndef SENTIMENTANALYSIS_HOLDER_H
 #define SENTIMENTANALYSIS_HOLDER_H
+#define DEBUG
 
 // Debug flag which displays the results of splits, etc
-#define _DEBUG
 
 template<typename K, typename D>
 using d_point = std::pair<K,D>;
