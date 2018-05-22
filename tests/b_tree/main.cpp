@@ -7,36 +7,64 @@
 #include <iostream>
 #include <string>
 #include <thread>
-#include <zconf.h>
+#include <unistd.h>
 using namespace std;
 
-const int T_SIZE = 10;
+const int T_SIZE = 4;
 
-
-bool thread_safe_func(holder<int> &a_holder)
+/* Testing thread safety */
+bool thread_safe_func(holder<int,int> &a_holder)
 {
-    for(int i=0; i < 10; ++i)
+    for(int i=0; i < 1000; ++i)
     {
+        usleep(rand() % 5);
         if(a_holder.full())
-            a_holder.clear();
-        a_holder.push(rand() % 100);
+        {
+            auto s = a_holder.split(std::make_pair(rand() % 100, rand() % 100));
+        }
+        else
+            a_holder.push(std::make_pair(rand() % 100, rand() % 100));
     }
 }
 
-bool thread_safe(holder<int> &a_holder, nullptr_t &n)
+bool thread_safe(holder<int,int> &a_holder, nullptr_t &n)
 {
     thread threads[T_SIZE];
-    for (int i=0; i < T_SIZE; ++i)
-        threads[i] = thread(thread_safe_func, std::ref(a_holder));
-    for (int i=0; i < T_SIZE; ++i)
-        threads[i].join();
+    for (auto &a_thread : threads)
+        a_thread = thread(thread_safe_func, std::ref(a_holder));
+    for (auto &a_thread : threads)
+        a_thread.join();
+    return true;
+}
+
+// Test split and output the results
+bool split_test(holder<int,int> &a_holder, nullptr_t &n)
+{
+    for (int i=0; i < 100; ++i)
+    {
+        auto p = std::pair<int, int>(i,i);
+        if (a_holder.full())
+        {
+            auto s = a_holder.split(make_pair(i,i));
+
+        }
+        else
+            a_holder.push(std::make_pair(i,i));
+    }
     return true;
 }
 
 int main(int argc, char *argv[])
 {
-    unit_test<holder<int>,nullptr_t> t(thread_safe, nullptr);
-    t.start();
-    cout << t.get_result() << endl;
-}
+    unit_test<holder<int,int>,nullptr_t> thread_safety(thread_safe, nullptr);
+    thread_safety.set_name("Thread safety");
+    thread_safety.set_verbose(false);
+    thread_safety.start();
+    cout << thread_safety.get_result() << endl;
 
+    unit_test<holder<int,int>, nullptr_t> split_testing(split_test, nullptr);
+    split_testing.set_name("split test")
+        .set_verbose(false);
+    split_testing.start();
+    cout << split_testing.get_result() << endl;
+}

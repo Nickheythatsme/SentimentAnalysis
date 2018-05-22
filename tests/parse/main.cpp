@@ -31,7 +31,7 @@ bool test_long(parse &parser, text_package &p)
 int main(int argc, char *argv[])
 {
     unit_test<parse, decltype(nullptr)> unit(test_simple, nullptr);
-    unit.get_config().name = "test_simple";
+    unit.set_name("test simple");
     auto result =  unit.start();
     if (result.passed)
         cout << result << endl;
@@ -42,8 +42,8 @@ int main(int argc, char *argv[])
             auto package = text_package(argv[1]);
             cout << "Reading: " << package.size() << " files" << endl;
             unit_test<parse, text_package> unit2(test_long, package);
-            unit2.get_config().iterations = 100;
-            unit2.get_config().name = "long parse";
+            unit2.set_iterations(100);
+            unit2.set_name("long parse");
             auto result2 =  unit2.start();
             if (result2.passed)
                 cout << result2 << endl;
