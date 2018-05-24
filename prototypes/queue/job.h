@@ -10,9 +10,14 @@
 
 #include <mutex>
 #include <atomic>
+#include <iostream> // TODO remove when not debugging
+#include <type_traits>
 
 template<class R, class A>
 using job_callee = R (*)(A);
+
+template<class A>
+using deref = typename std::remove_reference<A>::type;
 
 template<class R, class A>
 class job
@@ -43,7 +48,7 @@ public:
 protected:
 private:
     R return_val;
-    A args;
+    deref<A> args;
     job_callee<R,A> callee;
 };
 

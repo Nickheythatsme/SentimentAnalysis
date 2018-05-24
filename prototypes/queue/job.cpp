@@ -7,12 +7,14 @@ job<R,A>::job(job_callee<R,A> _callee) :
     args()
 {
 }
+
 template<class R, class A>
 job<R,A>::job(job_callee<R,A> _callee, A &&_args) :
     callee(_callee),
     args(std::forward<A>(_args))
 {
 }
+
 // MOVE CONSTRUCTOR
 template<class R, class A>
 job<R,A>::job(job<R,A> &&rhs) :
@@ -38,7 +40,14 @@ const R& job<R,A>::get_return_val() const
 template<class R, class A>
 void job<R,A>::set_args(A &&_args)
 {
-    A &&args = std::forward<A>(_args);
+    deref<A> temp = std::forward<A>(_args);
+
+    std::cout << "Is rvalue: " << std::is_rvalue_reference<A>::value << std::endl;
+    std::cout << "Is lvalue: " << std::is_lvalue_reference<A>::value << std::endl;
+
+    std::cout << "Is reference: " << std::is_same<A, deref<A>>::value << std::endl;
+
+    // args = deref<A>(std::forward<A>(_args));
 }
 
 // Return the arguments for this given job. Useful if the arguments change after the function call

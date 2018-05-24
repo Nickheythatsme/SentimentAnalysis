@@ -12,7 +12,7 @@ using varray = vector<vector<T>>;
 
 // Long running function to test the queue
 template<class T>
-varray<T> matrix_mult(const varray<T> src_array)
+varray<T> matrix_mult(varray<T> src_array)
 {
     auto dest_array = src_array;
     for (auto &col : dest_array)
@@ -54,14 +54,30 @@ decltype(auto) make_2d_array(size_t size)
     return array;
 }
 
+template<typename T>
+T simple_func(T s)
+{
+    cout << s << endl;
+    return s;
+}
+
 
 int main()
 {
+    /*
     auto array = make_2d_array<double>(ARRAY_SIZE);
-    job<varray<double>, const varray<double>> j1(matrix_mult, varray<double>(array));
+    job<varray<double>, varray<double>> j1(matrix_mult, array));
+    display_array(array);
     j1.start();
     j1.set_args(array);
     display_array(j1.get_return_val());
+    varray<double> c { std::move(j1.get_return_val()) };
+    */
+
+    int x = 4;
+    job<int, int> j1(simple_func, int(4));
+    j1.set_args(std::move(x));
+    j1.set_args(x);
 
     return 0;
 }
