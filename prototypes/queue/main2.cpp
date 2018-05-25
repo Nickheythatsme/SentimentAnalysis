@@ -1,79 +1,53 @@
 #include <iostream>
-#include <vector>
-#include <string>
-using namespace std;
+#include <mutex>
+#include <thread>
+#include <condition_variable>
+#include <queue>
 
-class movee
+using std::cout;
+using std::endl;
+using std::cin;
+
+
+
+std::queue<int> data_queue;
+std::mutex mut;
+std::condition_variable data_cond;
+
+int add_data()
 {
-public:
-    movee() = default;
-    movee(movee && rhs)
+    for (int i =0; i<4; ++i)
     {
-        cout << "movee moving!" << endl;
-        data = rhs.data;
-        rhs.data = 0;
+        auto c = i;
+        std::lock_guard<std::mutex> lk(mut);
+        data_queue.push(c);
+        data_cond.notify_one();
     }
-    movee(const movee & rhs)
-    {
-        cout << "movee copying!" << endl;
-        data = rhs.data;
-    }
-    ~movee() = default;
-    movee& operator=(const movee & m)
-    {
-        cout << "Assigning m" << endl;
-        data = m.data;
-    }
-    movee& operator=(movee && m)
-    {
-        cout << "Move assigning m" << endl;
-        data = m.data;
-        m.data = 0;
-    }
-    int data;
-private:
-protected:
-};
+}
 
-template<class T, class X>
-class example
+int process_data()
 {
-    public:
-        example() = default;
-        example(T &&_m) {m = std::forward<T>(_m);}
-        example(const example<T,X>&) = default;
-        example(example<T,X> &&rhs) = default;
-        ~example() = default;
-        void set_args(T &&_m)
-        {
-            m = std::forward<T>(_m); 
-        }
-
-        T m;
-    protected:
-    private:
-};
-
-template<class T>
-void test_func(T &&a)
-{
-    T b = std::forward<T>(a);
+    while(true)
+    {
+        std::unique_lock<std::mutex> lk(mut);
+        data_cond.wait(
+                lk, []{return !data_queue.empty();});
+        cout << "Popping: " << data_queue.front() << endl;
+        data_queue.pop();
+        lk.unlock();
+        cout << "Waiting..." << endl;
+    }
 }
 
 int main(int argc, char **argv)
 {
-    string s1 {"Hello"};
-    /*
-    example<string,int> e1(std::move(s1));
-    cout << s1 << endl;
-    e1.set_args(s1);
-    e1.set_args(std::move(s1));
-    */
-
-    test_func(s1);
-    cout << s1 << endl;
-    test_func(std::move(s1));
-    cout << s1 << endl;
+    std::thread process_d (process_data);
+    process_d.detach();
+    cin.ignore(100,'\n');
+    add_data();
+    cin.ignore(100,'\n');
+    add_data();
+    cin.ignore(100,'\n');
 
     return 0;
 }

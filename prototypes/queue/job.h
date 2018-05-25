@@ -1,31 +1,38 @@
 /*
  * 5/23/2018
  *
- * This is the package class. Each item in the queue will be a package, which
+ * This is the job class. Each item in the queue will be a package, which
  * will store the function, the arguments, and the return value.
  */
 
 #ifndef QUEUE_PACKAGE_
 #define QUEUE_PACKAGE_
 
-#include <mutex>
-#include <atomic>
 #include <iostream> // TODO remove when not debugging
 #include <type_traits>
 
+// We need job's args object to not be a reference, used in some arguments
+template<class A>
+using deRef = typename std::remove_reference<A>::type;
+
+// We need job's args object to be modifyable, so we remove the const
+template<class A>
+using deConstRef = typename std::remove_const<deRef<A>>::type;
+
+/*
+ * Define the function which is to be called by the job
+ */
 template<class R, class A>
 using job_callee = R (*)(A);
 
-template<class A>
-using deref = typename std::remove_reference<A>::type;
-
-template<class R, class A>
+// Job class definition
+template<typename R, typename A>
 class job
 {
 public:
     job() = delete;
-    job(job_callee<R,A> _callee);
-    job(job_callee<R,A> _callee, A &&_args);
+    job(job_callee<R,A> _callee, const deRef<A> &_args);
+    job(job_callee<R,A> _callee, deRef<A> &&_args);
     job(job<R,A> &&rhs);
     ~job() = default;
 
@@ -34,7 +41,8 @@ public:
     const R& get_return_val() const;
 
     // Set the args for the function
-    void set_args(A&& args);
+    job<R,A>& set_args(deRef<A>&& args);
+    job<R,A>& set_args(const deRef<A>& args);
 
     // Return the arguments
     A&& get_args();
@@ -48,7 +56,7 @@ public:
 protected:
 private:
     R return_val;
-    deref<A> args;
+    deConstRef<A> args;
     job_callee<R,A> callee;
 };
 
