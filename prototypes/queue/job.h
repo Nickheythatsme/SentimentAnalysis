@@ -5,10 +5,9 @@
  * will store the function, the arguments, and the return value.
  */
 
-#ifndef QUEUE_PACKAGE_
-#define QUEUE_PACKAGE_
+#ifndef QUEUE_JOB_
+#define QUEUE_JOB_
 
-#include <iostream> // TODO remove when not debugging
 #include <type_traits>
 
 // We need job's args object to not be a reference, used in some arguments
@@ -61,4 +60,4 @@ private:
 };
 
 #include "job.cpp"
-#endif // QUEUE_PACKAGE_
+#endif // QUEUE_JOB_

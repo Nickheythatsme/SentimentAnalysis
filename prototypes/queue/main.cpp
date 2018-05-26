@@ -1,6 +1,6 @@
 #include <iostream>
 #include <string>
-#include "worker.h"
+#include "queue_base.h"
 using namespace std;
 
 // Set current type easily
