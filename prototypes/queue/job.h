@@ -48,7 +48,7 @@ public:
     const A& get_args() const;
 
     // Set the function to call
-    job<R,A>& set_func(const job_callee<R,A> _callee);
+    job<R,A>& set_func(const job_callee<R,A> &_callee);
 
     // Start the function
     void start();
