@@ -8,18 +8,26 @@ project(Queue)
 # Define the exec name
 set(EXEC_NAME queue)
 
+# Set .h include files
+set(H_SOURCES
+        worker.hpp
+        job.hpp
+    )
+
 # Define the sources for the executable
 set(SOURCES
         main.cpp
+        job.hpp
+        worker.hpp
         )
 
-add_executable(${EXEC_NAME} ${SOURCES})
+add_executable(${EXEC_NAME} ${SOURCES} ${H_SOURCES})
 
 # Find thread library
-find_package (Threads REQUIRED)
+find_package(Threads REQUIRED)
 
 # Link the libraries to the executable
 target_link_libraries(
         ${EXEC_NAME}
         ${CMAKE_THREAD_LIBS_INIT}
-)
+        )
