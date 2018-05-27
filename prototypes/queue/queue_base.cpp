@@ -49,5 +49,5 @@ void queue_base<R,A>::add_arg(deRef<A> &&a)
 template<typename R, typename A>
 size_t queue_base<R,A>::choose_thread_count(size_t arg_size)
 {
-    
+
 }
