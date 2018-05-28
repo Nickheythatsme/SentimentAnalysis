@@ -1,6 +1,7 @@
 #include <iostream>
 #include <mutex>
 #include <thread>
+#include <atomic>
 #include <condition_variable>
 #include <queue>
 #include <stdio.h>
@@ -11,8 +12,8 @@ using std::cin;
 
 std::queue<int> data_queue;
 std::mutex mut;
-std::mutex mut2;
 std::condition_variable data_cond;
+std::atomic_bool working {true};
 
 int add_data()
 {
@@ -22,14 +23,14 @@ int add_data()
         std::lock_guard<std::mutex> lk(mut);
         data_queue.push(c);
     }
-    data_cond.notify_one();
+    data_cond.notify_all();
 }
 
-int process_data(int x, std::mutex &temp_mut)
+int process_data(int x)
 {
-    while(true)
+    while(working)
     {
-        std::unique_lock<std::mutex> lk(temp_mut);
+        std::unique_lock<std::mutex> lk(mut);
         data_cond.wait(
                 lk, []{return !data_queue.empty();});
         printf("Thread %d popping: %d\n", x, data_queue.front());
@@ -37,24 +38,27 @@ int process_data(int x, std::mutex &temp_mut)
         lk.unlock();
         printf("Thread %d waiting...\n", x);
     }
+    printf("Thread %d exiting\n", x);
 }
 
 int main(int argc, char **argv)
 {
     for (int i=0; i < 3; ++i)
     {
-        std::thread process_d (process_data, i, std::ref((i % 2) ? mut : mut2) );
+        std::thread process_d (process_data, i);
         process_d.detach();
     }
-
     cin.ignore(100,'\n');
-    add_data();
 
-    cin.ignore(100,'\n');
     add_data();
+    cin.ignore(100,'\n');
 
-    cin.ignore(100,'\n');
+    working = false;
     add_data();
+    cin.ignore(100,'\n');
+
+    add_data();
+    cin.ignore(100,'\n');
 
     return 0;
 }
