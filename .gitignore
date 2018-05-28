@@ -46,3 +46,4 @@ aclImdb*
 # Vim sessions
 *.vim
 .idea/deployment.xml
+prototypes/queue/.idea/deployment.xml

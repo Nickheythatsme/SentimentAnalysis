@@ -68,7 +68,7 @@ A&& job<R,A>::get_args()
 
 // Set the function to call
 template<typename R, typename A>
-job<R,A>& job<R,A>::set_func(const job_callee<R,A> _callee)
+job<R,A>& job<R,A>::set_func(const job_callee<R,A> &_callee)
 {
     callee = _callee;
     return *this;
