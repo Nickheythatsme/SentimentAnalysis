@@ -42,6 +42,8 @@ class worker
     protected:
     private:
         void process_jobs();
+        void process_jobs2();
+        void complete_job(job<R,A> &to_do);
         // Set to true if we're working, otherwise this is false
 
         // Queue for upcoming jobs and its mutex
@@ -93,32 +95,38 @@ void worker<R,A>::process_jobs()
 {
     while (working == true)
     {
-        std::cout << "....Working? " << working << std::endl;
-
         // Get the current job and lock the queue while popping
         std::unique_lock<std::mutex> loop_lock(jobs_mut);
 
         // Lock this thread and wait to be notified
-        std::cout << "....Waiting" << std::endl;
         data_cond.wait(
                 loop_lock, [&]{return !jobs.empty();});
-        std::cout << "....Done waiting" << std::endl;
 
         // Get an upcoming job while we have the lock
-        if (!jobs.empty())
-        {
-            job<R,A> current_job = std::move(jobs.front());
-            jobs.pop();
-            std::cout << "....Starting job: " << std::endl;
-            current_job.start();
-
-            // Work on the current job
-            std::unique_lock<std::mutex> ret_lock(ret_vals_mut);
-            ret_vals.emplace_back(std::move(current_job.get_return_val()));
-            ret_lock.unlock();
-        }
+        job<R,A> current_job = std::move(jobs.front());
+        jobs.pop();
         loop_lock.unlock(); // unlock the jobs queue
+        std::cout << "....Starting job: " << std::endl;
+        complete_job(current_job);
+    }
+}
 
+template<typename R, typename A>
+void worker<R,A>::complete_job(job<R,A> &to_do)
+{
+    // Work on the current job
+    to_do.start();
+    // Put the finished job into the vector
+    std::lock_guard<std::mutex> ret_lock(ret_vals_mut);
+    ret_vals.emplace_back(std::move(to_do.get_return_val()));
+}
+
+template<typename R, typename A>
+void worker<R,A>::process_jobs2()
+{
+    while (working)
+    {
+        
     }
 }
 
