@@ -48,11 +48,11 @@ void test_worker()
     // Start a new thread for our worker
     std::thread t(&worker<c_type, const c_type&>::start_working, std::ref(w1));
     std::this_thread::sleep_for(std::chrono::seconds(1)); // Let our worker get started
-    w1.stop_working();
 
     std::unique_lock<std::mutex> jobs_lock(jobs_mut);
-    jobs.push(job<c_type,const c_type&>(simple_func, c_type(x)));
+    // jobs.push(job<c_type,const c_type&>(simple_func, c_type(x)));
     jobs_lock.unlock();
+    w1.stop_working();
 
     cout << "MAIN: notifying" << endl;
     data_cond.notify_one();

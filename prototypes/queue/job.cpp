@@ -101,6 +101,7 @@ template<typename R, typename A>
 job<R,A>& job<R,A>::set_args(deConstRef<A> &&_args)
 {
     args = deRef<A>(std::move(_args));
+    return *this;
 }
 
 // Move our arguments out of this object

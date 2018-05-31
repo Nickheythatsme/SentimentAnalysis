@@ -34,6 +34,8 @@ class worker
         worker(const worker<R,A> &rhs) = delete;
         worker(worker<R,A> &&rhs) = delete;
         ~worker() = default;
+        worker& operator=(const worker &obj) = delete; // TODO(nick): implement?
+        worker& operator=(worker &&obj) = delete; // TODO(nick): implement?
         void stop_working() {working = false;}
         void start_working();
         bool is_working() {return working;}
@@ -42,7 +44,6 @@ class worker
     protected:
     private:
         void process_jobs();
-        void process_jobs2();
         void complete_job(job<R,A> &to_do);
         // Set to true if we're working, otherwise this is false
 
@@ -93,20 +94,26 @@ void worker<R,A>::start_working()
 template<typename R, typename A>
 void worker<R,A>::process_jobs()
 {
-    while (working == true)
+    while (working)
     {
         // Get the current job and lock the queue while popping
-        std::unique_lock<std::mutex> loop_lock(jobs_mut);
+        std::unique_lock<std::mutex> jobs_lock(jobs_mut);
 
         // Lock this thread and wait to be notified
         data_cond.wait(
-                loop_lock, [&]{return !jobs.empty();});
+                jobs_lock, [&]{return !jobs.empty() || !working;});
+
+        if (!working || jobs.empty())
+        {
+            break;
+        }
 
         // Get an upcoming job while we have the lock
         job<R,A> current_job = std::move(jobs.front());
         jobs.pop();
-        loop_lock.unlock(); // unlock the jobs queue
-        std::cout << "....Starting job: " << std::endl;
+        jobs_lock.unlock(); // unlock the jobs queue
+
+        // Call the function to work on the job
         complete_job(current_job);
     }
 }
@@ -120,14 +127,6 @@ void worker<R,A>::complete_job(job<R,A> &to_do)
     // Put the finished job into the vector
     std::lock_guard<std::mutex> ret_lock(ret_vals_mut);
     ret_vals.emplace_back(std::move(to_do.get_return_val()));
-}
-
-template<typename R, typename A>
-void worker<R,A>::process_jobs2()
-{
-    while (working)
-    {
-    }
 }
 
 #endif // SENTIMENTANALYSIS_PROTOTYPES_QUEUE_WORKER_CPP
