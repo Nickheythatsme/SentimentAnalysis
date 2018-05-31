@@ -13,7 +13,6 @@
 
 #include "job.cpp"
 #include <atomic>
-#include <chrono>
 #include <condition_variable>
 #include <mutex>
 #include <queue>
@@ -40,12 +39,13 @@ class worker
         void start_working();
         bool is_working() {return working;}
 
-        std::atomic_bool working {false};
     protected:
     private:
         void process_jobs();
-        void complete_job(job<R,A> &to_do);
+        void complete_job(job<R,A>& to_do);
+
         // Set to true if we're working, otherwise this is false
+        std::atomic_bool &working {false};
 
         // Queue for upcoming jobs and its mutex
         std::queue<job<R,A>>& jobs;
@@ -72,6 +72,7 @@ worker<R,A>::worker(std::mutex& _jobs_mut,
     ret_vals(_ret_vals),
     data_cond(_data_cond)
 {
+    process_jobs();
 }
 
 /*
@@ -100,10 +101,14 @@ void worker<R,A>::process_jobs()
         std::unique_lock<std::mutex> jobs_lock(jobs_mut);
 
         // Lock this thread and wait to be notified
+        std::cout << "\tWorking? " << working << std::endl
+                  << "\tEmpty? " << jobs.empty() << std::endl;
+        std::cout << "\tWaiting" << std::endl;
         data_cond.wait(
                 jobs_lock, [&]{return !jobs.empty() || !working;});
+        std::cout << "\tDone Waiting" << std::endl;
 
-        if (!working || jobs.empty())
+        if (!working)
         {
             break;
         }
