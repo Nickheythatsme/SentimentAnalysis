@@ -1,9 +1,8 @@
+#include "worker.cpp"
 #include <iostream>
 #include <string>
-#include <vector>
 #include <thread>
-#include "job.hpp"
-#include "worker.hpp"
+#include <vector>
 using namespace std;
 
 // Set current type easily

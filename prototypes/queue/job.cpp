@@ -5,8 +5,8 @@
  * will store the function, the arguments, and the return value.
  */
 
-#ifndef QUEUE_JOB_
-#define QUEUE_JOB_
+#ifndef SENTIMENTANALYSIS_PROTOTYPES_QUEUE_JOB_CPP
+#define SENTIMENTANALYSIS_PROTOTYPES_QUEUE_JOB_CPP
 
 #include <type_traits>
 #include <utility>
@@ -58,6 +58,7 @@ class job
         job_callee<R,A> callee;
 };
 
+// CONSTRUCTOR
 template<typename R, typename A>
 job<R,A>::job(job_callee<R,A> _callee, deConstRef<A> &&_args) :
     callee(_callee),
@@ -65,6 +66,7 @@ job<R,A>::job(job_callee<R,A> _callee, deConstRef<A> &&_args) :
 {
 }
 
+// CONSTRUCTOR
 template<typename R, typename A>
 job<R,A>::job(job_callee<R,A> _callee, const A &_args) :
     callee(_callee),
@@ -91,6 +93,7 @@ template<typename R, typename A>
 job<R,A>& job<R,A>::set_args(const A &_args)
 {
     args = _args;
+    return *this;
 }
 
 // Move arguments into our arguments
@@ -122,4 +125,4 @@ void job<R,A>::start()
     return_val = callee(args);
 }
 
-#endif // QUEUE_JOB_
+#endif // SENTIMENTANALYSIS_PROTOTYPES_QUEUE_JOB_CPP

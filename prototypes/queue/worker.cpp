@@ -8,17 +8,17 @@
  *
  * We use atomic variables and mutexes to ensure that there are no race conditions surrounding our queue.
  */
-#ifndef QUEUE_WORKER_
-#define QUEUE_WORKER_
+#ifndef SENTIMENTANALYSIS_PROTOTYPES_QUEUE_WORKER_CPP
+#define SENTIMENTANALYSIS_PROTOTYPES_QUEUE_WORKER_CPP
 
-#include <condition_variable>
+#include "job.cpp"
 #include <atomic>
+#include <chrono>
+#include <condition_variable>
 #include <mutex>
 #include <queue>
-#include <chrono>
-#include "job.hpp"
 
-// TODO remove when not debugging
+// TODO(nick): remove when not debugging
 #include <iostream> 
 
 template<typename R, typename A>
@@ -88,8 +88,8 @@ void worker<R,A>::start_working()
  * Process jobs in the queue, or wait until we're notified to work. 
  * Continue the loop while and wait to be notified
  */
-// TODO change to wait_until rather than wait. This requires an additional
-// check for the queue before we pop/get front
+// TODO(nick): change to wait_until rather than wait. This requires an
+// additional check for the queue before we pop/get front
 template<typename R, typename A>
 void worker<R,A>::process_jobs()
 {
@@ -116,6 +116,7 @@ void worker<R,A>::complete_job(job<R,A> &to_do)
 {
     // Work on the current job
     to_do.start();
+
     // Put the finished job into the vector
     std::lock_guard<std::mutex> ret_lock(ret_vals_mut);
     ret_vals.emplace_back(std::move(to_do.get_return_val()));
@@ -126,8 +127,7 @@ void worker<R,A>::process_jobs2()
 {
     while (working)
     {
-        
     }
 }
 
-#endif // QUEUE_WORKER_
+#endif // SENTIMENTANALYSIS_PROTOTYPES_QUEUE_WORKER_CPP
