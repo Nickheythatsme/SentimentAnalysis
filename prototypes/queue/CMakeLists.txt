@@ -11,8 +11,7 @@ set(EXEC_NAME queue)
 
 # Define the sources for the executable
 set(SOURCES
-        job.cpp
-        worker.cpp
+        queue.cpp
         )
 
 add_executable(${EXEC_NAME} main.cpp ${SOURCES})
@@ -25,15 +24,6 @@ target_link_libraries(
         ${EXEC_NAME}
         ${CMAKE_THREAD_LIBS_INIT}
         )
-
-# Create executable for test_worker
-add_executable(test_worker test_worker.cpp ${SOURCES})
-target_link_libraries(
-        test_worker
-        ${CMAKE_THREAD_LIBS_INIT}
-        )
-
-
 
 # Find clang-tidy
 find_program(

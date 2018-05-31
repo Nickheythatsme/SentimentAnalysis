@@ -1,40 +1,52 @@
-#include "worker.cpp"
+#include "queue.cpp"
 #include <iostream>
 #include <string>
-#include <thread>
-#include <vector>
+#include <chrono>
 using namespace std;
 
+class temp
+{
+    public:
+        temp(int _x) : x(_x) {cout << "Constructor with arguments: " << x << endl;}
+        temp() {cout << "Constructor: " << x << endl;}
+        temp(const temp &rhs) {cout << "Copy constructor: " << rhs.x << endl; x = rhs.x;}
+        temp(temp &&rhs) {cout << "Move constructor: " << rhs.x << endl; x = rhs.x; rhs.x = -1;}
+        ~temp() {cout << "Destructor: " << x << endl;}
+        int x {-1};
+    private:
+};
+
 // Set current type easily
-typedef int c_type;
+typedef temp c_type;
 
 /*
  * Simple function to test job
  */
-c_type simple_func(const c_type &s)
+c_type simple_func(c_type s)
 {
-    cout << "c_type: " << s << endl;
+    cout << "c_type: " << s.x << endl;
     return s;
 }
 
-void test_job()
+
+void test_queue()
 {
-    c_type x {'x'};
-    c_type y {'y'};
+    std::queue<c_type> jobs;
 
-    job<c_type, const c_type&> j1 (simple_func, std::move(x));
-    job<c_type, const c_type&> j2 (simple_func, y);
+    for (int i=1; i < 2; ++i)
+    {
+        c_type c {i};
+        jobs.push(std::move(c));
+    }
 
-    j1.set_args(y);
-    j1.set_args(std::move(y));
-    j1.start();
-
-    c_type ret = std::move(j1.get_return_val());
+    cout << endl << endl << endl << "Starting threads: " << endl;
+    thread_queue<c_type, c_type> q1(simple_func, std::move(jobs), 4);
+    q1.start_sync();
+    // std::this_thread::sleep_for(std::chrono::seconds(1));
 }
-
 
 int main()
 {
-    test_job();
+    test_queue();
     return 0;
 }
