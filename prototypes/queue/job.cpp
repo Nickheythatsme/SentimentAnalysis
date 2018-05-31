@@ -44,7 +44,7 @@ class job
         job<R,A>& set_args(const A &_args);
 
         // Return the arguments
-        A&& get_args();
+        deRef<A>&& get_args();
 
         // Set the function to call
         job<R,A>& set_func(const job_callee<R,A> &_callee);
@@ -106,7 +106,7 @@ job<R,A>& job<R,A>::set_args(deConstRef<A> &&_args)
 
 // Move our arguments out of this object
 template<typename R, typename A>
-A&& job<R,A>::get_args()
+deRef<A>&& job<R,A>::get_args()
 {
     return std::move(args);
 }

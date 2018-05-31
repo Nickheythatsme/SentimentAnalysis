@@ -28,7 +28,7 @@ class worker
         worker(std::mutex& _jobs_mut, 
                 std::queue<job<R,A>>& _jobs,
                 std::mutex& _ret_vals_mut,
-                std::vector<deConstRef<R>>& _ret_vals,
+                std::vector<job<R,A>>& _ret_vals,
                 std::condition_variable& _data_cond);
         worker(const worker<R,A> &rhs) = delete;
         worker(worker<R,A> &&rhs) = delete;
@@ -39,21 +39,22 @@ class worker
         void start_working();
         bool is_working() {return working;}
 
+        // Set to true if we're working, otherwise this is false
+        std::atomic_bool working {false};
+
     protected:
     private:
         void process_jobs();
-        void complete_job(job<R,A>& to_do);
+        void complete_job(job<R,A>&& to_do);
 
-        // Set to true if we're working, otherwise this is false
-        std::atomic_bool &working {false};
 
         // Queue for upcoming jobs and its mutex
         std::queue<job<R,A>>& jobs;
         std::mutex& jobs_mut;
 
         // Vector for finished jobs and its mutex
-        std::vector<deConstRef<R>>& ret_vals;
-        std::mutex& ret_vals_mut;
+        std::vector<job<R,A>>& finished;
+        std::mutex& finished_mut;
 
         // Data condition condition_varible. Used to enable waiting for workers
         std::condition_variable& data_cond;
@@ -63,16 +64,15 @@ class worker
 template<typename R, typename A>
 worker<R,A>::worker(std::mutex& _jobs_mut, 
         std::queue<job<R,A>>& _jobs,
-        std::mutex& _ret_vals_mut,
-        std::vector<deConstRef<R>>& _ret_vals,
+        std::mutex& _finished_mut,
+        std::vector<job<R,A>>& _finished,
         std::condition_variable& _data_cond) :
     jobs_mut(_jobs_mut),
     jobs(_jobs),
-    ret_vals_mut(_ret_vals_mut),
-    ret_vals(_ret_vals),
+    finished_mut(_finished_mut),
+    finished(_finished),
     data_cond(_data_cond)
 {
-    process_jobs();
 }
 
 /*
@@ -82,7 +82,6 @@ worker<R,A>::worker(std::mutex& _jobs_mut,
 template<typename R, typename A>
 void worker<R,A>::start_working()
 {
-    working = true;
     process_jobs();
 }
 
@@ -119,19 +118,19 @@ void worker<R,A>::process_jobs()
         jobs_lock.unlock(); // unlock the jobs queue
 
         // Call the function to work on the job
-        complete_job(current_job);
+        complete_job(std::move(current_job));
     }
 }
 
 template<typename R, typename A>
-void worker<R,A>::complete_job(job<R,A> &to_do)
+void worker<R,A>::complete_job(job<R,A> &&to_do)
 {
     // Work on the current job
     to_do.start();
 
     // Put the finished job into the vector
-    std::lock_guard<std::mutex> ret_lock(ret_vals_mut);
-    ret_vals.emplace_back(std::move(to_do.get_return_val()));
+    std::lock_guard<std::mutex> finished_lock(finished_mut);
+    finished.emplace_back(std::move(to_do));
 }
 
 #endif // SENTIMENTANALYSIS_PROTOTYPES_QUEUE_WORKER_CPP
