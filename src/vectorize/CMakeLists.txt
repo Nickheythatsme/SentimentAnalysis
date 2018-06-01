@@ -8,6 +8,7 @@ set(LIBRARY_NAME vectorize)
 
 # Define the sources to be added to the library
 set(SOURCES
+    queue.hpp
     parse.cpp parse.h
     count_words.cpp count_words.h
     window.cpp window.h

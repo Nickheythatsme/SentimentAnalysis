@@ -4,8 +4,6 @@ set(CMAKE_LEGACY_CYGWIN_WIN32 0) # Remove when CMake >= 2.8.4 is required
 
 project(Queue)
 
-
-
 # Define the exec name
 set(EXEC_NAME queue)
 

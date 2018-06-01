@@ -1,17 +1,25 @@
 #include "text_package.h"
 
 /* text_package_error implementation */
-text_package_error::text_package_error(const string &_message, const string &_dirname, const string &_filename) :
-    message(_message),
-    dirname(_dirname),
-    filename(_filename)
+// CONSTRUCTOR
+text_package_error::text_package_error() noexcept:
+    std::exception()
+{
+}
+
+// CONSTRUCTOR
+text_package_error::text_package_error(string _message, string _dirname, string _filename) noexcept :
+    std::exception(),
+    message(std::move(_message)),
+    dirname(std::move(_dirname)),
+    filename(std::move(_filename))
 {
 }
 std::ostream& operator<<(std::ostream& out, const text_package_error &rhs)
 {
-    out << "Packaging text error: " << rhs.message << endl
-        << "\tdirectory: " << rhs.dirname << endl
-        << "\tfilename: " << rhs.filename << endl;
+    out << "Packaging text error: " << rhs.message << std::endl
+        << "\tdirectory: " << rhs.dirname << std::endl
+        << "\tfilename: " << rhs.filename << std::endl;
     return out;
 }
 
@@ -37,8 +45,8 @@ long text_package::read_file(const string &filename, string &buff)
         buff.reserve(len);
     }
     catch(std::bad_alloc &alloc) {
-        std::cerr << "Cannot allocate buffer for size: " << len << endl
-                  << "Error: " << alloc.what() << endl;
+        std::cerr << "Cannot allocate buffer for size: " << len << std::endl
+                  << "Error: " << alloc.what() << std::endl;
         throw text_package_error("Unable to make buffer size that large","",filename);
     }
 
@@ -52,8 +60,8 @@ long text_package::read_file(const string &filename, string &buff)
 
 
 // This is used to wrap a bunch of text files
-text_package::text_package(const string &_dirname) : 
-    dirname(_dirname)
+text_package::text_package(string _dirname) : 
+    dirname(std::move(_dirname))
 {
     load_files();
 }
@@ -61,11 +69,12 @@ text_package::text_package(const string &_dirname) :
 // Wrapper for the load file function
 size_t text_package::load_files()
 {
-    glob_t *globbed = new glob_t;
+    auto *globbed = new glob_t;
     glob(dirname.c_str(), GLOB_NOSORT, nullptr, globbed);
     if (globbed->gl_pathc == 0)
         throw text_package_error("No files found.", dirname, "NULL");
     load_files(globbed);
+    return globbed->gl_pathc;
 }
 
 // Implmentation of the load files. Uses the filenames from glob and reads/loads files
@@ -78,14 +87,10 @@ size_t text_package::load_files(glob_t *globbed)
         auto temp_bytes = read_file(globbed->gl_pathv[i], buff);
         _bytes += temp_bytes;
         if (temp_bytes <= 0) {
-            cerr<<"Error loading file: " << globbed->gl_pathv[i] << endl;
+            std::cerr<<"Error loading file: " << globbed->gl_pathv[i] << std::endl;
         }
         else emplace_back(buff);
         buff.clear();
     }
     return _bytes;
-}
-
-text_package::~text_package()
-{
 }

@@ -20,21 +20,9 @@ include_directories(../../src/libs/new_b_tree)
 # Link the libraries to the executable
 target_link_libraries(
         ${EXEC_NAME}
-        vectorize
         ${CMAKE_THREAD_LIBS_INIT}
+        vectorize
         )
-
-# Find clang-tidy
-find_program(
-    CLANG_TIDY_EXE
-    NAMES "clang-tidy"
-    )
-if(NOT CLANG_TIDY_EXE)
-    message(STATUS "clang-tidy not found")
-else()
-    message(STATUS "clang-tidy found: ${CLANG_TIDY_EXE}")
-    set(DO_CLANG_TIDY "${CLANG_TIDY_EXE}" "-checks=*")
-endif()
 
 set_target_properties(
     ${EXEC_NAME} PROPERTIES

@@ -1,7 +1,8 @@
-set(EXEC_NAME parse)
+set(EXEC_NAME queue)
 
 set(SOURCES
     main.cpp
+    matrix.cpp matrix.h
     ../text_package.cpp ../text_package.h
     )
 
@@ -12,9 +13,14 @@ add_test(parse_regular
         ${CMAKE_CURRENT_BINARY_DIR}/${EXEC_NAME}
         ${CMAKE_CURRENT_SOURCE_DIR}/../text_samples/samples/*.txt)
 
+
+# Find thread library
+find_package(Threads REQUIRED)
+
 # Link the libraries to the executable
 target_link_libraries(
         ${EXEC_NAME}
+        ${CMAKE_THREAD_LIBS_INIT}
         vectorize
         )
 

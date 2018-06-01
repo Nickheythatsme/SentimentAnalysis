@@ -2,6 +2,7 @@
 // Created by njgro on 3/7/2018.
 //
 #include <iostream>
+#include <exception>
 #include <fstream>
 #include <cstring>
 #include <string>
@@ -17,20 +18,20 @@
 #define WINPAUSE
 #endif
 
-using std::cout;
 using std::cerr;
 using std::endl;
 using std::cin;
 using std::string;
 
 // Handle errors while assembling the package
-class text_package_error
+class text_package_error : public std::exception
 {
 public:
-    text_package_error(const string &message, const string &dirname="", const string &filename="");
+    text_package_error() noexcept;
+    text_package_error(string message, string dirname="", string filename="") noexcept;
     string message;
-    string dirname;
-    string filename;
+    string dirname {"no dir specified"};
+    string filename{"no filename specified"};
     friend std::ostream& operator<<(std::ostream& out, const text_package_error &rhs);
 };
 
@@ -39,8 +40,8 @@ class text_package : public std::vector<string>
 {
     public:
         text_package() = delete;
-        text_package(const string &dirname);
-        ~text_package();
+        text_package(string dirname);
+        ~text_package() = default;
         size_t bytes() {return _bytes;}
     private:
         size_t load_files();
@@ -52,6 +53,5 @@ class text_package : public std::vector<string>
         // General support functions to get the file contents
         static long read_file(const string &filename, string &buff);
 };
-
 
 #endif //SENTIMENTANALYSIS_SUPPORT_H
