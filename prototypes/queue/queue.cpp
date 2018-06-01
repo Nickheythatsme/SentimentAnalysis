@@ -59,6 +59,7 @@ class thread_queue
         std::thread *threads {nullptr};
 };
 
+// CONSTRUCTOR
 template<typename R, typename A>
 thread_queue<R,A>::thread_queue(job_callee<R,A> _func, 
         std::queue<A>&& _jobs, 
@@ -69,6 +70,7 @@ thread_queue<R,A>::thread_queue(job_callee<R,A> _func,
 {
 }
 
+// DESTRUCTOR
 template<typename R, typename A>
 thread_queue<R,A>::~thread_queue()
 {
@@ -116,10 +118,12 @@ void thread_queue<R,A>::start_sync()
     threads = nullptr;
 }
 
+// Stop all threads and delete the array of threads (and set to nullptr)
 template<typename R, typename A>
 void thread_queue<R,A>::stop()
 {
     if (!threads) return;
+
     working = false;
     job_cond.notify_all();
     for (int i=0; i < thread_count; ++i)
