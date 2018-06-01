@@ -9,10 +9,9 @@ set(SOURCES
 # Make the executable
 add_executable(${EXEC_NAME} ${SOURCES})
 
-add_test(parse_regular
+add_test(queue_test
         ${CMAKE_CURRENT_BINARY_DIR}/${EXEC_NAME}
         ${CMAKE_CURRENT_SOURCE_DIR}/../text_samples/samples/*.txt)
-
 
 # Find thread library
 find_package(Threads REQUIRED)
@@ -24,6 +23,7 @@ target_link_libraries(
         vectorize
         )
 
+# Add clang-tidy if it's found
 set_target_properties(
     ${EXEC_NAME} PROPERTIES
     CXX_STANDARD 14

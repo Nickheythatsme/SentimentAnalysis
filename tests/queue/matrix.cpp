@@ -2,30 +2,30 @@
 
 matrix& matrix::operator*=(double x)
 {
-    for (auto v = this->begin(); v != this->end(); ++v)
-        for (auto d = v->begin(); d != v->end(); ++d)
-            *d *= x;
+    for (auto &v : *this)
+        for (auto &d : v)
+            d *= x;
     return *this;
 }
 matrix& matrix::operator/=(double x)
 {
-    for (auto v = this->begin(); v != this->end(); ++v)
-        for (auto d = v->begin(); d != v->end(); ++d)
-            *d /= x;
+    for (auto &v : *this)
+        for (auto &d : v)
+            d /= x;
     return *this;
 }
 matrix& matrix::operator+=(double x)
 {
-    for (auto v = this->begin(); v != this->end(); ++v)
-        for (auto d = v->begin(); d != v->end(); ++d)
-            *d += x;
+    for (auto &v : *this)
+        for (auto &d : v)
+            d += x;
     return *this;
 }
 matrix& matrix::operator-=(double x)
 {
-    for (auto v = this->begin(); v != this->end(); ++v)
-        for (auto d = v->begin(); d != v->end(); ++d)
-            *d -= x;
+    for (auto &v : *this)
+        for (auto &d : v)
+            d -= x;
     return *this;
 }
 

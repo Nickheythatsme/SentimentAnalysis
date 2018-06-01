@@ -8,7 +8,8 @@ set(LIBRARY_NAME vectorize)
 
 # Define the sources to be added to the library
 set(SOURCES
-    queue.hpp
+    tqueue_job.hpp
+    tqueue.hpp
     parse.cpp parse.h
     count_words.cpp count_words.h
     window.cpp window.h
@@ -17,6 +18,20 @@ set(SOURCES
 
 # Create the library
 add_library(${LIBRARY_NAME} STATIC ${SOURCES})
+
+# Add clang-tidy if it's found
+set_target_properties(
+    ${LIBRARY_NAME} PROPERTIES
+    CXX_STANDARD 14
+    COMPILE_FLAGS "${WARNING_FLAGS}"
+    )
+
+if (CLANG_TIDY_EXE)
+    set_target_properties(
+        ${LIBRARY_NAME} PROPERTIES
+        CXX_CLANG_TIDY "${DO_CLANG_TIDY}"
+        )
+endif()
 
 # Make sure the compiler can find include files for the library
 target_include_directories(${LIBRARY_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

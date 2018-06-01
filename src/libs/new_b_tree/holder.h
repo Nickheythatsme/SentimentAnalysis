@@ -1,17 +1,19 @@
 //
 // Created by njgro on 4/27/2018.
 //
-#include <utility>
-#include <mutex>
-#include <atomic>
-#include <iostream>
+#define DEBUG
 
+#include <utility>
+
+#ifdef DEBUG
+#include <iostream>
 using std::cout;
 using std::endl;
+#endif
+
 
 #ifndef SENTIMENTANALYSIS_HOLDER_H
 #define SENTIMENTANALYSIS_HOLDER_H
-#define DEBUG
 
 // Debug flag which displays the results of splits, etc
 

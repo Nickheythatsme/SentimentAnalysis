@@ -24,6 +24,7 @@ target_link_libraries(
         vectorize
         )
 
+# Add clang-tidy if it's found
 set_target_properties(
     ${EXEC_NAME} PROPERTIES
     CXX_STANDARD 14
