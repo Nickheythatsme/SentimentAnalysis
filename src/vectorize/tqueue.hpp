@@ -21,29 +21,20 @@ class thread_queue
     public:
         thread_queue();
         thread_queue(job_callee<R,A> _func, 
-            std::queue<deconstref<A>>&& _jobs, 
+            std::vector<deconstref<A>>&& _jobs, 
             size_t _thread_count);
         thread_queue(const thread_queue& rhs);
         thread_queue(thread_queue&& rhs);
         ~thread_queue();
-        thread_queue<R,A>& add_job(A &&rhs);
         void start();
-        void start_sync();
-        void stop();
-        bool done();
     protected:
         void process();
-        void process_no_block();
     private:
         void start(bool sync);
 
         // Queue of jobs that must be completed
         std::mutex jobs_mut;
-        std::queue<job<R,A>> jobs;
-
-        // Store the return values from the function call
-        std::mutex finished_mut;
-        std::vector<job<R,A>> finished;
+        std::vector<job<R,A>> jobs;
 
         // Condition variable used to wake/pause threads
         std::condition_variable job_cond;
@@ -53,14 +44,15 @@ class thread_queue
         job_callee<R,A> func;
 
         size_t thread_count;
+        size_t running_threads;
         std::thread *threads {nullptr};
 };
 
 // CONSTRUCTOR
 template<typename R, typename A>
 thread_queue<R,A>::thread_queue(job_callee<R,A> _func, 
-        std::queue<deconstref<A>>&& arguments, 
-        size_t _thread_count) :
+            std::vector<deconstref<A>>&& _jobs, 
+            size_t _thread_count) :
     func(_func),
     thread_count(_thread_count)
 {
