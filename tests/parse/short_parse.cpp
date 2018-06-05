@@ -32,28 +32,9 @@ int main(int argc, char *argv[])
 {
     unit_test<parse, decltype(nullptr)> unit(test_simple, nullptr);
     unit.set_name("test simple");
-    auto result =  unit.start();
-    if (result.passed)
-        cout << result << endl;
+    auto result = unit.start();
+    cout << unit.get_result() << endl;
 
-    if (argc == 2)
-    {
-        try {
-            auto package = text_package(argv[1]);
-            cout << "Reading: " << package.size() << " files" << endl;
-            unit_test<parse, text_package> unit2(test_long, package);
-            unit2.set_iterations(100);
-            unit2.set_name("long parse");
-            auto result2 =  unit2.start();
-            if (result2.passed)
-                cout << result2 << endl;
-        }
-        catch(const text_package_error &err) {
-            cerr << err << endl;
-        }
-    }
-    else
-        cout << "Unable to perform long test (no directory given)" << endl;
     return 0;
 }
 

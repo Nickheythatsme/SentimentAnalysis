@@ -136,7 +136,7 @@ class unit_test : public configuration<T,D>
         test_result start();
 
         // Return the result of the test
-        auto get_result() { return result; }
+        const test_result& get_result() { return result; }
     protected:
         decltype(auto) commence_test(T &obj, D &data);
     private:
