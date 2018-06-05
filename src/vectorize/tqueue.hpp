@@ -89,7 +89,7 @@ void thread_queue<R,A>::start()
     for (i=0; i < thread_count; ++i)
     {
         threads[i] = std::thread(&thread_queue<R,A>::process, \
-            std::ref(*this), \
+            this, \
             i*increment_size, i*increment_size+increment_size);
     }
     // "Wrap up" the jobs. Finish the last batch on the main thread
