@@ -9,8 +9,6 @@ This queue can either start processing and allow the main thread to continue, or
 #include <condition_variable>
 #include <thread>
 #include <mutex>
-#include <atomic>
-#include <queue>
 #include <vector>
 #include <chrono>
 #include <iostream>
@@ -27,8 +25,9 @@ class thread_queue
         thread_queue(thread_queue&& rhs);
         ~thread_queue();
         void start();
+        void stop();
     protected:
-        void process();
+        void process(size_t beg_index, size_t end_index);
     private:
         void start(bool sync);
 
@@ -40,11 +39,10 @@ class thread_queue
         std::condition_variable job_cond;
 
         // Is true while working, otherwise is set to false
-        std::atomic_bool working {false};
         job_callee<R,A> func;
 
         size_t thread_count;
-        size_t running_threads;
+        size_t running_threads {0};
         std::thread *threads {nullptr};
 };
 
@@ -58,11 +56,10 @@ thread_queue<R,A>::thread_queue(job_callee<R,A> _func,
 {
     // Move the queue of arguments into the job queue
     std::lock_guard<std::mutex> jobs_lock(jobs_mut);
-    while (!arguments.empty())
+    for (auto &j : _jobs)
     {
-        job<R,A>&& new_job {std::move(arguments.front())};
-        jobs.push( std::move(new_job) );
-        arguments.pop();
+        job<R,A> new_job {std::move(j)};
+        jobs.emplace_back(std::move(new_job));
     }
 }
 
@@ -70,48 +67,38 @@ thread_queue<R,A>::thread_queue(job_callee<R,A> _func,
 template<typename R, typename A>
 thread_queue<R,A>::~thread_queue()
 {
+    std::lock_guard<std::mutex> jobs_lock(jobs_mut);
     this->stop();
 }
 
-// Start thread number of threads, and then notify them to 
-// start working.
+// Start the number of threads, then wait for them to notify the main thread.
+// When they are all finished the main thread will continue
 template<typename R, typename A>
 void thread_queue<R,A>::start()
 {
     if (threads) return;
 
+    std::unique_lock<std::mutex> jobs_lock(jobs_mut);
     threads = new std::thread[thread_count];
-    for (int i=0; i < thread_count; ++i)
-        threads[i] = std::thread(&thread_queue<R,A>::process, std::ref(*this));
-    working = true;
-    job_cond.notify_all();
-}
+    running_threads = thread_count;
 
-// Start thread number of threads, and then notify them to 
-// start working. WAIT until the queue is empty before exiting function
-template<typename R, typename A>
-void thread_queue<R,A>::start_sync()
-{
-    if (threads) return;
-
-    threads = new std::thread[thread_count];
-    working = true;
-    for (int i=0; i < thread_count; ++i)
-        threads[i] = std::thread(&thread_queue<R,A>::process_no_block, std::ref(*this));
-
-    int threads_left = thread_count;
-    while (threads_left > 0)
+    // Calculate the increment size
+    size_t increment_size = jobs.size() / (thread_count+1);
+    size_t i;
+    // Delegate jobs out to each processing thread.
+    for (i=0; i < thread_count; ++i)
     {
-        for (int i=0; i < thread_count; ++i)
-            if (threads[i].joinable())
-            {
-                threads[i].join();
-                --threads_left;
-            }
-        std::this_thread::sleep_for(std::chrono::microseconds(100));
+        threads[i] = std::thread(&thread_queue<R,A>::process, \
+            std::ref(*this), \
+            i*increment_size, i*increment_size+increment_size);
     }
-    delete [] threads;
-    threads = nullptr;
+    // "Wrap up" the jobs. Finish the last batch on the main thread
+    process(i*increment_size, jobs.size() - 1);
+
+    // Wait for all threads to finish and for main thread to be notified
+    job_cond.wait(jobs_lock, [&]{return running_threads > 0;}); // TODO(nick) change wait to wait_for
+
+    this->stop();
 }
 
 // Stop all threads and delete the array of threads (and set to nullptr)
@@ -120,56 +107,24 @@ void thread_queue<R,A>::stop()
 {
     if (!threads) return;
 
-    working = false;
-    job_cond.notify_all();
     for (int i=0; i < thread_count; ++i)
+    {
         if (threads[i].joinable())
             threads[i].join();
+    }
     delete [] threads;
     threads = nullptr;
 }
 
 template<typename R, typename A>
-void thread_queue<R,A>::process()
+void thread_queue<R,A>::process(size_t beg_index, size_t end_index)
 {
-    while (working)
-    {
-        std::unique_lock<std::mutex> jobs_lock(jobs_mut);
+    auto beg = jobs.begin() + beg_index;
+    auto end = jobs.end() - (jobs.size() - end_index);
 
-        job_cond.wait(
-            jobs_lock, [&]{return !jobs.empty() || !working;}
-        );
+    for (; beg != end; ++beg)
+        beg->start(func);
 
-        if (!working) break;
-
-        job<R,A> current_job { std::move(jobs.front()) };
-        jobs.pop();
-        jobs_lock.unlock();
-
-        // Make the function call
-        current_job.start(func);
-        
-        std::unique_lock<std::mutex> finished_lock(finished_mut);
-        finished.emplace_back(std::move(current_job));
-    }
-}
-
-template<typename R, typename A>
-void thread_queue<R,A>::process_no_block()
-{
-    while (!jobs.empty() && working)
-    {
-        std::unique_lock<std::mutex> jobs_lock(jobs_mut);
-
-        if (jobs.empty()) return;
-        job<R,A> current_job { std::move(jobs.front()) };
-        jobs.pop();
-        jobs_lock.unlock();
-
-        // Make the function call
-        current_job.start(func);
-
-        std::unique_lock<std::mutex> finished_lock(finished_mut);
-        finished.emplace_back(std::move(current_job));
-    }
+    --running_threads;
+    job_cond.notify_one();
 }

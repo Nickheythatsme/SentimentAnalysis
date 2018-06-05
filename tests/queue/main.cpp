@@ -1,3 +1,4 @@
+#include "../test_case.h"
 #include "tqueue.hpp"
 #include "matrix.h"
 #include <iostream>
@@ -11,23 +12,32 @@ int test_func(matrix& m)
     return 1;
 }
 
-int main(int argc, char *argv[])
+bool run_test(int &num, nullptr_t &t)
 {
     matrix m;
     m.fill_random(1000,1000);
-    std::queue<matrix> jobs;
+    std::vector<matrix> jobs;
     for (int i=0; i < 100; ++i)
-        jobs.push(matrix(m));
+        jobs.push_back(matrix(m));
 
-    cout << "Starting test" << endl;
-    for (int i=2; i < 15; ++i)
+    thread_queue<int, matrix&> tq (test_func, std::move(jobs), num);
+    tq.start();
+
+    return true;
+}
+
+int main(int argc, char *argv[])
+{
+    std::vector<int> args {0,1,2,3,4,8,12,16,20,80};
+    for (auto &v : args)
     {
-        thread_queue<int, matrix&> q1 (&test_func, std::queue<matrix>(jobs), i);
-        auto start = std::chrono::system_clock::now();
-        q1.start_sync();
-        auto end = std::chrono::system_clock::now();
-        cout << "Processing time for " << i << " cores: " << (std::chrono::duration<double> {end-start}).count() << endl;
+        unit_test<int, nullptr_t> t1(run_test, nullptr, v);
+        t1.set_name(to_string(v) + " core test");
+        t1.set_verbose(true);
+        cout << t1.start() << endl;
     }
+
+
     return 0;
 }
 
