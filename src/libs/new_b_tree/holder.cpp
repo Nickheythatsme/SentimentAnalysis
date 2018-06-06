@@ -27,7 +27,6 @@ holder<K,D>::holder(d_point<K,D> &&rhs) :
     data = new d_point<K,D>[B_SIZE];
     data[0] = std::move(rhs);
 }
-
 // Copy constructor
 template<typename K, typename D>
 holder<K,D>::holder(const holder<K,D> &obj) :
@@ -37,7 +36,6 @@ holder<K,D>::holder(const holder<K,D> &obj) :
     for (int i = 0; i < data_count; ++i)
         data[i] = obj.data[i];
 }
-
 // Move constructor of another holder object
 template<typename K, typename D>
 holder<K,D>::holder(holder<K,D> &&obj)
@@ -47,14 +45,12 @@ holder<K,D>::holder(holder<K,D> &&obj)
     data_count = obj.data_count;
     obj.data_count = 0;
 }
-
 // Destructor
 template<typename K, typename D>
 holder<K,D>::~holder()
 {
     delete [] data;
 };
-
 // Assignment operator
 template<typename K, typename D>
 holder<K,D>& holder<K,D>::operator=(const holder<K,D> &rhs)
@@ -65,7 +61,6 @@ holder<K,D>& holder<K,D>::operator=(const holder<K,D> &rhs)
     for (int i=0; i < data_count; ++i)
         data[i] = rhs.data;
 }
-
 // Assignment move operator
 template<typename K, typename D>
 holder<K,D>& holder<K,D>::operator=(holder<K,D> &&rhs)
@@ -76,7 +71,6 @@ holder<K,D>& holder<K,D>::operator=(holder<K,D> &&rhs)
     data_count = rhs.data_count;
     rhs.data_count = 0;
 }
-
 // Push another d_point<K,D> obj into the array.
 template<typename K, typename D>
 bool holder<K,D>::push(d_point<K,D> && rhs)
@@ -86,14 +80,12 @@ bool holder<K,D>::push(d_point<K,D> && rhs)
     sort_points(data, data_count);
     return true;
 }
-
 // Push another copy of an object into the array.
 template<typename K, typename D>
 bool holder<K,D>::push(const d_point<K,D> &rhs)
 {
     return this->push(d_point<K,D>(rhs));
 }
-
 // Compare the data in this array to to_test.
 // RETURNS the index of the first data which is greater than or equal to_test.
 template<typename K, typename D>
@@ -177,7 +169,7 @@ split_variables<K,D> holder<K,D>::split(d_point<K,D> &&new_t)
                 << split_vars.greater_child -> data[i].first << ", "
                 << split_vars.greater_child -> data[i].first << "), ";
         cout << endl << endl;
-#endif // DEBUG
+#endif
 
     return split_vars;
 }
