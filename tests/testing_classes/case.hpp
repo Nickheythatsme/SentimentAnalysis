@@ -17,8 +17,8 @@ class test_case : public config
         test_case(string name, testing_func _func);
         test_case(const test_case &rhs) = default;
         test_case(test_case &&rhs) = default;
-        ~test_case() = default;
-        general_result start();
+        virtual ~test_case() = default;
+        virtual void start();
         general_result get_result();
     private:
         testing_func func;
@@ -33,8 +33,9 @@ test_case::test_case(string name, testing_func _func) :
 { }
 
 // Run the test case;
-general_result test_case::start()
+void test_case::start()
 {
+    results = general_result();
     results.beginning = system_clock::now();
     results.name = this->name;
 
@@ -50,8 +51,6 @@ general_result test_case::start()
     results.passed = results.iterations = this->iterations;
     results.average = (end - start) / results.iterations;
     results.total = end - start;
-
-    return results;
 }
 
 general_result test_case::get_result()
