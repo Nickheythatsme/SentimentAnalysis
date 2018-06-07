@@ -13,16 +13,16 @@ int main(int argc, char **argv)
 {
     std::vector<size_t> sizes;
     for (int i=1; i < 100; ++i)
-        sizes.emplace_back(i*10);
+        sizes.emplace_back(i*100);
     std::vector<double> results;
-    for (const auto &i : sizes)
+    for (int i=1; i < 100; ++i)
     {
-        results.emplace_back(i);
+        results.emplace_back(rand());
     }
 
     for (size_t i=0; i<100; ++i)
     {
-        cout << i*10 << "\t" << results[i*10] << endl;
+        cout << i << "\t" << results[i] << endl;
     }
 
     performance_result r(sizes, results);

@@ -52,6 +52,7 @@ class performance_result : public general_result
         
         correlations run_correlations() const;
         static double calc_correlation(const std::vector<double> &l1, const std::vector<double> &l2);
+        static double calc_correlation2(const std::vector<double> &l1, const std::vector<double> &l2);
         std::vector<double> data_points;
         std::vector<size_t> n_points;
 };
@@ -170,9 +171,32 @@ std::vector<double> performance_result::calc_two_to_n(const std::vector<size_t> 
     return to_return;
 }
 
+double performance_result::calc_correlation(const std::vector<double> &l1, const std::vector<double> &l2)
+{
+    if (l1.size() != l2.size()) return -2;
+    size_t n = l1.size();
+    long double sum_products = 0.0;
+    long double sum_l1 = 0.0;
+    long double sum_l1_2 = 0.0;
+    long double sum_l2 = 0.0;
+    long double sum_l2_2 = 0.0;
+
+    for (size_t i=0; i<n; ++i)
+    {
+        sum_products += l1[i] * l2[i];
+        sum_l1 += l1[i];
+        sum_l1_2 += l1[i] * l1[i];
+        sum_l2 += l2[i];
+        sum_l2_2 += l2[i] * l2[i];
+    }
+
+    long double top = (n*sum_products - (sum_l1)*(sum_l2));
+    long double bottom = sqrt((n*sum_l1_2 - sum_l1*sum_l1) * (n*sum_l2_2 - sum_l2*sum_l2));
+    return top/bottom;
+}
 
 // Calculate the Pearson R correlation
-double performance_result::calc_correlation(const std::vector<double> &l1, const std::vector<double> &l2)
+double performance_result::calc_correlation2(const std::vector<double> &l1, const std::vector<double> &l2)
 {
     if (l1.size() != l2.size()) return -2;
     double l1_average = 0.0;
@@ -212,6 +236,7 @@ class performance_test : public config
 {
     public:
         performance_test() = delete;
+        performance_test
         performance_test(const performance_test &rhs);
         performance_test(performance_test &&rhs);
         ~performance_test() = default;
