@@ -1,9 +1,10 @@
 //
 // Created by njgro on 4/27/2018.
 //
-#define DEBUG
+// #define DEBUG
 
 #include <utility>
+#include <cstdlib>
 
 #ifdef DEBUG
 #include <iostream>
@@ -31,7 +32,7 @@ struct split_variables
 {
     holder<K,D> *lesser_child;
     holder<K,D> *greater_child;
-    d_point<K,D> middle_data;
+    d_point<K,D>&& middle_data;
 };
 
 /*
@@ -49,40 +50,45 @@ public:
     explicit holder(d_point<K,D> &&rhs);
     holder(const holder<K,D>&obj);
     holder(holder<K,D> &&obj);
-    ~holder();
+    virtual ~holder();
 
     // Assignment operator for another holder object
     holder<K,D>& operator=(const holder<K,D> &rhs);
     // Assignment operator to move an object
     holder<K,D>& operator=(holder<K,D> &&rhs);
 
-    // Push another data point into this node
+    // Push another data point into this node. Through moving the object
     bool push(d_point<K,D> &&obj);
-    bool push(const d_point<K,D> &obj);
 
     // Return true if B_SIZE == data_count (we're full)
     bool full() const {return data_count == B_SIZE;}
+
+    // Returnt the data_count
+    size_t get_data_count() {return data_count;}
 
     // Compare an incoming data point to the data in our array. 
     // Return the index of the first data_point which is greater than to_test
     size_t compare(const d_point<K,D> &&to_test) const;
 
     // Set data_count to 0
-    void clear();
+    void clear() {data_count = 0;}
 
-    // Split thsi node, returning a split_varaibles struct with the split nodes
-    split_variables<K,D> split(d_point<K,D> &&data);
+    // Split this node, returning a split_varaibles struct with the split nodes
+    virtual split_variables<K,D> split(d_point<K,D> &&data);
+
+    // Find an data point which matches obj, then return it.
+    bool find(const K &to_find, d_point<K,D>& to_return) const;
+
+    // Return true if object is in the holder, false if not
+    bool exists(const K &to_find) const;
 
     // B_SIZE, how many data points can a node hold?
     static const size_t B_SIZE {3};
 protected:
-    // Find an data point which matches obj, then return it.
-    d_point<K,D>& find(const d_point<K,D> &obj) const;
 private:
     // Data storing points
     d_point<K,D> *data;
     // How many data points are currently stored?
-    // std::atomic<size_t> data_count {0};
     size_t data_count {0};
     // Sort the currently store points
     static void sort_points(d_point<K,D> *data, size_t len);

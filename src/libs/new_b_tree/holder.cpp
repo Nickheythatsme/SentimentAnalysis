@@ -10,7 +10,6 @@ holder<K,D>::holder()
 {
     data = new d_point<K,D>[B_SIZE];
 };
-
 // Constructor with arguments
 template<typename K, typename D>
 holder<K,D>::holder(const d_point<K,D> &rhs) :
@@ -80,12 +79,6 @@ bool holder<K,D>::push(d_point<K,D> && rhs)
     sort_points(data, data_count);
     return true;
 }
-// Push another copy of an object into the array.
-template<typename K, typename D>
-bool holder<K,D>::push(const d_point<K,D> &rhs)
-{
-    return this->push(d_point<K,D>(rhs));
-}
 // Compare the data in this array to to_test.
 // RETURNS the index of the first data which is greater than or equal to_test.
 template<typename K, typename D>
@@ -114,13 +107,6 @@ void holder<K,D>::sort_points(d_point<K,D> *data, size_t len)
     }
 }
 
-// Clear every data point in the array (by setting data_count==0
-template<typename K, typename D>
-void holder<K,D>::clear()
-{
-    data_count = 0;
-}
-
 // Split this holder into two, based on the sorted data
 template<typename K, typename D>
 split_variables<K,D> holder<K,D>::split(d_point<K,D> &&new_t)
@@ -137,16 +123,16 @@ split_variables<K,D> holder<K,D>::split(d_point<K,D> &&new_t)
     // Sort the new array
     holder<K,D>::sort_points(all_data, B_SIZE+1);
 
-    // Create the split_vars object
+    // Create and fill the split_vars object
     split_variables<K,D> split_vars;
     split_vars.middle_data = std::move(all_data[(B_SIZE)/2]);
     split_vars.greater_child = new holder<K,D>();
     split_vars.lesser_child = this;
-    split_vars.lesser_child->data_count = 0;
+    split_vars.lesser_child->data_count = 0; // set our data_count to 0
 
     for (i=0; i<B_SIZE/2; ++i)
         split_vars.lesser_child->push(std::move(all_data[i]));
-    // i is @ the middle index here, we need to go to the end
+    // i is at the middle index here, we need to go to the end
     for (++i; i < B_SIZE+1; ++i)
         split_vars.greater_child->push(std::move(all_data[i]));
 
@@ -172,4 +158,27 @@ split_variables<K,D> holder<K,D>::split(d_point<K,D> &&new_t)
 #endif
 
     return split_vars;
+}
+
+// Return true if the data point exists in this holder. If not, return false
+template<typename K, typename D>
+bool holder<K,D>::exists(const K &to_find) const
+{
+    for (int i=0; i < data_count; ++i)
+        if (data[i].first == to_find)
+            return true;
+    return false;
+}
+
+// Find an data point which matches obj, then return it.
+template<typename K, typename D>
+bool holder<K,D>::find(const K &to_find, d_point<K,D>& to_return) const
+{
+    for (int i=0; i < data_count; ++i)
+        if (data[i].first == to_find)
+        {
+            to_return = data[i];
+            return true;
+        }
+    return false;
 }

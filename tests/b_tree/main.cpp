@@ -8,63 +8,47 @@
 #include <string>
 #include <thread>
 #include <unistd.h>
+#include <random>
+#include <vector>
+#include <algorithm>
 using namespace std;
 
-const int T_SIZE = 4;
-
-/* Testing thread safety */
-bool thread_safe_func(holder<int,int> &a_holder)
-{
-    for(int i=0; i < 1000; ++i)
-    {
-        usleep(rand() % 5);
-        if(a_holder.full())
-        {
-            auto s = a_holder.split(std::make_pair(rand() % 100, rand() % 100));
-        }
-        else
-            a_holder.push(std::make_pair(rand() % 100, rand() % 100));
-    }
-}
-
-bool thread_safe(holder<int,int> &a_holder, nullptr_t &n)
-{
-    thread threads[T_SIZE];
-    for (auto &a_thread : threads)
-        a_thread = thread(thread_safe_func, std::ref(a_holder));
-    for (auto &a_thread : threads)
-        a_thread.join();
-    return true;
-}
+const int B_SIZE = 3;
 
 // Test split and output the results
-bool split_test(holder<int,int> &a_holder, nullptr_t &n)
+bool split_test(nullptr_t &v, nullptr_t &n)
 {
-    for (int i=0; i < 100; ++i)
-    {
-        auto p = std::pair<int, int>(i,i);
-        if (a_holder.full())
-        {
-            auto s = a_holder.split(make_pair(i,i));
+    std::default_random_engine generator(3);
+    std::uniform_int_distribution<int> distribution(1,10);
 
-        }
-        else
-            a_holder.push(std::make_pair(i,i));
+    holder<int,int> a_holder;
+    vector<pair<int,int>> values;
+
+    int i;
+    for (i=0; i<B_SIZE+1; ++i)
+    {
+        int val = distribution(generator);
+        values.emplace_back(make_pair(val, val));
     }
-    return true;
+    for (i=0; i <B_SIZE; ++i)
+        a_holder.push(pair<int,int>(values[i]));
+
+    pair<int,int> &&new_val = pair<int,int>(values[i]);
+    auto split_val = a_holder.split(std::move(new_val));
+    sort(values.begin(), values.end());
+
+    return split_val.middle_data == values[B_SIZE/2];
 }
 
 int main(int argc, char *argv[])
 {
-    unit_test<holder<int,int>,nullptr_t> thread_safety(thread_safe, nullptr);
-    thread_safety.set_name("Thread safety");
-    thread_safety.set_verbose(false);
-    thread_safety.start();
-    cout << thread_safety.get_result() << endl;
-
-    unit_test<holder<int,int>, nullptr_t> split_testing(split_test, nullptr);
+    unit_test<nullptr_t, nullptr_t> split_testing(split_test, nullptr);
     split_testing.set_name("split test")
-        .set_verbose(false);
+        .set_verbose(false)
+        .set_iterations(1000);
     split_testing.start();
-    cout << split_testing.get_result() << endl;
+    auto result =  split_testing.get_result();
+    cout << result << endl;
+
+    return  result.passed;
 }
