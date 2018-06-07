@@ -124,8 +124,7 @@ split_variables<K,D> holder<K,D>::split(d_point<K,D> &&new_t)
     holder<K,D>::sort_points(all_data, B_SIZE+1);
 
     // Create and fill the split_vars object
-    split_variables<K,D> split_vars;
-    split_vars.middle_data = std::move(all_data[(B_SIZE)/2]);
+    split_variables<K,D> split_vars(std::move(all_data[(B_SIZE)/2]));
     split_vars.greater_child = new holder<K,D>();
     split_vars.lesser_child = this;
     split_vars.lesser_child->data_count = 0; // set our data_count to 0

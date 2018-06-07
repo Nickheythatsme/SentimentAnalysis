@@ -30,6 +30,7 @@ class holder;
 template<typename K, typename D>
 struct split_variables
 {
+    split_variables(d_point<K,D>&& _middle_data) : middle_data(std::move(_middle_data)) {}
     holder<K,D> *lesser_child;
     holder<K,D> *greater_child;
     d_point<K,D>&& middle_data;
