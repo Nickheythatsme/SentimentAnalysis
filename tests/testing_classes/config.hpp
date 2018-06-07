@@ -55,8 +55,6 @@ class logging
 };
 
 
-
-
 // Configuration for a test, as well as the data and object if provided
 class config
 {

@@ -7,19 +7,15 @@
 using std::chrono::system_clock;
 
 // Result of a test. Also formats the display
-struct general_result 
+class general_result 
 {
+public:
     general_result() = default;
     general_result(const general_result &rhs) = default;
     general_result(general_result &&rhs) = default;
     ~general_result() = default;
     general_result& operator=(const general_result &_general_result) = default;
     general_result& operator=(general_result &&_general_result) = default;
-
-    friend std::ostream& operator<<(std::ostream& out, const general_result &rhs);
-    std::ostream& display(std::ostream& out) const; 
-    static std::string display_time(const std::chrono::duration<double> &t);
-    static std::string display_time(const system_clock::time_point &t);
 
     bool passed {false};
     std::string name;
@@ -28,6 +24,12 @@ struct general_result
     system_clock::time_point ending;
     std::chrono::duration<double> average {0};
     std::chrono::duration<double> total {0};
+
+    friend std::ostream& operator<<(std::ostream& out, const general_result &rhs);
+protected:
+    std::ostream& display(std::ostream& out) const; 
+    static std::string display_time(const std::chrono::duration<double> &t);
+    static std::string display_time(const system_clock::time_point &t);
 };
 
 /* general_result implementation */

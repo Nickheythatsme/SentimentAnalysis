@@ -1,3 +1,7 @@
+/*
+Nicholas Grout 6/6/2018
+This class starts a test case, returning only true/false and timing the duration.
+*/
 #ifndef SENTIMENT_ANALYSIS_TEST_CASE
 #define SENTIMENT_ANALYSIS_TEST_CASE
 
@@ -35,16 +39,16 @@ general_result test_case::start()
     results.name = this->name;
 
     auto start = std::chrono::high_resolution_clock::now();
-    size_t test_result = 0;
     for (int i=0; i < this->iterations; ++i)
     {
-        test_result += func(); // increment test_result
+        ++results.iterations;
+        results.iterations += func(); // increment test_result
     }
     auto end = std::chrono::high_resolution_clock::now();
     results.ending = system_clock::now();
 
-    results.passed = test_result == this->iterations;
-    results.average = (end - start) / test_result;
+    results.passed = results.iterations = this->iterations;
+    results.average = (end - start) / results.iterations;
     results.total = end - start;
 
     return results;
