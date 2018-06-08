@@ -14,10 +14,6 @@
 using std::string;
 using std::endl;
 
-// Defining a pointer to a function so the user may add their own test functions
-template<class T, class D>
-using custom_function = bool (*)(T &, D &);
-
 class test_err : public std::exception
 {
 public:

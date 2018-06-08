@@ -1,41 +1,67 @@
 #include <fstream>
 #include <iostream>
 #include <string>
-#include "../test_case.h"
+#include "../testing_classes/case.hpp"
+#include "../testing_classes/performance.hpp"
 #include "../text_package.h"
 #include "parse.h"
 
 using std::cout;
 using std::endl;
 
-bool test_long(parse &parser, text_package &p)
+const char *filename;
+text_package package;
+
+bool test_long()
 {
-    for (auto const &text : p)
+    parse parser;
+    for (auto const &text : package)
+    {
         parser(text);
+    }
+    return true;
+}
+
+bool test_performance(size_t n)
+{
+    parse parser;
+    for (size_t i=0; i<n; ++i)
+    {
+        parser(package[i]);
+    }
     return true;
 }
 
 int main(int argc, char *argv[])
 {
-    if (argc == 2)
+    if (argc < 2)
     {
-        try {
-            cout << "Opening file: " << argv[1] << endl;
-            auto package = text_package(argv[1]);
-            unit_test<parse, text_package> unit(test_long, package);
-            unit.set_iterations(100);
-            unit.set_name("long parse");
-            unit.set_verbose(true);
-            auto result =  unit.start();
-            if (result.passed)
-                cout << result << endl;
-        }
-        catch(const text_package_error &err) {
-            cerr << err << endl;
-        }
-    }
-    else
         cout << "Unable to perform long test (no directory given)" << endl;
+        exit(EXIT_FAILURE);
+    }
+
+    try {
+        for (size_t i=1; i<argc; ++i)
+        {
+            package.load_files(argv[i]);
+            cout << "Reading file: " << argv[i] << endl;
+        }
+        cout << "Finished reading " << package.size() << " files (" 
+             << package.bytes()/1000 << " kilobytes)" << endl;
+    }catch(const text_package_error &err) {
+        cerr << err << endl;
+        return false;
+    }
+
+    test_case case1("long parse test", test_long);
+    case1.set_iterations(1);
+    case1.set_verbose(true);
+    case1.start();
+    cout << case1.get_result() << endl;
+
+    performance_test perf1 ("Performance parse test", test_performance, 100, 1000);
+    perf1.start();
+    cout << perf1.get_result() << endl;
 
     return 0;
 }

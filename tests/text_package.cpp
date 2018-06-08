@@ -60,14 +60,14 @@ long text_package::read_file(const string &filename, string &buff)
 
 
 // This is used to wrap a bunch of text files
-text_package::text_package(string _dirname) : 
-    dirname(std::move(_dirname))
+text_package::text_package(string dirname) : 
+    _bytes(0)
 {
-    load_files();
+    load_files(dirname);
 }
 
 // Wrapper for the load file function
-size_t text_package::load_files()
+size_t text_package::load_files(const string &dirname)
 {
     auto *globbed = new glob_t;
     glob(dirname.c_str(), GLOB_NOSORT, nullptr, globbed);

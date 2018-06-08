@@ -84,7 +84,7 @@ public:
     bool exists(const K &to_find) const;
 
     // B_SIZE, how many data points can a node hold?
-    static const size_t B_SIZE {3};
+    static size_t B_SIZE;
 protected:
 private:
     // Data storing points

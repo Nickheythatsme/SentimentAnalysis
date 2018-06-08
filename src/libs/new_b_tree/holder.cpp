@@ -4,6 +4,9 @@
 
 #include "holder.h"
 
+template<typename K, typename D>
+size_t holder<K,D>::B_SIZE = 3;
+
 // Constructor
 template<typename K, typename D>
 holder<K,D>::holder()

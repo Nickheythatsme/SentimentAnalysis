@@ -4,6 +4,9 @@
 #include <string> // Aid in outputting results to stream
 #include <ctime> // For displaying the time
 
+#ifndef SENTIMENTANALYSIS_TESTING_RESULT
+#define SENTIMENTANALYSIS_TESTING_RESULT
+
 using std::chrono::system_clock;
 
 // Result of a test. Also formats the display
@@ -86,3 +89,5 @@ std::string general_result::display_time(const system_clock::time_point &t)
     ret_string.erase(ret_string.size()-1, 1);
     return ret_string;
 }
+
+#endif // SENTIMENTANALYSIS_TESTING_RESULT

@@ -19,8 +19,8 @@ class test_case : public config
         test_case(test_case &&rhs) = default;
         virtual ~test_case() = default;
         virtual void start();
-        general_result get_result();
-    private:
+        const general_result& get_result() {return results;}
+    protected:
         testing_func func;
         general_result results;
 };
@@ -51,11 +51,6 @@ void test_case::start()
     results.passed = results.iterations = this->iterations;
     results.average = (end - start) / results.iterations;
     results.total = end - start;
-}
-
-general_result test_case::get_result()
-{
-    return general_result(results);
 }
 
 #endif // SENTIMENT_ANALYSIS_TEST_CASE

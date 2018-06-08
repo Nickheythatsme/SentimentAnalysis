@@ -4,6 +4,7 @@ set(SHORT_PARSE_SOURCES
     ../text_package.cpp ../text_package.h
     )
 
+find_package (Threads)
 set(LONG_PARSE_SOURCES
     long_parse.cpp
     ../text_package.cpp ../text_package.h
@@ -16,12 +17,14 @@ add_executable(long_parse ${LONG_PARSE_SOURCES})
 # Link the libraries to the executable
 target_link_libraries(
     short_parse
+    ${CMAKE_THREAD_LIBS_INIT}
     vectorize
     )
 
 # Link the libraries to the executable
 target_link_libraries(
     long_parse
+    ${CMAKE_THREAD_LIBS_INIT}
     vectorize
     )
 

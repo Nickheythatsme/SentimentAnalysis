@@ -4,27 +4,23 @@
 
 using namespace std;
 
-bool func()
+bool func(size_t n)
 {
-    return rand() % 5;
+    char array[n];
+    for (size_t i=0; i<n; ++i)
+        array[i] = char(rand());
+    return true;
 }
 
 int main(int argc, char **argv)
 {
-    std::vector<size_t> sizes;
-    for (int i=1; i < 100; ++i)
-        sizes.emplace_back(i*100);
-    std::vector<double> results;
-    for (int i=1; i < 100; ++i)
+    performance_test t("Performance test!", func, 10000, 1000000);
+    try {
+        t.start();
+    }catch(test_err &e)
     {
-        results.emplace_back(rand());
+        cout << e << endl;
     }
 
-    for (size_t i=0; i<100; ++i)
-    {
-        cout << i << "\t" << results[i] << endl;
-    }
-
-    performance_result r(sizes, results);
-    cout << r << endl;
+    cout << t.get_results() << endl;
 }

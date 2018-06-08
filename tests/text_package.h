@@ -39,15 +39,16 @@ public:
 class text_package : public std::vector<string>
 {
     public:
-        text_package() = delete;
+        text_package() = default;
+        text_package(const text_package &rhs) = default;
+        text_package(text_package &&rhs) = default;
         text_package(string dirname);
         ~text_package() = default;
         size_t bytes() {return _bytes;}
+        size_t load_files(const string &dirname);
     private:
-        size_t load_files();
         size_t load_files(glob_t *globbed);
         static int glob_error(const char *path, int errno);
-        string dirname;
         size_t _bytes;
 
         // General support functions to get the file contents
