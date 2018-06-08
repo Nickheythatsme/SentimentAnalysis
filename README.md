@@ -4,8 +4,7 @@ Sentiment analysis has been something I've been interested in for a long time. F
 ## TODO
 * Finish b_tree
 * Finish parsing into windows
+* Make word window manager class
 * Make graph for words
 * Finish testing
 * Make matrix of word associations
-* Make class to manage matrix of words
-* Make word window manager class
