@@ -10,7 +10,7 @@ import time
 logger = logging.getLogger('update_and_test')
 
 # Get git_authentication for commenting
-git_auth = open('.git_auth.txt','r').read()
+git_auth = ''
 
 def run_git():
     """ Try to run "git pull." 
@@ -93,15 +93,11 @@ def cycle():
         logging.error("Exception occurred during cycle: " + e)
 
 
-def main():
-    while(1):
-        cycle()
-        time.sleep(10)
-
-
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
     logger.setLevel(logging.INFO)
-    logger.info('test')
-    main()
+    git_auth = sys.argv[1]
+    while(1):
+        cycle()
+        time.sleep(10)
 
