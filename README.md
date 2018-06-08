@@ -8,3 +8,4 @@ Sentiment analysis has been something I've been interested in for a long time. F
 * Make graph for words
 * Finish testing
 * Make matrix of word associations
+
