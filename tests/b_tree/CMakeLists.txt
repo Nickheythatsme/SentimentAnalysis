@@ -15,7 +15,7 @@ add_test(b_tree
         ${CMAKE_CURRENT_SOURCE_DIR}/../text_samples/samples/*.txt)
 
 # Include the b_tree directory
-include_directories(../../src/libs/new_b_tree)
+include_directories(../../src/libs/b_tree)
 
 # Link the libraries to the executable
 target_link_libraries(
