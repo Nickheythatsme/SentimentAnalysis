@@ -11,3 +11,4 @@ Sentiment analysis has been something I've been interested in for a long time. F
 
 ## Testing
 * Unit test each class and each function
+* Test b_tree
