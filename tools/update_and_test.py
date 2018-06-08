@@ -1,9 +1,3 @@
-"""
-6/6/2018 Nicholas Grout
-
-This script updates the current repro from github, then rebuilds and tests the repro. 
-It then comments the results to github with the most recent test results.
-"""
 import subprocess
 import os
 import sys
@@ -12,8 +6,11 @@ import requests
 import json
 import time
 
+# Set up logging
 logger = logging.getLogger('update_and_test')
-logger.setLevel(logging.DEBUG)
+
+# Get git_authentication for commenting
+git_auth = open('.git_auth.txt','r').read()
 
 def run_git():
     """ Try to run "git pull." 
@@ -80,9 +77,8 @@ def comment_results(test_results):
     recent_sha = message.split('\n')[0].split(' ')[0]
 
     # Make the POST request with the test results
-    rauth =('nickheythatsme',"KcinKcin'98")
     rdata = {"body":test_results}
-    r = requests.post('https://api.github.com/repos/nickheythatsme/sentimentanalysis/commits/'+recent_sha+'/comments', auth=rauth, data=json.dumps(rdata))
+    r = requests.post('https://api.github.com/repos/nickheythatsme/sentimentanalysis/commits/'+recent_sha+'/comments', auth=git_auth, data=json.dumps(rdata))
     print(r.status_code)
     return r.status_code
 
