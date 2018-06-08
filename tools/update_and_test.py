@@ -20,11 +20,12 @@ def run_git():
     command = ["git","pull","origin","master"]
     logger.info('Running "{}"'.format(command))
     result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    logger.info("git pull returned: " + str(result.returncode))
     if result.returncode != 0:
         err = result.stderr.decode("utf-8")
         logger.error('git error: ' + err)
         raise Exception("git error: " + err)
-    if result.stdout.decode("utf-8") == "Already up to date.\n":
+    if "Already up-to-date" or "Already up to date" in result.stdout.decode("utf-8") :
         logger.info('git repro is already up to date')
         return False
     logger.info('git repro has been updated')
@@ -94,6 +95,9 @@ def cycle():
 
 
 if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print("Usage: update_and_test [github username:githubpassword]")
+        sys.exit(1)
     logging.basicConfig(level=logging.DEBUG)
     logger.setLevel(logging.INFO)
     git_auth = sys.argv[1]
