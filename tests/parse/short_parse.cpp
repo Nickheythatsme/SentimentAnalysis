@@ -1,15 +1,15 @@
 #include <fstream>
 #include <iostream>
 #include <string>
-#include "../test_case.h"
+#include "../testing_classes/case.hpp"
 #include "../text_package.h"
 #include "parse.h"
 
 using namespace std;
 
-bool test_simple(parse &parser, nullptr_t &t)
+bool test_simple()
 {
-    parser("testing! this is a test");
+    parse parser("testing! this is a test");
     auto len = (parser.size() >= 5) ? 5 : parser.size() - 1;
 
     cout << "words parsed: " << parser.size() << endl;
@@ -21,20 +21,12 @@ bool test_simple(parse &parser, nullptr_t &t)
     return parser.size() == 5;
 }
 
-bool test_long(parse &parser, text_package &p)
-{
-    for (auto const &text : p)
-        parser(text);
-    return true;
-}
-
 int main(int argc, char *argv[])
 {
-    unit_test<parse, decltype(nullptr)> unit(test_simple, nullptr);
-    unit.set_name("test simple");
-    auto result = unit.start();
-    cout << unit.get_result() << endl;
+    test_case case1("simple parse test",test_simple);
+    case1.start();
+    cout << case1.get_result() << endl;
 
-    return 0;
+    return !(case1.get_result().passed); // Return '0' for success
 }
 

@@ -30,11 +30,15 @@ target_link_libraries(
 
 add_test(short_parse
         ${CMAKE_CURRENT_BINARY_DIR}/short_parse
-        "${CMAKE_CURRENT_SOURCE_DIR}/../text_samples/*.txt")
+        "${CMAKE_BINARY_DIR}/aclImdb/test/neg/*.txt"
+        "${CMAKE_BINARY_DIR}/aclImdb/test/pos/*.txt")
+# "${CMAKE_CURRENT_SOURCE_DIR}/../text_samples/*.txt")
 
 add_test(long_parse
         ${CMAKE_CURRENT_BINARY_DIR}/long_parse
-        "${CMAKE_CURRENT_SOURCE_DIR}/../text_samples/*.txt")
+        "${CMAKE_BINARY_DIR}/aclImdb/test/neg/*.txt"
+        "${CMAKE_BINARY_DIR}/aclImdb/test/pos/*.txt")
+        #"${CMAKE_CURRENT_SOURCE_DIR}/../text_samples/*.txt")
 
 
 # Set properties for clang tidy

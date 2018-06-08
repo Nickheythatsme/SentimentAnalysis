@@ -25,6 +25,7 @@ bool test_long()
 bool test_performance(size_t n)
 {
     parse parser;
+    n = (n > parser.size()) ? parser.size() : n;
     for (size_t i=0; i<n; ++i)
     {
         parser(package[i]);
