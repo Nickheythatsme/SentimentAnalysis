@@ -1,3 +1,10 @@
+/*
+ * 6/8/2018 Nicholas Grout
+ *
+ * This class maintains the children of this node. It is inherited from a holder
+ * so it also holds data. This class only traverses, inserts, and deletes on 
+ * itself or its children. There is no parent pointer.
+ */
 #include "holder.h"
 
 #ifndef SENTIMENTANALYSIS_BNODE_
