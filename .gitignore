@@ -48,3 +48,4 @@ aclImdb*
 .idea/deployment.xml
 prototypes/queue/.idea/deployment.xml
 .idea/
+.vscode/
