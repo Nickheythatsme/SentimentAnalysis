@@ -20,12 +20,13 @@ def run_git():
     command = ["git","pull","origin","master"]
     logger.info('Running "{}"'.format(command))
     result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    logger.info("git pull returned: " + str(result.returncode))
+    message = result.stdout.decode("utf-8")
+    logger.info("git pull returned: " + message)
     if result.returncode != 0:
         err = result.stderr.decode("utf-8")
         logger.error('git error: ' + err)
         raise Exception("git error: " + err)
-    if "Already up-to-date" or "Already up to date" in result.stdout.decode("utf-8") :
+    if "Already up-to-date.\n" == message or "Already up to date.\n" == message:
         logger.info('git repro is already up to date')
         return False
     logger.info('git repro has been updated')
@@ -77,10 +78,12 @@ def comment_results(test_results):
     message = result.stdout.decode("utf-8")
     recent_sha = message.split('\n')[0].split(' ')[0]
 
+    logger.info("Making POST request...")
     # Make the POST request with the test results
     rdata = {"body":test_results}
-    r = requests.post('https://api.github.com/repos/nickheythatsme/sentimentanalysis/commits/'+recent_sha+'/comments', auth=git_auth, data=json.dumps(rdata))
-    print(r.status_code)
+    r = requests.post('https://api.github.com/repos/nickheythatsme/sentimentanalysis/commits/'+recent_sha+'/comments', \
+            auth=(git_auth), data=json.dumps(rdata))
+    logger.info("POST request returned status code: " + str(r.status_code))
     return r.status_code
 
 
@@ -98,10 +101,10 @@ if __name__ == "__main__":
     if len(sys.argv) < 2:
         print("Usage: update_and_test [github username:githubpassword]")
         sys.exit(1)
+    git_auth = (sys.argv[1].split(':')[0], sys.argv[1].split(':')[1])
     logging.basicConfig(level=logging.DEBUG)
     logger.setLevel(logging.INFO)
-    git_auth = sys.argv[1]
     while(1):
         cycle()
-        time.sleep(10)
+        time.sleep(30)
 
