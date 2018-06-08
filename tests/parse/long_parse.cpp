@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
              << package.bytes()/1000 << " kilobytes)" << endl;
     }catch(const text_package_error &err) {
         cerr << err << endl;
-        return false;
+        return 2;
     }
 
     test_case case1("long parse test", test_long);
@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
     case1.start();
     cout << case1.get_result() << endl;
 
-    performance_test perf1 ("Performance parse test", test_performance, 100, 1000);
+    performance_test perf1 ("Performance parse test", test_performance, 1000, 10000);
     perf1.start();
     cout << perf1.get_result() << endl;
 
