@@ -94,7 +94,7 @@ def cycle():
             test_results = run_tests()
             comment_results(test_results)
     except Exception as e:
-        logging.error("Exception occurred during cycle: " + e)
+        logging.error("Exception occurred during cycle: " + str(e))
 
 
 if __name__ == "__main__":
@@ -104,7 +104,11 @@ if __name__ == "__main__":
     git_auth = (sys.argv[1].split(':')[0], sys.argv[1].split(':')[1])
     logging.basicConfig(level=logging.DEBUG)
     logger.setLevel(logging.INFO)
+
+    # Run initial log
+    run_make()
+    test_results = run_tests()
+    comment_results(test_results)
     while(1):
         cycle()
         time.sleep(30)
-
