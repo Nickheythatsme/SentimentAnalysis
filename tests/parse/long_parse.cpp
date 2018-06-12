@@ -3,6 +3,7 @@
 #include <string>
 #include "../testing_classes/case.hpp"
 #include "../testing_classes/performance.hpp"
+#include "../testing_classes/timer.hpp"
 #include "text_package.h"
 #include "parse.h"
 
@@ -42,13 +43,17 @@ int main(int argc, char *argv[])
     }
 
     try {
+        test_timer read_time;
+        read_time.start();
         for (size_t i=1; i<argc; ++i)
         {
             package.load_files(argv[i]);
-            cout << "Reading file: " << argv[i] << endl;
+            cout << "Reading directory: " << argv[i] << endl;
         }
+        read_time.end();
         cout << "Finished reading " << package.size() << " files (" 
-             << package.bytes()/1000 << " kilobytes)" << endl;
+             << package.bytes()/1000 << " kilobytes)" << endl
+             << "Time: " << read_time << endl;
     } catch(const text_package_error &err) {
         cerr << err << endl;
         return 2;

@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include "../testing_classes/case.hpp"
+#include "../testing_classes/timer.hpp"
 #include "text_package.h"
 #include "parse.h"
 
@@ -15,6 +16,8 @@ bool test_simple()
     string sample_test {"testing! this is a test"};
     cout << "Parsing: " << sample_test << endl;
     parse parser;
+
+    // Start parsing
     parser(sample_test);
     auto len = (parser.size() >= 5) ? 5 : parser.size() - 1;
 

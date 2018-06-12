@@ -26,6 +26,7 @@ class thread_queue
         ~thread_queue();
         void start();
         void stop();
+        std::vector<job<R,A>>&& get_jobs();
     protected:
         void process(size_t beg_index, size_t end_index);
     private:
@@ -127,4 +128,11 @@ void thread_queue<R,A>::process(size_t beg_index, size_t end_index)
 
     --running_threads;
     job_cond.notify_one();
+}
+
+template<typename R, typename A>
+std::vector<job<R,A>>&& thread_queue<R,A>::get_jobs()
+{
+    std::lock_guard<std::mutex> jobs_lock(jobs_mut);
+    return std::move(jobs);
 }
