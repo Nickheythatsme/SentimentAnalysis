@@ -35,6 +35,7 @@ def run_git():
 
 def run_make():
     """ Run make clean and then make all to rebuild the repro """
+
     # Run 'make clean'
     make_clean = ["make","clean"]
     logger.info('Running "{}"'.format(make_clean))
@@ -51,7 +52,7 @@ def run_make():
     if result.returncode != 0:
         err = result.stderr.decode("utf-8")
         logger.error("compilation error: " + err)
-        raise Exception("compilation error: " + err)
+        return err # Return make error
     logger.info('project compiled')
     return True
 
@@ -86,13 +87,19 @@ def comment_results(test_results):
     logger.info("POST request returned status code: " + str(r.status_code))
     return r.status_code
 
+def run_update_test():
+    make_results = run_make()
+    if make_results != True:
+        comment_results(make_results)
+    else: 
+        test_results = run_tests()
+        comment_results(test_results)
+
 
 def cycle():
     try:
         if run_git():
-            run_make()
-            test_results = run_tests()
-            comment_results(test_results)
+            run_update_test()
     except Exception as e:
         logging.error("Exception occurred during cycle: " + str(e))
 
@@ -105,10 +112,8 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
     logger.setLevel(logging.INFO)
 
-    # Run initial log
-    run_make()
-    test_results = run_tests()
-    comment_results(test_results)
+    # Start loop
+    run_update_test()
     while(1):
         cycle()
         time.sleep(30)
