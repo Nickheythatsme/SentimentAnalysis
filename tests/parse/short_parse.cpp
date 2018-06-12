@@ -7,26 +7,25 @@
 
 using namespace std;
 
+/*
+ * Test preconfigured text
+ */
 bool test_simple()
 {
-    parse parser("testing! this is a test");
+    parse parser;
+    parser("testing! this is a test");
     auto len = (parser.size() >= 5) ? 5 : parser.size() - 1;
 
     cout << "words parsed: " << parser.size() << endl;
-    cout << "First " << len << " words: " << endl;
-    for(int i=0; i < len; ++i)
+    for(const auto &c : parser)
     {
-        cout << '"' << parser[i] << '"' << endl;
+        cout << '"' << c << '"' << endl;
     }
     return parser.size() == 5;
 }
 
 int main(int argc, char *argv[])
 {
-    test_case case1("simple parse test",test_simple);
-    case1.start();
-    cout << case1.get_result() << endl;
-
-    return !(case1.get_result().passed); // Return '0' for success
+    return !test_simple(); // Return 0 for success.
 }
 

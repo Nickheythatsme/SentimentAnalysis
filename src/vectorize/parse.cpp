@@ -19,6 +19,15 @@ parse::parse(const char* _delims) :
     strcpy(delims, _delims);
 }
 
+// CONSTRUCTOR with arguments
+parse::parse(const char* _delims, const std::string &str) :
+	std::vector<std::string>()
+{
+    delims = new char[strlen(_delims) + 1];
+    strcpy(delims, _delims);
+    this->operator()(str);
+}
+
 // COPY CONSTRUCTOR
 parse::parse(const parse &obj) :
 	std::vector<std::string>(obj)
@@ -61,7 +70,6 @@ parse& parse::operator()(const std::string &str)
  */
 parse& parse::operator=(const parse &obj)
 {
-    //TODO infinite recursion here? This should not call parse's assignment operator, rather the parent of parse, vector
     std::vector<std::string>::operator=(obj);
 
     delete [] delims;
@@ -71,11 +79,23 @@ parse& parse::operator=(const parse &obj)
 	return *this;
 }
 
+/*
+ * Assignment move operator
+ */
+parse& parse::operator=(parse &&rhs)
+{
+    std::vector<std::string>::operator=(std::move(rhs));
+    delims = rhs.delims;
+    rhs.delims = nullptr;
+
+    return *this;
+}
+
 // Parse the UTF8 string and split it based on the delimiters
 long parse::_parse(const char *str)
 {
 	int buff_index=0, char_len;
-	char *buff = new char[MAX_LEN];
+	char* buff = new char[MAX_LEN];
     char* buff_head = buff;
 
 
@@ -117,6 +137,9 @@ long parse::_parse(const char *str)
             }
 		}
 	}
+    if (buff_index > MIN_LEN) {
+        this->emplace_back(std::string(buff_head));
+    }
     delete [] buff_head;
 	return (long) this->size();
 }
