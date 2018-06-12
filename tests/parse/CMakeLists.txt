@@ -1,13 +1,11 @@
 
 set(SHORT_PARSE_SOURCES
     short_parse.cpp
-    ../text_package.cpp ../text_package.h
     )
 
 find_package (Threads)
 set(LONG_PARSE_SOURCES
     long_parse.cpp
-    ../text_package.cpp ../text_package.h
     )
 
 # Make the executable

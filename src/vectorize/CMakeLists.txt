@@ -14,7 +14,10 @@ set(SOURCES
     count_words.cpp count_words.h
     window.cpp window.h
     utf8_manip.cpp utf8_manip.h
-        word.cpp word.h)
+    word.cpp word.h
+    text_package.h
+    text_package.cpp
+    )
 
 # Create the library
 add_library(${LIBRARY_NAME} STATIC ${SOURCES})

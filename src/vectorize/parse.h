@@ -8,7 +8,7 @@
 #define VECTORIZE_PARSE_
 
 #define MAX_LEN 1024
-#define MIN_LEN 1
+#define MIN_LEN 3
 
 /*
  * So for UTF-8 encoding:

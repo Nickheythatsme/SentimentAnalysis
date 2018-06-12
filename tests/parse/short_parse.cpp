@@ -2,7 +2,7 @@
 #include <iostream>
 #include <string>
 #include "../testing_classes/case.hpp"
-#include "../text_package.h"
+#include "text_package.h"
 #include "parse.h"
 
 using namespace std;
@@ -12,8 +12,10 @@ using namespace std;
  */
 bool test_simple()
 {
+    string sample_test {"testing! this is a test"};
+    cout << "Parsing: " << sample_test << endl;
     parse parser;
-    parser("testing! this is a test");
+    parser(sample_test);
     auto len = (parser.size() >= 5) ? 5 : parser.size() - 1;
 
     cout << "words parsed: " << parser.size() << endl;
@@ -21,7 +23,7 @@ bool test_simple()
     {
         cout << '"' << c << '"' << endl;
     }
-    return parser.size() == 5;
+    return parser.size() == 3;
 }
 
 int main(int argc, char *argv[])

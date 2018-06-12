@@ -2,7 +2,6 @@ set(EXEC_NAME b_tree)
 
 set(SOURCES
     main.cpp
-    ../text_package.cpp ../text_package.h
     )
 
 find_package (Threads)

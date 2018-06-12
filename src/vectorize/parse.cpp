@@ -114,7 +114,7 @@ long parse::_parse(const char *str)
         else
 		{
             // Test the length of the word, add it if passed
-			if (buff_index > MIN_LEN) {
+			if (buff_index >= MIN_LEN) {
                 *buff = '\0';
 				this->emplace_back(std::string(buff_head));
             }
@@ -137,7 +137,7 @@ long parse::_parse(const char *str)
             }
 		}
 	}
-    if (buff_index > MIN_LEN) {
+    if (buff_index >= MIN_LEN) {
         this->emplace_back(std::string(buff_head));
     }
     delete [] buff_head;

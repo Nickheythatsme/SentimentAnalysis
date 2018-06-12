@@ -3,7 +3,6 @@ set(EXEC_NAME queue)
 set(SOURCES
     main.cpp
     matrix.cpp matrix.h
-    ../text_package.cpp ../text_package.h
     )
 
 # Make the executable

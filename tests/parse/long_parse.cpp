@@ -3,7 +3,7 @@
 #include <string>
 #include "../testing_classes/case.hpp"
 #include "../testing_classes/performance.hpp"
-#include "../text_package.h"
+#include "text_package.h"
 #include "parse.h"
 
 using std::cout;
@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
 {
     if (argc < 2)
     {
-        cout << "Unable to perform long test (no directory given)" << endl;
+        cout << "Unable to perform long test (no pattern given)" << endl;
         exit(EXIT_FAILURE);
     }
 
@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
         }
         cout << "Finished reading " << package.size() << " files (" 
              << package.bytes()/1000 << " kilobytes)" << endl;
-    }catch(const text_package_error &err) {
+    } catch(const text_package_error &err) {
         cerr << err << endl;
         return 2;
     }

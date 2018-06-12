@@ -8,6 +8,8 @@
 #include <string>
 #include <vector>
 #include <glob.h>
+#include <thread>
+
 
 #ifndef SENTIMENTANALYSIS_TEXT_PACKAGE_H
 #define SENTIMENTANALYSIS_TEXT_PACKAGE_H
@@ -47,7 +49,10 @@ class text_package : public std::vector<string>
         size_t bytes() {return _bytes;}
         size_t load_files(const string &dirname);
     private:
-        size_t load_files(glob_t *globbed);
+        void _load_files(glob_t *globbed, std::vector<string> texts, 
+                size_t &bytes,
+                size_t start, size_t end);
+        size_t start_loading(glob_t *globbed);
         static int glob_error(const char *path, int errno);
         size_t _bytes;
 
