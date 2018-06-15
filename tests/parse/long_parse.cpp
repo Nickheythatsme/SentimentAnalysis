@@ -10,7 +10,6 @@
 using std::cout;
 using std::endl;
 
-const char *filename;
 text_package package;
 
 bool test_long()
@@ -47,8 +46,10 @@ int main(int argc, char *argv[])
         read_time.start();
         for (size_t i=1; i<argc; ++i)
         {
-            package.load_files(argv[i]);
-            cout << "Reading directory: " << argv[i] << endl;
+            string dirname {argv[i]};
+            dirname += "\\*";
+            cout << "Reading directory: " << dirname << endl;
+            package.load_files(dirname);
         }
         read_time.end();
         cout << "Finished reading " << package.size() << " files (" 
@@ -56,7 +57,7 @@ int main(int argc, char *argv[])
              << "Time: " << read_time << endl;
     } catch(const text_package_error &err) {
         cerr << err << endl;
-        return 2;
+        exit(EXIT_FAILURE);
     }
 
     test_case case1("long parse test", test_long);

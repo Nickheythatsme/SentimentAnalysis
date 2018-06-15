@@ -67,12 +67,12 @@ text_package::text_package(string dirname) :
 }
 
 // Wrapper for the load file function
-size_t text_package::load_files(const string &dirname)
+size_t text_package::load_files(const string &matching_path)
 {
     std::vector<string> filenames;
 #ifdef WINDOWS
     auto a_file = new WIN32_FIND_DATA;
-    auto handle = FindFirstFile(dirname.c_str(), a_file);
+    auto handle = FindFirstFile(matching_path.c_str(), a_file);
 
     auto find_result = FindNextFile(handle, a_file);
     filenames.emplace_back(a_file->cFileName);
@@ -83,13 +83,13 @@ size_t text_package::load_files(const string &dirname)
     }
 #else
     auto globbed = new glob_t;
-    glob(dirname.c_str(), GLOB_NOSORT, nullptr, globbed);
+    glob(matching_path.c_str(), GLOB_NOSORT, nullptr, globbed);
     for (size_t i=0; i< globbed->gl_pathc; ++i)
         filenames.emplace_back(globbed->gl_pathv[i]);
     globfree(globbed);
 #endif
     if (filenames.empty())
-        throw text_package_error("No files found.", dirname, "NULL");
+        throw text_package_error("No files found.", matching_path, "NULL");
     start_loading(std::move(filenames));
     return this->size();
 }
@@ -150,7 +150,7 @@ void text_package::_load_files(
         auto temp_bytes = read_file(filenames[i], buff);
         bytes += temp_bytes;
         if (temp_bytes <= 0) {
-            std::cerr<<"Error loading file: " << filenames[i] << std::endl;
+            std::cerr<< "Error loading file: " << filenames[i] << std::endl;
         }
         else 
             texts[i] = std::move(buff);

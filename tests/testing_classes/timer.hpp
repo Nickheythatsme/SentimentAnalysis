@@ -37,11 +37,13 @@ test_timer::test_timer(std::string name) :
 test_timer& test_timer::start()
 {
     start_time = high_resolution_clock::now();
+    return *this;
 }
 
 test_timer& test_timer::end()
 {
     end_time = high_resolution_clock::now();
+    return *this;
 }
 
 std::ostream& test_timer::to_stream(std::ostream &out) const
