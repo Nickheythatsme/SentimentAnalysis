@@ -41,6 +41,7 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
+
     try {
         test_timer read_time;
         read_time.start();

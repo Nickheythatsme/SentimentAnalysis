@@ -48,8 +48,8 @@ test_timer& test_timer::end()
 
 std::ostream& test_timer::to_stream(std::ostream &out) const
 {
-    time_t start_ctime = system_clock::to_time_t(start_time);
-    time_t end_ctime = system_clock::to_time_t(end_time);
+	time_t start_ctime = start_time.time_since_epoch().count();
+	time_t end_ctime = end_time.time_since_epoch().count();
     auto time_span = duration<double, std::milli>(end_time - start_time);
 
     out << "\tStart: " <<  ctime(&start_ctime)

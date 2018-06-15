@@ -32,8 +32,10 @@ std::ostream& operator<<(std::ostream& out, const text_package_error &rhs)
 long text_package::read_file(const string &filename, string &buff)
 {
     std::ifstream fin(filename.c_str());
-    if (!fin) 
-        throw text_package_error("error opening file", "", filename);
+    if (!fin)
+        return -1;
+        // TODO should we throw here or return -1?
+        // throw text_package_error("error opening file", "", filename);
 
     // Determine file size
     fin.seekg (0, fin.end);
@@ -100,8 +102,8 @@ size_t text_package::start_loading(std::vector<string> &&filenames)
     std::vector<string> texts {filenames.size()};
     size_t thread_count = std::thread::hardware_concurrency(); // TODO replace with global config file
     std::cout << "Loading files on " << thread_count << " threads" << std::endl;
-    size_t bytes_read[thread_count];
-    std::thread threads[thread_count];
+    auto bytes_read = new size_t[thread_count];
+    auto* threads = new std::thread[thread_count];
 
     size_t increment = filenames.size() / thread_count;
     size_t i;

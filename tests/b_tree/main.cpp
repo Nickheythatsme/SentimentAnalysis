@@ -60,9 +60,11 @@ int main(int argc, char *argv[])
     case1.start();
     cout << case1.get_result() << endl;
     if (!case1.get_result().passed)
-        return 2;
+        return 1;
     
     performance_test perf1("Performance split test", performance_split, 1000, 200);
     perf1.start();
     cout << perf1.get_result() << endl;
+
+	return 0;
 }
