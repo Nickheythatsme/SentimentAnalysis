@@ -69,33 +69,48 @@ text_package::text_package(string dirname) :
 // Wrapper for the load file function
 size_t text_package::load_files(const string &dirname)
 {
-    auto *globbed = new glob_t;
-    glob(dirname.c_str(), GLOB_NOSORT, nullptr, globbed);
-    if (globbed->gl_pathc == 0)
-        throw text_package_error("No files found.", dirname, "NULL");
-    start_loading(globbed);
-    globfree(globbed);
+    std::vector<string> filenames;
+#ifdef WINDOWS
+    auto a_file = new WIN32_FIND_DATA;
+    auto handle = FindFirstFile(dirname.c_str(), a_file);
 
+    auto find_result = FindNextFile(handle, a_file);
+    filenames.emplace_back(a_file->cFileName);
+    while (find_result)
+    {
+        find_result = FindNextFile(handle, a_file);
+        filenames.emplace_back(a_file->cFileName);
+    }
+#else
+    auto globbed = new glob_t;
+    glob(dirname.c_str(), GLOB_NOSORT, nullptr, globbed);
+    for (size_t i=0; i< globbed->gl_pathc; ++i)
+        filenames.emplace_back(globbed->gl_pathv[i]);
+    globfree(globbed);
+#endif
+    if (filenames.empty())
+        throw text_package_error("No files found.", dirname, "NULL");
+    start_loading(std::move(filenames));
     return this->size();
 }
 
-size_t text_package::start_loading(glob_t *globbed)
+size_t text_package::start_loading(std::vector<string> &&filenames)
 {
     // Make an array of the number of files we have
-    std::vector<string> texts {globbed->gl_pathc};
+    std::vector<string> texts {filenames.size()};
     size_t thread_count = std::thread::hardware_concurrency(); // TODO replace with global config file
     std::cout << "Loading files on " << thread_count << " threads" << std::endl;
     size_t bytes_read[thread_count];
     std::thread threads[thread_count];
 
-    size_t increment = globbed->gl_pathc / thread_count;
+    size_t increment = filenames.size() / thread_count;
     size_t i;
     for (i=0; i<thread_count-1; ++i)
     {
         threads[i] = std::thread(
                 &text_package::_load_files,
                 *this, 
-                globbed, 
+                std::ref(filenames),
                 std::ref(texts), 
                 std::ref(bytes_read[i]),
                 i*increment, 
@@ -104,11 +119,11 @@ size_t text_package::start_loading(glob_t *globbed)
     threads[i] = std::thread(
             &text_package::_load_files,
             *this,
-            globbed,
+            std::ref(filenames),
             std::ref(texts),
             std::ref(bytes_read[i]),
             i*increment,
-            globbed->gl_pathc);
+            filenames.size());
 
     for (i=0; i<thread_count; ++i)
     {
@@ -121,20 +136,21 @@ size_t text_package::start_loading(glob_t *globbed)
 }
 
 // Implmentation of the load files. Uses the filenames from glob and reads/loads files
-void text_package::_load_files(glob_t *globbed, 
-        std::vector<string> texts, 
+void text_package::_load_files(
+        std::vector<string> &filenames,
+        std::vector<string> &texts,
         size_t &bytes,
         size_t start, size_t end)
 {
     string buff;
     bytes = 0;
 
-    for (int i=start; i < end; ++i)
+    for (size_t i=start; i < end; ++i)
     {
-        auto temp_bytes = read_file(globbed->gl_pathv[i], buff);
+        auto temp_bytes = read_file(filenames[i], buff);
         bytes += temp_bytes;
         if (temp_bytes <= 0) {
-            std::cerr<<"Error loading file: " << globbed->gl_pathv[i] << std::endl;
+            std::cerr<<"Error loading file: " << filenames[i] << std::endl;
         }
         else 
             texts[i] = std::move(buff);

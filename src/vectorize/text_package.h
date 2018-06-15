@@ -7,7 +7,6 @@
 #include <cstring>
 #include <string>
 #include <vector>
-#include <glob.h>
 #include <thread>
 
 
@@ -15,9 +14,10 @@
 #define SENTIMENTANALYSIS_TEXT_PACKAGE_H
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-#define WINPAUSE system("pause");
+#define WINDOWS
+#include <windows.h>
 #else
-#define WINPAUSE
+#include <glob.h>
 #endif
 
 using std::cerr;
@@ -30,7 +30,7 @@ class text_package_error : public std::exception
 {
 public:
     text_package_error() noexcept;
-    text_package_error(string message, string dirname="", string filename="") noexcept;
+    explicit text_package_error(string message, string dirname="", string filename="") noexcept;
     string message;
     string dirname {"no dir specified"};
     string filename{"no filename specified"};
@@ -44,16 +44,15 @@ class text_package : public std::vector<string>
         text_package() = default;
         text_package(const text_package &rhs) = default;
         text_package(text_package &&rhs) = default;
-        text_package(string dirname);
-        ~text_package() = default;
+        explicit text_package(string dirname);
+        virtual ~text_package() = default;
         size_t bytes() {return _bytes;}
         size_t load_files(const string &dirname);
     private:
-        void _load_files(glob_t *globbed, std::vector<string> texts, 
+        void _load_files(std::vector<string> &filenames, std::vector<string> &texts,
                 size_t &bytes,
                 size_t start, size_t end);
-        size_t start_loading(glob_t *globbed);
-        static int glob_error(const char *path, int errno);
+        size_t start_loading(std::vector<string> &&filenames);
         size_t _bytes;
 
         // General support functions to get the file contents
