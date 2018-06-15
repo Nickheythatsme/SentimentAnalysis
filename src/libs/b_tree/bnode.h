@@ -6,6 +6,7 @@
  * itself or its children. There is no parent pointer.
  */
 #include "holder.h"
+#include <memory>
 
 #ifndef SENTIMENTANALYSIS_BNODE_
 #define SENTIMENTANALYSIS_BNODE_
@@ -20,8 +21,11 @@ class bnode : public holder<K,D>
         ~bnode();
         bnode<K,D>& operator=(const bnode<K,D>& rhs);
         bnode<K,D>& operator=(bnode<K,D>&& rhs);
-
         bool is_leaf();
+		// Wrapper for the insert. This function returns a pointer to the root, 
+		// whether that be this node or a new node
+		bnode* insert(d_point<K, D>&& to_insert);
+		static size_t CHILD_SIZE;
     protected:
     private:
         // Resolve an incoming split TODO we may need to split again ourselves.
@@ -30,13 +34,13 @@ class bnode : public holder<K,D>
         // Call split on our selves. Oragnize our children and seperate them.
         virtual split_variables<K,D> split(d_point<K,D>&& data);
 
-        // Recursive insert function. Returns true if our child split
-        bool insert(d_point<K,D>&& to_insert, split_variables<K,D> &split)
+        // Recursive insert function. Returns a pointer to the split struct if it exists, nullptr otherwise
+		unique_ptr<split_variables<K, D>> insert(d_point<K, D>&& to_insert);
 
         // Go to the next child depending on the data 'to_insert'
         bnode<K,D>* next_child(d_point<K,D>&& to_insert);
 
-        bnode<K,D> *children;
+        bnode<K,D>* children;
 };
 
 #endif // SENTIMENTANALYSIS_BNODE_
