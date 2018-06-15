@@ -46,10 +46,7 @@ int main(int argc, char *argv[])
         read_time.start();
         for (size_t i=1; i<argc; ++i)
         {
-            string dirname {argv[i]};
-            dirname += "\\*";
-            cout << "Reading directory: " << dirname << endl;
-            package.load_files(dirname);
+            package.load_files(argv[i]);
         }
         read_time.end();
         cout << "Finished reading " << package.size() << " files (" 
