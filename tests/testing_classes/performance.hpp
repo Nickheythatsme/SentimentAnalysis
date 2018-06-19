@@ -132,7 +132,7 @@ void performance_result::run_correlations()
 std::vector<double> performance_result::calc_log_n(const std::vector<size_t> &n_points)
 {
     std::vector<double> to_return(n_points.size());
-    for (int i=0; i<n_points.size(); ++i)
+    for (size_t i=0; i<n_points.size(); ++i)
         to_return[i] = log(n_points[i]);
     return to_return;
 }
@@ -141,7 +141,7 @@ std::vector<double> performance_result::calc_log_n(const std::vector<size_t> &n_
 std::vector<double> performance_result::calc_n_log_n(const std::vector<size_t> &n_points)
 {
     std::vector<double> to_return(n_points.size());
-    for (int i=0; i<n_points.size(); ++i)
+    for (size_t i=0; i<n_points.size(); ++i)
         to_return[i] = n_points[i] * log(n_points[i]);
     return to_return;
 }
@@ -150,7 +150,7 @@ std::vector<double> performance_result::calc_n_log_n(const std::vector<size_t> &
 std::vector<double> performance_result::calc_n(const std::vector<size_t> &n_points)
 {
     std::vector<double> to_return(n_points.size());
-    for (int i=0; i<n_points.size(); ++i)
+    for (size_t i=0; i<n_points.size(); ++i)
         to_return[i] = n_points[i];
     return to_return;
 }
@@ -158,7 +158,7 @@ std::vector<double> performance_result::calc_n(const std::vector<size_t> &n_poin
 std::vector<double> performance_result::calc_n2(const std::vector<size_t> &n_points)
 {
     std::vector<double> to_return(n_points.size());
-    for (int i=0; i<n_points.size(); ++i)
+    for (size_t i=0; i<n_points.size(); ++i)
         to_return[i] = n_points[i] * n_points[i];
     return to_return;
 }
@@ -166,7 +166,7 @@ std::vector<double> performance_result::calc_n2(const std::vector<size_t> &n_poi
 std::vector<double> performance_result::calc_two_to_n(const std::vector<size_t> &n_points)
 {
     std::vector<double> to_return(n_points.size());
-    for (int i=0; i<n_points.size(); ++i)
+    for (size_t i=0; i<n_points.size(); ++i)
         to_return[i] = pow(2,n_points[i]);
     return to_return;
 }

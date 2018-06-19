@@ -2,14 +2,14 @@
 // Created by njgro on 4/27/2018.
 //
 // #include "b_tree.h"
-#include "holder.h"
+#include "bnode.h"
 #include "../testing_classes/case.hpp"
 #include "../testing_classes/performance.hpp"
 #include <iostream>
 #include <string>
 #include <thread>
-//#include <unistd.h>
 #include <random>
+#include <utility>
 #include <vector>
 #include <algorithm>
 using namespace std;
@@ -18,8 +18,8 @@ using namespace std;
 // Test split and output the results
 bool split_test()
 {
-    std::default_random_engine generator(3);
-    std::uniform_int_distribution<int> distribution(1,1000);
+    default_random_engine generator(3);
+    uniform_int_distribution<int> distribution(1,1000);
     holder<int,int>::B_SIZE = 2 + (distribution(generator) % 4); // B_SIZE between 2, 5
 
     holder<int,int> a_holder;

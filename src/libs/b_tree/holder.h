@@ -1,11 +1,16 @@
 //
 // Created by njgro on 4/27/2018.
 //
-// #define DEBUG
+#ifndef SENTIMENTANALYSIS_HOLDER_H
+#define SENTIMENTANALYSIS_HOLDER_H
+
+
 
 #include <utility>
 #include <cstdlib>
 
+// Debug flag which displays the results of splits, etc
+// #define DEBUG
 #ifdef DEBUG
 #include <iostream>
 using std::cout;
@@ -13,13 +18,9 @@ using std::endl;
 #endif
 
 
-#ifndef SENTIMENTANALYSIS_HOLDER_H
-#define SENTIMENTANALYSIS_HOLDER_H
-
-// Debug flag which displays the results of splits, etc
-
 template<typename K, typename D>
 using d_point = std::pair<K,D>;
+
 
 // Forward declaration of holder class
 template<typename K, typename D>
@@ -87,8 +88,8 @@ public:
     static size_t B_SIZE;
 protected:
 private:
-    // Data storing points
-    d_point<K,D> *data;
+    // unique ptr to data stored in this array
+	d_point<K, D> *data;
     // How many data points are currently stored?
     size_t data_count {0};
     // Sort the currently store points
