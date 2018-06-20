@@ -1,5 +1,3 @@
-#include "../testing_classes/case.hpp"
-#include "../testing_classes/performance.hpp"
 #include "tqueue.hpp"
 #include "matrix.h"
 #include <iostream>
@@ -49,19 +47,6 @@ bool performance_func(size_t n)
 
 int main(int argc, char *argv[])
 {
-    test_case case1 ("multi threaded queue test on various threads", run_test);
-    case1.start();
-    cout << case1.get_result() << endl;
-    if (!case1.get_result().passed)
-        return 1;
-
-    performance_test perf1("performance test of queue", performance_func, 10, 80); 
-    perf1.start();
-    cout << perf1.get_result() << endl;
-    if (!perf1.get_result().passed)
-        return 1;
-
-
     return 0;
 }
 
