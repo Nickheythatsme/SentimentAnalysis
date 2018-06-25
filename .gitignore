@@ -50,3 +50,4 @@ prototypes/queue/.idea/deployment.xml
 .idea/
 .vscode/
 .git_auth.json
+CMakeSettings.json

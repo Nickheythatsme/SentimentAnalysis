@@ -1,39 +1,28 @@
+cmake_minimum_required(VERSION 3.5)
 
-set(PARSE_SOURCES
-    test_parse.cpp
+set(TARGET
+    test_parse
     )
 
 # Find required packages
 find_package (Threads REQUIRED)
-find_package(Boost COMPONENTS unit_test_framework)
 
-# Make the executable
-add_executable(parse ${PARSE_SOURCES})
+set(TARGET_H "${CMAKE_CURRENT_SOURCE_DIR}/${TARGET}.h")
+set(TARGET_CPP "${CMAKE_CURRENT_BINARY_DIR}/${TARGET}.cpp")
 
-# Link the libraries to the executable
+# Making .cpp file from CXXTESTGEN
+add_custom_command(
+    OUTPUT ${TARGET_CPP}
+    COMMAND ${CXXTESTGEN} --output ${TARGET_CPP} --runner=ErrorPrinter ${TARGET_H}
+    DEPENDS ${TARGET_H}
+    )
+
+message("Making executable")
+add_executable(${TARGET} ${TARGET_CPP})
+set_target_properties(${TARGET} PROPERTIES COMPILE_FLAGS "-Wno-effc++")
 target_link_libraries(
-    parse
+    ${TARGET}
     ${CMAKE_THREAD_LIBS_INIT}
     vectorize
-	Boost::unit_test_framework
     )
-
-add_test(parse
-        ${CMAKE_CURRENT_BINARY_DIR}/parse
-        "${CMAKE_BINARY_DIR}/aclImdb/test/neg/*.txt"
-        "${CMAKE_BINARY_DIR}/aclImdb/test/pos/*.txt")
-
-# Set properties for clang tidy
-set_target_properties(
-    parse PROPERTIES
-    CXX_STANDARD 14
-    COMPILE_FLAGS "${WARNING_FLAGS}"
-    )
-
-if (CLANG_TIDY_EXE)
-    set_target_properties(
-        parse PROPERTIES
-        CXX_CLANG_TIDY "${DO_CLANG_TIDY}"
-        )
-endif()
 
