@@ -10,6 +10,7 @@ function(cxx_test target source)
         DEPENDS "${H_FULL_NAME}"
         )
     add_executable(${target} ${CPP_FULL_NAME})
-    set_target_properties(${target} PROPERTIES COMPILE_FLAGS "-Wno-effc++")
+	# TODO check windows vs linux
+    #set_target_properties(${target} PROPERTIES COMPILE_FLAGS "-Wno-effc++") 
     add_test("${target}" ${RUNTIME_OUTPUT_DIRECTORY}/${target})
 endfunction(cxx_test)

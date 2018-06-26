@@ -20,13 +20,17 @@ class TestParse : public CxxTest::TestSuite
             parse parser;
             parser(example);
             auto size = parser.size();
+			system("pause");
             TS_ASSERT(size); // Check if 0
             if (!size)
                 TS_FAIL("parser did not parse any words!");
             else if (size < 9)
                 TS_WARN("parser parsed less than 9 words");
             else
-                TS_TRACE("parser finished parsing");
+                TS_TRACE("parser finished parsing: ");
+			for (const auto & w : parser)
+				TS_TRACE(w);
+			system("pause");
         }
     protected:
     private:
