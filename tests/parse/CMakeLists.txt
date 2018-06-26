@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
+enable_testing()
 set(TARGET
     test_parse
     )
@@ -7,10 +8,11 @@ set(TARGET
 # Find required packages
 find_package (Threads REQUIRED)
 
-cxx_test(${TARGET} ${TARGET}.h)
+cxx_test("short_parse" ${TARGET})
 target_link_libraries(
-    ${TARGET}
+    "short_parse"
     ${CMAKE_THREAD_LIBS_INIT}
     vectorize
     )
 
+add_test("short_parse" "${CMAKE_CURRENT_BINARY_DIR}/short_parse")
