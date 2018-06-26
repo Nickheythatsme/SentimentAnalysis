@@ -52,5 +52,5 @@ class TestParse : public CxxTest::TestSuite
 		}
         string example{ "This is some example text! Okay? \
             'Here we are,' I can't imagine!" };
-		string delims{ "'\",.()!" };
+		string delims{ "'\",.()! " };
 };
