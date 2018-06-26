@@ -28,19 +28,17 @@ class TestParse : public CxxTest::TestSuite
                 TS_TRACE("parser finished parsing: ");
 			for (const auto & w : parser)
 				TS_TRACE(w);
-			system("pause");
         }
 		void testDelims()
 		{
 			TS_TRACE("Testing the presence of a delimiter");
 			auto parser = runParser();
 			for (const auto & word : parser)
-				for (const auto & d_char : delims)
-					for (const auto & w_char : word)
+				for (const auto & w_char : word)
+					for (const auto & d_char : delims)
 						if (d_char == w_char)
 							TS_FAIL("Delim character failed: " + d_char + word);
 			TS_TRACE("No delimeters found in word");
-			system("pause");
 		}
     protected:
     private:
