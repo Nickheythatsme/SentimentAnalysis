@@ -15,4 +15,4 @@ target_link_libraries(
     vectorize
     )
 
-add_test("short_parse" "${CMAKE_CURRENT_BINARY_DIR}/short_parse")
+add_test("short_parse" "${CMAKE_CURRENT_BINARY_DIR}/short_parse" "-v")

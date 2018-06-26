@@ -15,12 +15,10 @@ using namespace std;
 class TestParse : public CxxTest::TestSuite
 {
     public:
-        void testParse(void)
+        void testLength(void)
         {
-            parse parser;
-            parser(example);
-            auto size = parser.size();
-			system("pause");
+			auto parser = runParser();
+			auto size = parser.size();
             TS_ASSERT(size); // Check if 0
             if (!size)
                 TS_FAIL("parser did not parse any words!");
@@ -32,8 +30,27 @@ class TestParse : public CxxTest::TestSuite
 				TS_TRACE(w);
 			system("pause");
         }
+		void testDelims()
+		{
+			TS_TRACE("Testing the presence of a delimiter");
+			auto parser = runParser();
+			for (const auto & word : parser)
+				for (const auto & d_char : delims)
+					for (const auto & w_char : word)
+						if (d_char == w_char)
+							TS_FAIL("Delim character failed: " + d_char + word);
+			TS_TRACE("No delimeters found in word");
+			system("pause");
+		}
     protected:
     private:
-        string example {"This is some example text! Okay? \
-            'Here we are,' I can't imagine!"};
+		parse runParser()
+		{
+			parse parser { delims.c_str() };
+            parser(example);
+			return parser;
+		}
+        string example{ "This is some example text! Okay? \
+            'Here we are,' I can't imagine!" };
+		string delims{ "'\",.()!" };
 };
