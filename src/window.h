@@ -1,42 +1,47 @@
+/*
+6/26/2018 Nicholas Grout
+
+This class manages the windows for one word, 
+as well as the words found in association with this word.
+Acts very similar to a vertex/edges in a undirected graph.
+*/
+#pragma once
+
+#ifndef SENTIMENTANALYSIS_WINDOW_
+#define SENTIMENTANALYSIS_WINDOW_
+
 #include <string>
-#include <iostream>
 #include <vector>
+#include <memory>
+#include <utility>
 
-#ifndef SENTIMENTANALYSIS_VECTORIZE_WINDOW
-#define SENTIMENTANALYSIS_VECTORIZE_WINDOW
+// Shortname for vector of window pointers paired with a counter
+// Represents all words that are associated with this word, as well as 
+// the strength of the association (number of times they appear next to each other)
+using word_assoc = std::pair<std::shared_ptr<window>, size_t>;
 
-// Shorthand for string vector
-using s_vector=std::vector<std::string>;
-
-class window : public s_vector
+class window : public std::string
 {
 public:
-    window();
-    window(const window &obj);
-    window(window &&rhs);
-    ~window() = default;
+	window();
+	window(const window &rhs);
+	window(window &&rhs);
+	~window();
 
-    // Addition operators
-    friend window operator+(const window &win, const std::string &obj);
-    friend window operator+(const window &win, const window &obj);
+	// Add a word if it doesn't exist. 
+	// If it does, increment the correspondence count 
+	window& add(std::shared_ptr<window> rhs);
 
-    //  Addition assignment operators
-    window& operator+=(const std::string &obj);
-    window& operator+=(const window &obj);
-    window& operator+=(window &&rhs);
+	// Return a reference to a window by matching a string
+	const word_assoc& operator[](const string &rhs) const;
 
-    // Assignment operators
-    window& operator=(const window &obj);
-    window& operator=(window &&rhs) noexcept;
-
-    /* append a new word onto this window */
-    window& append(const std::string &obj);
-    window& append(const window &obj);
-    window& append(window &&rhs);
+	// Implementation of find/exists functions. 
+	// Returns the index of the desired window iff it exists.
+	// Returns NPOS if it does not exist
+	size_t find(const string &rhs) const;
 protected:
-    window& assign(const window &obj) noexcept;
-    window& assign(window &&rhs);
 private:
+	std::vector<word_assoc> words;
 };
 
-#endif //SENTIMENTANALYSIS_VECTORIZE_WINDOW
+#endif // SENTIMENTANALYSIS_WINDOW_

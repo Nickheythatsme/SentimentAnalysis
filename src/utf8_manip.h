@@ -1,11 +1,15 @@
-//
-// Created by njgro on 3/9/2018.
-//
-#include <cstring>
-#include <cctype>
+/*
+	Created by njgro on 3/9/2018.
+
+	This class is a set of static functions for working with UTF-8 strings 
+	characters/strings
+*/
 
 #ifndef SENTIMENTANALYSIS_UTF8_MANIP_H
 #define SENTIMENTANALYSIS_UTF8_MANIP_H
+
+#include <cstring>
+#include <cctype>
 
 /*
  * So for UTF-8 encoding:
