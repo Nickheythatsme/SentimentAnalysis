@@ -40,14 +40,13 @@ if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/cxxtest-4.3)
 
 	#################
 	#Make window test
-	#TODO finish implementation of test
-	#set (SOURCE "test_window.h")
-	#set (TARGET "window_test")
-	#cxx_test(${TARGET} ${SOURCE})
-	#target_link_libraries(
-	#	${TARGET}
-	#	vectorize
-	#	)
+	set (SOURCE "test_window.h")
+	set (TARGET "window_test")
+	cxx_test(${TARGET} ${SOURCE})
+	target_link_libraries(
+		${TARGET}
+		vectorize
+		)
 else()
 	message(SEND_ERROR "cxxtest directory not found.
 	It can be downloaded here: https://cxxtest.com/

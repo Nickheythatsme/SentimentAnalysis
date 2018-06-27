@@ -33,12 +33,12 @@ public:
 	window& add(std::shared_ptr<window> rhs);
 
 	// Return a reference to a window by matching a string
-	const word_assoc& operator[](const string &rhs) const;
+	const word_assoc& operator[](const std::string &rhs) const;
 
 	// Implementation of find/exists functions. 
 	// Returns the index of the desired window iff it exists.
 	// Returns NPOS if it does not exist
-	size_t find(const string &rhs) const;
+	size_t find_word(const std::string &rhs) const;
 protected:
 private:
 	std::vector<word_assoc> words;

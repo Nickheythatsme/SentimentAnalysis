@@ -13,9 +13,10 @@ public:
 	void testAdd(void)
 	{
 		window w;
-		auto s_ptr = std::make_shared<string>("test string!");
-		w.add(std::shared_ptr<string>(s_ptr));
-		size_t result = w.find("test string!");
+		string test_str{ "test string!" };
+		auto s_ptr = std::make_shared<string>(test_str);
+		w.add(std::shared_ptr<window>(s_ptr));
+		size_t result = w.find_word(test_str);
 		TS_ASSERT(result != string::npos);
 	}
 protected:

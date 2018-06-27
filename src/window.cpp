@@ -26,12 +26,12 @@ window & window::add(std::shared_ptr<window> rhs)
 	return *this;
 }
 
-const word_assoc & window::operator[](const string & to_find) const
+const word_assoc & window::operator[](const std::string & to_find) const
 {
 	return words[find(to_find)];
 }
 
-size_t window::find(const string & rhs) const
+size_t window::find_word(const std::string & rhs) const
 {
 	return std::string::npos;
 }
