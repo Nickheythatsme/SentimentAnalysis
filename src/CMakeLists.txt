@@ -11,6 +11,7 @@ set(SOURCES
     parse.cpp parse.h
     utf8_manip.cpp utf8_manip.h
     text_package.h text_package.cpp
+	btree.hpp
     )
 
 # Create the library

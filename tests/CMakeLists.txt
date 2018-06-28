@@ -40,8 +40,8 @@ if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/cxxtest-4.3)
 
 	#################
 	#Make window test
-	set (SOURCE "test_window.h")
-	set (TARGET "window_test")
+	set (SOURCE "test_btree.h")
+	set (TARGET "btree")
 	cxx_test(${TARGET} ${SOURCE})
 	target_link_libraries(
 		${TARGET}
