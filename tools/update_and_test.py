@@ -1,3 +1,5 @@
+# Script to pull from github, and rebuild the project.
+# The script then posts test results to the commit page on github
 import subprocess
 import os
 import sys
@@ -113,6 +115,7 @@ if __name__ == "__main__":
     logger.setLevel(logging.INFO)
 
     # Start loop
+    run_git()
     run_update_test()
     while(1):
         cycle()

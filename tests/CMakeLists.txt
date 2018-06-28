@@ -1,12 +1,14 @@
 cmake_minimum_required(VERSION 3.5)
 message("Including tests")
 
+set(CXXTEST_DIR "${CMAKE_CURRENT_SOURCE_DIR}/cxxtest")
+
 # Check if the cxxtest director exists
-if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/cxxtest-4.3)
+if (EXISTS ${CXXTEST_DIR})
 
 	# Include cxxtest and find cxxtestgen executable
-	include_directories(${CMAKE_CURRENT_SOURCE_DIR}/cxxtest-4.3)
-	set(CXXTESTGEN "${CMAKE_CURRENT_SOURCE_DIR}/cxxtest-4.3/bin/./cxxtestgen")
+	include_directories(${CXXTEST_DIR})
+	set(CXXTESTGEN "${CXXTEST_DIR}/bin/./cxxtestgen")
 
 	# Function to add cxxtest
 	function(cxx_test target source)
@@ -48,7 +50,8 @@ if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/cxxtest-4.3)
 		vectorize
 		)
 else()
-	message(SEND_ERROR "cxxtest directory not found.
-	It can be downloaded here: https://cxxtest.com/
-	Then placed in the directory: ${CMAKE_CURRENT_SOURCE_DIR}")
+	message(SEND_ERROR "
+Cxxtest directory not found but is needed for testing. Clone it here:
+cd ${CMAKE_CURRENT_SOURCE_DIR}/test
+git clone https://github.com/CxxTest/cxxtest")
 endif()

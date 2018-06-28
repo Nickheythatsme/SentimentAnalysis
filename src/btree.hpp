@@ -55,7 +55,7 @@ public:
 	bool push(key_data<K,D> rhs);
 
 	// Split the node 
-	// TODO add definition
+    // Returns a split_holder with a 
 	split_holder<K,D> split(key_data<K,D> new_data);
 
 	// Return TRUE if we're full. FALSE if we're not.
@@ -112,7 +112,7 @@ inline size_t holder<K, D>::compare(const K & to_compare)
 	size_t i;
 	for (i = 0; i < data_count; ++i)
 	{
-		if (to_compare <= to_compare)
+		if (to_compare <= data[i].first)
 			return i;
 	}
 
@@ -158,13 +158,7 @@ split_holder<K,D> holder<K, D>::split(key_data<K,D> new_data)
 			return 0;
 		}
 	);
-#ifdef DEBUG
-	for (size_t j = 0; j <BSIZE+1; ++j)
-	{
-		auto tracker = to_sort[j];
-		std::cout << tracker.first << std::endl;
-	}
-#endif
+
 	// TODO test logic here...
 	split_dest.push_up.reset(new key_data<K, D>(std::move(to_sort[BSIZE / 2])));
 	split_dest.new_rhs.reset(new holder<K, D>());
@@ -173,10 +167,29 @@ split_holder<K,D> holder<K, D>::split(key_data<K,D> new_data)
 		split_dest.new_rhs->push(std::move(to_sort[i]));
 	}
 	this->data.reset(new key_data<K, D>[BSIZE]);
+    this->data_count = 0;
 	for (i = 0; i < BSIZE / 2; ++i)
 	{
 		this->push(std::move(to_sort[i]));
 	}
+#ifdef DEBUG
+    std::cout << std::endl << "self: ";
+	for (i=0; i < this->data_count; ++i)
+    {
+        std::cout << this->data[i].first << ", ";
+    }
+
+    std::cout << std::endl << 
+        "Push up data: " << split_dest.push_up->first << std::endl;
+
+    std::cout << "rhs: ";
+	for (i=0; i < split_dest.new_rhs->data_count; ++i)
+	{
+		std::cout << split_dest.new_rhs->data[i].first << ", ";
+	}
+    std::cout << std::endl;
+    
+#endif
 	return split_dest;
 }
 /*
