@@ -19,19 +19,27 @@ window::~window()
 {
 }
 
-window & window::add(std::shared_ptr<window> rhs)
+window& window::add(string_ptr rhs)
 {
-	auto new_pair = std::make_pair(std::move(rhs), 0);
-	words.emplace_back(std::move(new_pair));
+	words.emplace_back(std::move(rhs));
 	return *this;
 }
 
-const word_assoc & window::operator[](const std::string & to_find) const
+// Returns the word 
+const std::string& window::operator[](size_t to_return) const
 {
-	return words[find(to_find)];
+	return words[to_return];
 }
 
+// Find a word. Returns std::string::npos if word is not in this list
 size_t window::find_word(const std::string & rhs) const
 {
+	size_t location = 0;
+	for (const auto &word : words)
+	{
+		if (word == to_find)
+			return location;
+		++location;
+	}
 	return std::string::npos;
 }
