@@ -13,6 +13,7 @@ this class.
 
 #include <utility>
 #include <memory>
+#include <algorithm>
 
 #ifdef DEBUG
 #include <iostream>
@@ -21,6 +22,9 @@ this class.
 // Used to store data, with a key and a data value
 template<class K, class D>
 using key_data = std::pair<K, D>;
+
+template<class K, class D>
+using compare_func = bool(*)(const key_data<K,D> &lhs, const key_data<K,D> &rhs);
 
 // Forward declaration
 template<class K, class D>
@@ -60,9 +64,14 @@ public:
 
 	// Return TRUE if we're full. FALSE if we're not.
 	bool full() const;
+
+	size_t find(const K& to_find) const;
 protected:
 private:
-	static int cmp(const void* lhs, const void* rhs);
+	bool is_sorted() const;
+	// TODO implement iterator so we can use sort from <algorithm>
+	compare_func cmp_func;
+
 	std::unique_ptr<key_data<K,D>[]> data;
 	size_t data_count;
 };
@@ -125,6 +134,10 @@ inline bool holder<K, D>::push(key_data<K,D> rhs)
 {
 	if (data_count == BSIZE) return false;
 	data[data_count++] = std::move(rhs);
+	if (!is_sorted())
+	{
+		sort();
+	}
 	return true;
 }
 
@@ -144,6 +157,7 @@ split_holder<K,D> holder<K, D>::split(key_data<K,D> new_data)
 	}
 	to_sort[i] = std::move(new_data);
 
+	// TODO implement moder std::sort from <algorithm>
 	std::qsort(
 		to_sort.get(), 
 		BSIZE + 1, 
@@ -207,9 +221,19 @@ inline bool holder<K, D>::full() const
 }
 
 template<class K, class D>
-int holder<K, D>::cmp(const void* lhs, const void* rhs)
+inline bool holder<K, D>::is_sorted() const
 {
-	return 1;
+	for (size_t i = 0; i < data_count-1; ++i)
+	{
+		if (data[i] > data[i + 1])
+			return false;
+	}
+	return true
+}
+
+template<class K, class D>
+inline void holder<K, D>::sort()
+{
 }
 
 #endif // SENTIMENT_ANALYSIS_BTREE

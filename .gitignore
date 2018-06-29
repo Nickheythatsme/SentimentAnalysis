@@ -52,3 +52,4 @@ prototypes/queue/.idea/deployment.xml
 .git_auth.json
 CMakeSettings.json
 cxxtest-*
+tests/cxxtest/
