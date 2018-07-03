@@ -4,7 +4,7 @@ This class manages a templated btree, where items are stored based on their
 key. Each key must implement the relational operators in order to work with 
 this class.
 */
-#define DEBUG
+// #define DEBUG
 #ifndef SENTIMENT_ANALYSIS_BTREE
 #define SENTIMENT_ANALYSIS_BTREE
 
@@ -28,7 +28,7 @@ using key_data = std::pair<K, D>;
 template<class K>
 using Compare = bool(*)(const K &lhs, const K &rhs);
 
-// Default compare function
+// Default compare function used for sorting the arrays
 template<class K>
 bool default_compare(const K &lhs, const K &rhs)
 {
@@ -52,7 +52,11 @@ struct split_holder
 template<class K, class D>
 class holder
 {
+#ifdef DEBUG
 public:
+#else
+protected:
+#endif
 	holder();
 	explicit holder(key_data<K,D> rhs);
 	holder(holder &&rhs);
@@ -69,26 +73,22 @@ public:
 
 	// Split the node 
     // Returns a split_holder with a 
-	split_holder<K,D> split(key_data<K,D> new_data);
+	virtual split_holder<K,D> split(key_data<K,D> new_data);
 
 	// Return TRUE if we're full. FALSE if we're not.
-	bool full() const;
+	bool is_full() const;
 
-#ifndef DEBUG
-protected:
-#endif
-    size_t exists(const K &to_find) const;
-	static Compare<K> compare;
-
+    // Sorting functions. All static to simplify the splitting (since splitting requires BSIZE+1)
     static void sort(key_data<K,D>* to_sort, size_t len);
 	static bool is_sorted(const key_data<K,D>* to_check, size_t len);
-#ifndef DEBUG
-private:
-#endif
+	static Compare<K> compare; // Used to compare during the sort
+
+    // Data this nodes holds, and the data count
 	std::unique_ptr<key_data<K,D>[]> data;
 	size_t data_count;
 };
 
+// Set compare to default compare function
 template<class K, class D>
 Compare<K> holder<K,D>::compare = default_compare<K>;
 
@@ -173,22 +173,25 @@ split_holder<K,D> holder<K, D>::split(key_data<K,D> new_data)
 	}
 	to_sort[i] = std::move(new_data);
 
-	// TODO implement std::sort from <algorithm>
+    // Sort the new array
     sort(to_sort.get(), BSIZE+1);
 
-	// TODO test logic here...
+    // get the push up data
 	split_dest.push_up.reset(new key_data<K, D>(std::move(to_sort[BSIZE / 2])));
 	split_dest.new_rhs.reset(new holder<K, D>());
+    // move data > push up data into the new rhs holder
 	for (i = BSIZE / 2 + 1; i < BSIZE + 1; ++i)
 	{
 		split_dest.new_rhs->push(std::move(to_sort[i]));
 	}
+    // move data < push up data into this holder
 	this->data.reset(new key_data<K, D>[BSIZE]);
     this->data_count = 0;
 	for (i = 0; i < BSIZE / 2; ++i)
 	{
 		this->push(std::move(to_sort[i]));
 	}
+
 #ifdef DEBUG
     std::cout << std::endl << "self: ";
 	for (i=0; i < this->data_count; ++i)
@@ -205,13 +208,13 @@ split_holder<K,D> holder<K, D>::split(key_data<K,D> new_data)
 		std::cout << split_dest.new_rhs->data[i].first << ", ";
 	}
     std::cout << std::endl;
-    
 #endif
+
 	return split_dest;
 }
 
 template<class K, class D>
-inline bool holder<K, D>::full() const
+inline bool holder<K, D>::is_full() const
 {
 	return data_count != BSIZE;
 }
@@ -244,7 +247,13 @@ void holder<K,D>::sort(key_data<K,D>* data, size_t len)
     }
 }
 
+/***********************/
 /* NODE Implementation */
+template<class K, class D>
+class node;
+template<class K, class D>
+using child_ptr_ptr = std::unique_ptr<std::unique_ptr<node<K,D>>[]>;
+
 template<class K, class D>
 class node : public holder<K,D>
 {
@@ -256,28 +265,36 @@ class node : public holder<K,D>
         // Returns pointer to the new root
         node<K,D>* insert(key_data<K,D> new_data);
         key_data<K,D>& find(const K &to_find);
+        bool is_leaf() const;
     protected:
     private:
+        // Array of pointers to child nodes
+        child_ptr_ptr<K,D> children;
 };
 
 template<class K, class D>
-node<K,D>::node() :
-    holder<K,D>()
+inline node<K,D>::node() :
+    holder<K,D>(),
+    children(new node<K,D>*[BSIZE+1])
 {
 }
 
 template<class K, class D>
-node<K,D>::node(const node<K,D> &rhs)
+inline node<K,D>::node(const node<K,D> &rhs) :
+    holder<K,D>(rhs),
+    children(new node<K,D>*[BSIZE+1])
 {
 }
 
 template<class K, class D>
-node<K,D>::node(node<K,D> &&rhs)
+inline node<K,D>::node(node<K,D> &&rhs) :
+    holder<K,D>(std::move(rhs)),
+    children(std::move(rhs.children))
 {
 }
 
 template<class K, class D>
-node<K,D>::~node()
+inline node<K,D>::~node()
 {
 }
 
@@ -285,12 +302,17 @@ node<K,D>::~node()
 template<class K, class D>
 node<K,D>* node<K,D>::insert(key_data<K,D> new_data)
 {
+    if (is_leaf() && !this->is_full())
+        this->push(new_data);
+    return this;
 }
 
 template<class K, class D>
-key_data<K,D>& node<K,D>::find(const K &to_find)
+bool node<K,D>::is_leaf() const
 {
+    for (size_t i=0; i<BSIZE+1; ++i)
+    {
+    }
 }
-
 
 #endif // SENTIMENT_ANALYSIS_BTREE

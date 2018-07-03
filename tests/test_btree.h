@@ -2,6 +2,7 @@
 6/26/2018 Nicholas Grout
 */
 
+#define DEBUG
 #include "btree.hpp"
 #include <cxxtest/TestSuite.h>
 #include <random>
@@ -16,7 +17,7 @@ public:
 	void testPush(void)
 	{
 		holder<int, string> h;
-		TS_ASSERT(h.full());
+		TS_ASSERT(h.is_full());
 	}
 	void testSplit(void)
 	{
@@ -44,6 +45,7 @@ public:
             TS_ASSERT(result == i);
         }
 	}
+
     void testSort(void)
     {
         TS_TRACE("testing sorting");
@@ -51,12 +53,13 @@ public:
         std::uniform_int_distribution<int> uniform_dist(0, 100);
         holder<int, string> h;
 
-        for (size_t i=0; i<h.data_count; ++i)
+        for (size_t i=0; i<BSIZE; ++i)
         {
             h.push( std::make_pair(uniform_dist(r_engine), "test") );
         }
         TS_ASSERT(h.is_sorted(h.data.get(), h.data_count));
     }
+
     void testCustomSort(void)
     {
         holder<string, string>::compare = [=] (const string &lhs, const string &rhs)
