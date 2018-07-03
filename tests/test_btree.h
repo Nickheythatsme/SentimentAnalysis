@@ -4,8 +4,11 @@
 
 #include "btree.hpp"
 #include <cxxtest/TestSuite.h>
-
+#include <random>
+#include <chrono>
 using std::string;
+
+#define SEED 1
 
 class TestHolder : public CxxTest::TestSuite
 {
@@ -41,7 +44,21 @@ public:
             TS_ASSERT(result == i);
         }
 	}
+    void testSort(void)
+    {
+        TS_TRACE("testing sorting");
+
+        std::uniform_int_distribution<int> uniform_dist(0, 100);
+        holder<int, string> h;
+
+        for (size_t i=0; i<BSIZE; ++i)
+        {
+            h.push( std::make_pair(uniform_dist(r_engine), "test") );
+        }
+        TS_ASSERT(h.is_sorted());
+    }
 protected:
 private:
-
+    std::random_device r;
+    std::default_random_engine r_engine { r() };
 };

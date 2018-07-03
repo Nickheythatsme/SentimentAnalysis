@@ -14,6 +14,7 @@ this class.
 #include <utility>
 #include <memory>
 #include <algorithm>
+#include <iterator>
 
 #ifdef DEBUG
 #include <iostream>
@@ -57,7 +58,7 @@ public:
 	explicit holder(compare_func<K> _cmp_func);
 	holder(holder &&rhs);
 	holder(const holder &rhs);
-	~holder() = default;
+	virtual ~holder() = default;
 
 	// Compare to_compare to they keys in our holder.
 	// Returns the index of the first data which is greater than to_compare
@@ -74,11 +75,12 @@ public:
 	// Return TRUE if we're full. FALSE if we're not.
 	bool full() const;
 
-	size_t find(const K& to_find) const;
-protected:
-private:
 	bool is_sorted() const;
-	// TODO implement iterator so we can use sort from <algorithm>
+protected:
+    size_t exists(const K &to_find) const;
+private:
+    void sort();
+
 	compare_func<K> cmp_func{ default_compare<K> };
 
 	std::unique_ptr<key_data<K,D>[]> data;
@@ -157,7 +159,8 @@ inline bool holder<K, D>::push(key_data<K,D> rhs)
 {
 	if (data_count == BSIZE) return false;
 	data[data_count++] = std::move(rhs);
-	// TODO sort
+    if (!is_sorted())
+        sort();
 	return true;
 }
 
@@ -167,17 +170,18 @@ split_holder<K,D> holder<K, D>::split(key_data<K,D> new_data)
 {
 	// Array of size BSIZE+1 to hold our data + 1 more data
 	std::unique_ptr<key_data<K, D>[]> to_sort{ new key_data<K,D>[BSIZE + 1] }; 
+
 	// Struct to hold new split data (the new rhs holder and push up data)
 	split_holder<K,D> split_dest; 
-
 	size_t i;
+
 	for (i = 0; i < BSIZE; ++i)
 	{
 		to_sort[i] = std::move(data[i]);
 	}
 	to_sort[i] = std::move(new_data);
 
-	// TODO implement moder std::sort from <algorithm>
+	// TODO implement std::sort from <algorithm>
 	std::qsort(
 		to_sort.get(), 
 		BSIZE + 1, 
@@ -239,9 +243,76 @@ inline bool holder<K, D>::is_sorted() const
 	for (size_t i = 0; i < data_count-1; ++i)
 	{
 		if (data[i] > data[i + 1])
+        {
 			return false;
+        }
 	}
 	return true;
 }
+
+// TODO implement quicksort? This bubble sort is lame.
+template<class K, class D>
+void holder<K,D>::sort()
+{
+	for (size_t i = 0; i < data_count - 1; ++i)
+    {
+        if (!cmp_func(data[i].first, data[i + 1].first))
+        {
+            std::swap(data[i], data[i+1]);
+        }
+    }
+    if (!is_sorted())
+    {
+        sort();
+    }
+}
+
+/* NODE Implementation */
+template<class K, class D>
+class node : public holder<K,D>
+{
+    public:
+        node();
+        node(const node<K,D> &rhs);
+        node(node<K,D> &&rhs);
+        ~node();
+        // Returns pointer to the new root
+        node<K,D>* insert(key_data new_data);
+        key_data<K,D>& find(const K &to_find);
+    protected:
+    private:
+};
+
+template<class K, class D>
+node::node()
+{
+}
+
+template<class K, class D>
+node::node(const node<K,D> &rhs)
+{
+}
+
+template<class K, class D>
+node::node(node<K,D> &&rhs)
+{
+}
+
+template<class K, class D>
+node::~node()
+{
+}
+
+// Insert, returns pointer to the new root
+template<class K, class D>
+node<K,D>* node::insert(key_data new_data)
+{
+}
+
+template<class K, class D>
+key_data<K,D>& node::find(const K &to_find)
+{
+}
+
 
 #endif // SENTIMENT_ANALYSIS_BTREE
