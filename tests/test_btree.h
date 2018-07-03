@@ -30,7 +30,7 @@ public:
         // TEST new rhs data by comparing i to the holder
         for (size_t i=(BSIZE/2)+1, j=0; i<=BSIZE; ++i, ++j)
         {
-            auto result = split_result.new_rhs->compare(i);
+            auto result = split_result.new_rhs->first_greater(i);
             TS_ASSERT(result == j);
         }
 
@@ -40,7 +40,7 @@ public:
         // TEST lhs (the original old holder)
         for (size_t i=0; i<=BSIZE/2; ++i)
         {
-            size_t result = h.compare(i);
+            size_t result = h.first_greater(i);
             TS_ASSERT(result == i);
         }
 	}
@@ -51,11 +51,29 @@ public:
         std::uniform_int_distribution<int> uniform_dist(0, 100);
         holder<int, string> h;
 
-        for (size_t i=0; i<BSIZE; ++i)
+        for (size_t i=0; i<h.data_count; ++i)
         {
             h.push( std::make_pair(uniform_dist(r_engine), "test") );
         }
-        TS_ASSERT(h.is_sorted());
+        TS_ASSERT(h.is_sorted(h.data.get(), h.data_count));
+    }
+    void testCustomSort(void)
+    {
+        holder<string, string>::compare = [=] (const string &lhs, const string &rhs)
+        {
+            return lhs[0] < rhs[0];
+        };
+        holder<string, string> h;
+        h.push(std::make_pair("a","a"));
+        h.push(std::make_pair("d","d"));
+        h.push(std::make_pair("c","c"));
+        h.push(std::make_pair("b","b"));
+
+        for (size_t i=0; i<4; ++i)
+        {
+            TS_TRACE(h.data[i].first);
+        }
+
     }
 protected:
 private:

@@ -26,7 +26,7 @@ using key_data = std::pair<K, D>;
 
 // Abbreviation of compare function. This is used to sort data in the array
 template<class K>
-using compare_func = bool(*)(const K &lhs, const K &rhs);
+using Compare = bool(*)(const K &lhs, const K &rhs);
 
 // Default compare function
 template<class K>
@@ -54,15 +54,14 @@ class holder
 {
 public:
 	holder();
-	explicit holder(key_data<K,D> rhs, compare_func<K> _cmp_func = holder::default_cmp);
-	explicit holder(compare_func<K> _cmp_func);
+	explicit holder(key_data<K,D> rhs);
 	holder(holder &&rhs);
 	holder(const holder &rhs);
 	virtual ~holder() = default;
 
 	// Compare to_compare to they keys in our holder.
 	// Returns the index of the first data which is greater than to_compare
-	size_t compare(const K &to_compare);
+	size_t first_greater(const K &to_compare);
 
 	// Push data into the holder. 
 	// Returns TRUE if success, FALSE if we're full and it's not added.
@@ -75,51 +74,45 @@ public:
 	// Return TRUE if we're full. FALSE if we're not.
 	bool full() const;
 
-	bool is_sorted() const;
+#ifndef DEBUG
 protected:
+#endif
     size_t exists(const K &to_find) const;
+	static Compare<K> compare;
+
+    static void sort(key_data<K,D>* to_sort, size_t len);
+	static bool is_sorted(const key_data<K,D>* to_check, size_t len);
+#ifndef DEBUG
 private:
-    void sort();
-
-	compare_func<K> cmp_func{ default_compare<K> };
-
+#endif
 	std::unique_ptr<key_data<K,D>[]> data;
 	size_t data_count;
 };
+
+template<class K, class D>
+Compare<K> holder<K,D>::compare = default_compare<K>;
 
 // CONSTRUCTOR
 template<class K, class D>
 inline holder<K, D>::holder() : 
 	data_count(0),
-	data(new key_data<K,D>[BSIZE]),
-	cmp_func(default_compare<K>)
+	data(new key_data<K,D>[BSIZE])
 {
 }
 
 // CONSTRUCTOR with arguments
 template<class K, class D>
-inline holder<K, D>::holder(key_data<K,D> rhs, compare_func<K> _cmp_func) :
+inline holder<K, D>::holder(key_data<K,D> rhs) :
 	data_count(1),
-	data(new key_data<K,D>[BSIZE]),
-	cmp_func(_cmp_func)
+	data(new key_data<K,D>[BSIZE])
 {
 	data[0] = std::move(rhs);
 }
 
 template<class K, class D>
-inline holder<K, D>::holder(compare_func<K> _cmp_func) :
-	data_count(1),
-	data(new key_data<K,D>[BSIZE]),
-	cmp_func(_cmp_func)
-{
-
-}
-
-template<class K, class D>
 inline holder<K, D>::holder(holder && rhs) :
 	data(std::move(rhs.data)),
-	data_count(rhs.data_count),
-	cmp_func(rhs.cmp_func)
+	data_count(rhs.data_count)
 {
 	rhs.data = nullptr;
 	rhs.data_count = 0;
@@ -128,8 +121,7 @@ inline holder<K, D>::holder(holder && rhs) :
 template<class K, class D>
 inline holder<K, D>::holder(const holder &rhs) :
 	data(),
-	data_count(new key_data<K,D>[BSIZE]),
-	cmp_func(rhs.cmp_func)
+	data_count(new key_data<K,D>[BSIZE])
 {
 	data = new key_data<K,D>[BSIZE];
 	for (size_t i = 0; i < data_count; ++i)
@@ -141,12 +133,12 @@ inline holder<K, D>::holder(const holder &rhs) :
 // Compare to_compare to they keys in our holder.
 // Returns the index of the first data which is greater than to_compare
 template<class K, class D>
-inline size_t holder<K, D>::compare(const K & to_compare)
+inline size_t holder<K, D>::first_greater(const K & to_compare)
 {
 	size_t i;
 	for (i = 0; i < data_count; ++i)
 	{
-		if (!cmp_func(data[i].first, to_compare)) // same as: to_compare <= data[i].first
+		if (!compare(data[i].first, to_compare)) // same as: to_compare <= data[i].first
 			return i;
 	}
 
@@ -159,8 +151,8 @@ inline bool holder<K, D>::push(key_data<K,D> rhs)
 {
 	if (data_count == BSIZE) return false;
 	data[data_count++] = std::move(rhs);
-    if (!is_sorted())
-        sort();
+    if (!is_sorted(data.get(), data_count))
+        sort(data.get(), data_count);
 	return true;
 }
 
@@ -182,20 +174,7 @@ split_holder<K,D> holder<K, D>::split(key_data<K,D> new_data)
 	to_sort[i] = std::move(new_data);
 
 	// TODO implement std::sort from <algorithm>
-	std::qsort(
-		to_sort.get(), 
-		BSIZE + 1, 
-		sizeof(key_data<K, D>), 
-		[](const void* lhs_v, const void* rhs_v) 
-		{
-			key_data<K, D> lhs = *static_cast<const key_data<K, D>*>(lhs_v);
-			key_data<K, D> rhs = *static_cast<const key_data<K, D>*>(rhs_v);
-
-			if (lhs.first < rhs.first) return - 1;
-			if (lhs.first > rhs.first) return 1;
-			return 0;
-		}
-	);
+    sort(to_sort.get(), BSIZE+1);
 
 	// TODO test logic here...
 	split_dest.push_up.reset(new key_data<K, D>(std::move(to_sort[BSIZE / 2])));
@@ -238,32 +217,30 @@ inline bool holder<K, D>::full() const
 }
 
 template<class K, class D>
-inline bool holder<K, D>::is_sorted() const
+inline bool holder<K, D>::is_sorted(const key_data<K,D>* data, size_t len)
 {
-	for (size_t i = 0; i < data_count-1; ++i)
+	for (size_t i = 0; i < len-1; ++i)
 	{
-		if (data[i] > data[i + 1])
-        {
-			return false;
-        }
+        if (!compare(data[i].first, data[i + 1].first))
+            return false;
 	}
 	return true;
 }
 
 // TODO implement quicksort? This bubble sort is lame.
 template<class K, class D>
-void holder<K,D>::sort()
+void holder<K,D>::sort(key_data<K,D>* data, size_t len)
 {
-	for (size_t i = 0; i < data_count - 1; ++i)
+	for (size_t i = 0; i < len - 1; ++i)
     {
-        if (!cmp_func(data[i].first, data[i + 1].first))
+        if (!compare(data[i].first, data[i + 1].first))
         {
             std::swap(data[i], data[i+1]);
         }
     }
-    if (!is_sorted())
+    if (!is_sorted(data, len))
     {
-        sort();
+        sort(data, len);
     }
 }
 
@@ -277,40 +254,41 @@ class node : public holder<K,D>
         node(node<K,D> &&rhs);
         ~node();
         // Returns pointer to the new root
-        node<K,D>* insert(key_data new_data);
+        node<K,D>* insert(key_data<K,D> new_data);
         key_data<K,D>& find(const K &to_find);
     protected:
     private:
 };
 
 template<class K, class D>
-node::node()
+node<K,D>::node() :
+    holder<K,D>()
 {
 }
 
 template<class K, class D>
-node::node(const node<K,D> &rhs)
+node<K,D>::node(const node<K,D> &rhs)
 {
 }
 
 template<class K, class D>
-node::node(node<K,D> &&rhs)
+node<K,D>::node(node<K,D> &&rhs)
 {
 }
 
 template<class K, class D>
-node::~node()
+node<K,D>::~node()
 {
 }
 
 // Insert, returns pointer to the new root
 template<class K, class D>
-node<K,D>* node::insert(key_data new_data)
+node<K,D>* node<K,D>::insert(key_data<K,D> new_data)
 {
 }
 
 template<class K, class D>
-key_data<K,D>& node::find(const K &to_find)
+key_data<K,D>& node<K,D>::find(const K &to_find)
 {
 }
 
