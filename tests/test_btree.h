@@ -37,7 +37,7 @@ public:
         // TEST lhs (the original old holder)
         for (size_t i=0; i<=BSIZE/2; ++i)
         {
-            auto result = h.compare(i);
+            size_t result = h.compare(i);
             TS_ASSERT(result == i);
         }
 	}

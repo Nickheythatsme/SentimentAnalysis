@@ -23,8 +23,16 @@ this class.
 template<class K, class D>
 using key_data = std::pair<K, D>;
 
-template<class K, class D>
-using compare_func = bool(*)(const key_data<K,D> &lhs, const key_data<K,D> &rhs);
+// Abbreviation of compare function. This is used to sort data in the array
+template<class K>
+using compare_func = bool(*)(const K &lhs, const K &rhs);
+
+// Default compare function
+template<class K>
+bool default_compare(const K &lhs, const K &rhs)
+{
+	return lhs < rhs;
+}
 
 // Forward declaration
 template<class K, class D>
@@ -45,7 +53,8 @@ class holder
 {
 public:
 	holder();
-	holder(key_data<K,D> rhs);
+	explicit holder(key_data<K,D> rhs, compare_func<K> _cmp_func = holder::default_cmp);
+	explicit holder(compare_func<K> _cmp_func);
 	holder(holder &&rhs);
 	holder(const holder &rhs);
 	~holder() = default;
@@ -70,32 +79,45 @@ protected:
 private:
 	bool is_sorted() const;
 	// TODO implement iterator so we can use sort from <algorithm>
-	compare_func cmp_func;
+	compare_func<K> cmp_func{ default_compare<K> };
 
 	std::unique_ptr<key_data<K,D>[]> data;
 	size_t data_count;
 };
 
-
+// CONSTRUCTOR
 template<class K, class D>
 inline holder<K, D>::holder() : 
 	data_count(0),
-	data(new key_data<K,D>[BSIZE])
+	data(new key_data<K,D>[BSIZE]),
+	cmp_func(default_compare<K>)
 {
 }
 
+// CONSTRUCTOR with arguments
 template<class K, class D>
-inline holder<K, D>::holder(key_data<K,D> rhs) :
+inline holder<K, D>::holder(key_data<K,D> rhs, compare_func<K> _cmp_func) :
 	data_count(1),
-	data(new key_data<K,D>[BSIZE])
+	data(new key_data<K,D>[BSIZE]),
+	cmp_func(_cmp_func)
 {
 	data[0] = std::move(rhs);
 }
 
 template<class K, class D>
+inline holder<K, D>::holder(compare_func<K> _cmp_func) :
+	data_count(1),
+	data(new key_data<K,D>[BSIZE]),
+	cmp_func(_cmp_func)
+{
+
+}
+
+template<class K, class D>
 inline holder<K, D>::holder(holder && rhs) :
 	data(std::move(rhs.data)),
-	data_count(rhs.data_count)
+	data_count(rhs.data_count),
+	cmp_func(rhs.cmp_func)
 {
 	rhs.data = nullptr;
 	rhs.data_count = 0;
@@ -104,7 +126,8 @@ inline holder<K, D>::holder(holder && rhs) :
 template<class K, class D>
 inline holder<K, D>::holder(const holder &rhs) :
 	data(),
-	data_count(new key_data<K,D>[BSIZE])
+	data_count(new key_data<K,D>[BSIZE]),
+	cmp_func(rhs.cmp_func)
 {
 	data = new key_data<K,D>[BSIZE];
 	for (size_t i = 0; i < data_count; ++i)
@@ -121,7 +144,7 @@ inline size_t holder<K, D>::compare(const K & to_compare)
 	size_t i;
 	for (i = 0; i < data_count; ++i)
 	{
-		if (to_compare <= data[i].first)
+		if (!cmp_func(data[i].first, to_compare)) // same as: to_compare <= data[i].first
 			return i;
 	}
 
@@ -134,10 +157,7 @@ inline bool holder<K, D>::push(key_data<K,D> rhs)
 {
 	if (data_count == BSIZE) return false;
 	data[data_count++] = std::move(rhs);
-	if (!is_sorted())
-	{
-		sort();
-	}
+	// TODO sort
 	return true;
 }
 
@@ -206,13 +226,6 @@ split_holder<K,D> holder<K, D>::split(key_data<K,D> new_data)
 #endif
 	return split_dest;
 }
-/*
-struct split_holder 
-{
-	std::unique_ptr<key_data<K,D>> push_up;
-	std::unique_ptr<holder<K,D>> new_rhs;
-};
-*/
 
 template<class K, class D>
 inline bool holder<K, D>::full() const
@@ -228,12 +241,7 @@ inline bool holder<K, D>::is_sorted() const
 		if (data[i] > data[i + 1])
 			return false;
 	}
-	return true
-}
-
-template<class K, class D>
-inline void holder<K, D>::sort()
-{
+	return true;
 }
 
 #endif // SENTIMENT_ANALYSIS_BTREE
