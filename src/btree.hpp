@@ -254,7 +254,7 @@ void holder<K,D>::sort(key_data<K,D>* data, size_t len)
 template<class K, class D>
 class node;
 template<class K, class D>
-using child_ptr = std::unique_ptr<node<K,D>[]>;
+using child_ptr_ptr = std::unique_ptr< std::unique_ptr<node<K,D>> []>;
 
 template<class K, class D>
 class node : public holder<K,D>
@@ -280,7 +280,7 @@ class node : public holder<K,D>
         node<K,D>* absorb(key_data<K,D> new_data, split_holder<K,D> &to_absorb);
 
         // Array of pointers to child nodes
-        child_ptr<K,D> children;
+        child_ptr_ptr<K,D> children;
         size_t child_count;
 };
 
@@ -288,7 +288,7 @@ class node : public holder<K,D>
 template<class K, class D>
 inline node<K,D>::node() :
     holder<K,D>(),
-    children(new node<K,D>[BSIZE+1]),
+    children(new std::unique_ptr<node<K,D>>[BSIZE+1]),
     child_count(0)
 {
 }
@@ -297,9 +297,13 @@ inline node<K,D>::node() :
 template<class K, class D>
 inline node<K,D>::node(const node<K,D> &rhs) :
     holder<K,D>(rhs),
-    children(new node<K,D>[BSIZE+1]),
-    child_count(0)
+    children(new std::unique_ptr<node<K,D>>[BSIZE+1]),
+    child_count(rhs.child_count)
 {
+	for (size_t i = 0; i < child_count; ++i)
+	{
+		children[i].reset(new node<K,D>(*rhs.children[i]));
+	}
 }
 
 // MOVE CONSTRUCTOR
@@ -307,7 +311,7 @@ template<class K, class D>
 inline node<K,D>::node(node<K,D> &&rhs) :
     holder<K,D>(std::move(rhs)),
     children(std::move(rhs.children)),
-    child_count(0)
+    child_count(rhs.child_count)
 {
 }
 
@@ -358,7 +362,7 @@ template<class K, class D>
 node<K,D>* node<K,D>::absorb(key_data<K,D> new_data, split_holder<K,D> &to_absorb)
 {
     //TODO finish absorb
-    return true;
+	return nullptr;
 }
 
 template<class K, class D>

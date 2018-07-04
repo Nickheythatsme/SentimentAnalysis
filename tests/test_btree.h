@@ -62,7 +62,7 @@ public:
 
     void testCustomSort(void)
     {
-        holder<string, string>::compare = [=] (const string &lhs, const string &rhs)
+        holder<string, string>::compare = [] (const string &lhs, const string &rhs)
         {
             return lhs[0] < rhs[0];
         };
