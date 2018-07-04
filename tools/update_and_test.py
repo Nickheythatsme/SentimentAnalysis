@@ -14,6 +14,9 @@ logger = logging.getLogger('update_and_test')
 # Get git_authentication for commenting
 git_auth = ''
 
+# Build/clean/test commands (defaults)
+build_type = "make"
+
 def run_git():
     """ Try to run "git pull." 
     RETURNS TRUE if we've updated, FALSE if nothing has been updated
@@ -35,22 +38,21 @@ def run_git():
     return True
 
 
-def run_make():
+def build():
     """ Run make clean and then make all to rebuild the repro """
-
-    # Run 'make clean'
-    make_clean = ["make","clean"]
-    logger.info('Running "{}"'.format(make_clean))
-    result = subprocess.run(make_clean, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    # Run '{build_type} clean'
+    clean_cmd = [build_type,"clean"]
+    logger.info('Running "{}"'.format(clean_cmd))
+    result = subprocess.run(clean_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     if result.returncode != 0:
         err = result.stderr.decode("utf-8")
         logger.error('make clean error: Makefile probably doesn\'t exist. ' + err)
         raise Exception("make error: no makefile found")
 
-    # Run 'make all'
-    make_all = ["make","all"]
-    logger.info('Running "{}"'.format(make_all))
-    result = subprocess.run(make_all, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    # Run '{build_type} all'
+    build_cmd = [build_type,"all"]
+    logger.info('Running "{}"'.format(build_cmd))
+    result = subprocess.run(build_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     if result.returncode != 0:
         err = result.stderr.decode("utf-8")
         logger.error("compilation error: " + err)
@@ -58,16 +60,18 @@ def run_make():
     logger.info('project compiled')
     return True
 
+
 def run_tests():
-    make_test = ["make","test"]
-    logger.info('Running "{}"'.format(make_test))
-    result = subprocess.run(make_test, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    test_cmd = [build_type,"test"]
+    logger.info('Running "{}"'.format(test_cmd))
+    result = subprocess.run(test_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     if result.returncode != 0:
         err = result.stderr.decode("utf-8")
         logger.error("Error running tests: " + err)
     message = result.stdout.decode("utf-8")
     logger.info('tests completed:\n' + message)
     return message
+
 
 def comment_results(test_results):
     command = ["git","show-ref"]
@@ -90,9 +94,9 @@ def comment_results(test_results):
     return r.status_code
 
 def run_update_test():
-    make_results = run_make()
-    if make_results != True:
-        comment_results(make_results)
+    build_results = build()
+    if build_results != True:
+        comment_results(build_results)
     else: 
         test_results = run_tests()
         comment_results(test_results)
@@ -107,10 +111,11 @@ def cycle():
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Usage: update_and_test [github username:githubpassword]")
+    if len(sys.argv) != 3:
+        print("Usage: update_and_test [github-username:github-password] [make/ninja]")
         sys.exit(1)
     git_auth = (sys.argv[1].split(':')[0], sys.argv[1].split(':')[1])
+    build_type = sys.argv[2]
     logging.basicConfig(level=logging.DEBUG)
     logger.setLevel(logging.INFO)
 
