@@ -249,10 +249,12 @@ void holder<K,D>::sort(key_data<K,D>* data, size_t len)
 
 /***********************/
 /* NODE Implementation */
+
+// Shorthand for children
 template<class K, class D>
 class node;
 template<class K, class D>
-using child_ptr_ptr = std::unique_ptr<std::unique_ptr<node<K,D>>[]>;
+using child_ptr = std::unique_ptr<node<K,D>[]>;
 
 template<class K, class D>
 class node : public holder<K,D>
@@ -262,37 +264,54 @@ class node : public holder<K,D>
         node(const node<K,D> &rhs);
         node(node<K,D> &&rhs);
         ~node();
+        // Insert a new key_data point into this node or its subtree
         // Returns pointer to the new root
         node<K,D>* insert(key_data<K,D> new_data);
         key_data<K,D>& find(const K &to_find);
         bool is_leaf() const;
     protected:
     private:
+        // Recursively find a spot to insert a node, splitting after insertion and
+        // returning true if we have split. So when this function returns TRUE,
+        // that means the current node must absorb incoming nodes/data from its child
+        bool insert(key_data<K,D> new_data, split_holder<K,D> &to_absorb);
+
+        // Absorb a split_holder into this node/holder
+        node<K,D>* absorb(key_data<K,D> new_data, split_holder<K,D> &to_absorb);
+
         // Array of pointers to child nodes
-        child_ptr_ptr<K,D> children;
+        child_ptr<K,D> children;
+        size_t child_count;
 };
 
+// CONSTRUCTOR
 template<class K, class D>
 inline node<K,D>::node() :
     holder<K,D>(),
-    children(new node<K,D>*[BSIZE+1])
+    children(new node<K,D>[BSIZE+1]),
+    child_count(0)
 {
 }
 
+// COPY CONSTRUCTOR
 template<class K, class D>
 inline node<K,D>::node(const node<K,D> &rhs) :
     holder<K,D>(rhs),
-    children(new node<K,D>*[BSIZE+1])
+    children(new node<K,D>[BSIZE+1]),
+    child_count(0)
 {
 }
 
+// MOVE CONSTRUCTOR
 template<class K, class D>
 inline node<K,D>::node(node<K,D> &&rhs) :
     holder<K,D>(std::move(rhs)),
-    children(std::move(rhs.children))
+    children(std::move(rhs.children)),
+    child_count(0)
 {
 }
 
+// DESTRUCTOR
 template<class K, class D>
 inline node<K,D>::~node()
 {
@@ -302,17 +321,50 @@ inline node<K,D>::~node()
 template<class K, class D>
 node<K,D>* node<K,D>::insert(key_data<K,D> new_data)
 {
-    if (is_leaf() && !this->is_full())
-        this->push(new_data);
+    // Make an empty holder for the splitting/absorbing
+    split_holder<K,D> to_absorb;
+    if (insert(std::move(new_data), to_absorb))
+    {
+        // TODO handle absorbtion
+        auto new_root = absorb(std::move(new_data), to_absorb);
+        return new_root;
+    }
     return this;
 }
 
 template<class K, class D>
-bool node<K,D>::is_leaf() const
+bool node<K,D>::insert(key_data<K,D> new_data, split_holder<K,D> &to_absorb)
 {
-    for (size_t i=0; i<BSIZE+1; ++i)
+    // If we're a leaf and have room, insert here
+    if (is_leaf())
     {
+        if (!this->is_full())
+        {
+            this->push(std::move(new_data));
+            return nullptr;
+        }
+        else
+        {
+            this->split(std::move(new_data), to_absorb);
+        }
     }
+    return false;
+}
+
+// Absorb a new rhs node and push up data. Returns a new root node with its 
+// own push up data if it was unable to absorb to_absorb without splitting 
+// itself.
+template<class K, class D>
+node<K,D>* node<K,D>::absorb(key_data<K,D> new_data, split_holder<K,D> &to_absorb)
+{
+    //TODO finish absorb
+    return true;
+}
+
+template<class K, class D>
+inline bool node<K,D>::is_leaf() const
+{
+    return child_count == 0;
 }
 
 #endif // SENTIMENT_ANALYSIS_BTREE

@@ -78,6 +78,11 @@ public:
         }
 
     }
+
+    void testNodeInsert(void)
+    {
+        node<int, int> n;
+    }
 protected:
 private:
     std::random_device r;
