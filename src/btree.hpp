@@ -58,7 +58,7 @@ public:
 protected:
 #endif
 	holder();
-	explicit holder(key_data<K,D> rhs);
+	explicit holder(key_data<K,D> &&rhs);
 	holder(holder &&rhs);
 	holder(const holder &rhs);
 	virtual ~holder() = default;
@@ -69,20 +69,25 @@ protected:
 
 	// Push data into the holder. 
 	// Returns TRUE if success, FALSE if we're full and it's not added.
-	bool push(key_data<K,D> rhs);
+	bool push(key_data<K,D> &&rhs);
 
 	// Split the node 
     // Returns a split_holder with a 
-	virtual split_holder<K,D> split(key_data<K,D> new_data);
+	virtual split_holder<K,D> split(key_data<K,D> &&new_data);
 
 	// Return TRUE if we're full. FALSE if we're not.
 	bool is_full() const;
+    // Return the current data_count
+    size_t get_data_count() const;
 
-    // Sorting functions. All static to simplify the splitting (since splitting requires BSIZE+1)
+    // Sorting functions and pointer to sorting function. All static to simplify the splitting (since splitting requires BSIZE+1)
     static void sort(key_data<K,D>* to_sort, size_t len);
 	static bool is_sorted(const key_data<K,D>* to_check, size_t len);
 	static Compare<K> compare; // Used to compare during the sort
 
+#ifndef DEBUG
+private:
+#endif
     // Data this nodes holds, and the data count
 	std::unique_ptr<key_data<K,D>[]> data;
 	size_t data_count;
@@ -102,7 +107,7 @@ inline holder<K, D>::holder() :
 
 // CONSTRUCTOR with arguments
 template<class K, class D>
-inline holder<K, D>::holder(key_data<K,D> rhs) :
+inline holder<K, D>::holder(key_data<K,D> &&rhs) :
 	data_count(1),
 	data(new key_data<K,D>[BSIZE])
 {
@@ -110,7 +115,7 @@ inline holder<K, D>::holder(key_data<K,D> rhs) :
 }
 
 template<class K, class D>
-inline holder<K, D>::holder(holder && rhs) :
+inline holder<K, D>::holder(holder &&rhs) :
 	data(std::move(rhs.data)),
 	data_count(rhs.data_count)
 {
@@ -133,7 +138,7 @@ inline holder<K, D>::holder(const holder &rhs) :
 // Compare to_compare to they keys in our holder.
 // Returns the index of the first data which is greater than to_compare
 template<class K, class D>
-inline size_t holder<K, D>::first_greater(const K & to_compare)
+inline size_t holder<K, D>::first_greater(const K &to_compare)
 {
 	size_t i;
 	for (i = 0; i < data_count; ++i)
@@ -147,7 +152,7 @@ inline size_t holder<K, D>::first_greater(const K & to_compare)
 
 // Push data into the holder. Data_count should also increase.
 template<class K, class D>
-inline bool holder<K, D>::push(key_data<K,D> rhs)
+inline bool holder<K, D>::push(key_data<K,D> &&rhs)
 {
 	if (data_count == BSIZE) return false;
 	data[data_count++] = std::move(rhs);
@@ -158,7 +163,7 @@ inline bool holder<K, D>::push(key_data<K,D> rhs)
 
 // Split the holder. 
 template<class K, class D>
-split_holder<K,D> holder<K, D>::split(key_data<K,D> new_data)
+split_holder<K,D> holder<K, D>::split(key_data<K,D> &&new_data)
 {
 	// Array of size BSIZE+1 to hold our data + 1 more data
 	std::unique_ptr<key_data<K, D>[]> to_sort{ new key_data<K,D>[BSIZE + 1] }; 
@@ -213,12 +218,20 @@ split_holder<K,D> holder<K, D>::split(key_data<K,D> new_data)
 	return split_dest;
 }
 
+// Return TRUE if this holder is full, false if otherwise
 template<class K, class D>
 inline bool holder<K, D>::is_full() const
 {
 	return data_count != BSIZE;
 }
+// Return the current data count
+template<class K, class D>
+inline size_t holder<K,D>::get_data_count() const
+{
+    return data_count;
+}
 
+// Return TRUE if the array is sorted, false if otherwise
 template<class K, class D>
 inline bool holder<K, D>::is_sorted(const key_data<K,D>* data, size_t len)
 {
@@ -230,7 +243,8 @@ inline bool holder<K, D>::is_sorted(const key_data<K,D>* data, size_t len)
 	return true;
 }
 
-// TODO implement quicksort? This bubble sort is lame.
+// Sort the array
+// TODO implement quicksort? Look into the overhead. Which one would be faster?
 template<class K, class D>
 void holder<K,D>::sort(key_data<K,D>* data, size_t len)
 {
@@ -243,7 +257,7 @@ void holder<K,D>::sort(key_data<K,D>* data, size_t len)
     }
     if (!is_sorted(data, len))
     {
-        sort(data, len);
+        sort(data, len); // recursive call
     }
 }
 
@@ -266,7 +280,7 @@ class node : public holder<K,D>
         ~node();
         // Insert a new key_data point into this node or its subtree
         // Returns pointer to the new root
-        node<K,D>* insert(key_data<K,D> new_data);
+        node<K,D>* insert(key_data<K,D> &&new_data);
         key_data<K,D>& find(const K &to_find);
         bool is_leaf() const;
     protected:
@@ -274,22 +288,21 @@ class node : public holder<K,D>
         // Recursively find a spot to insert a node, splitting after insertion and
         // returning true if we have split. So when this function returns TRUE,
         // that means the current node must absorb incoming nodes/data from its child
-        bool insert(key_data<K,D> new_data, split_holder<K,D> &to_absorb);
+        bool insert(key_data<K,D> &&new_data, split_holder<K,D> &to_absorb);
 
         // Absorb a split_holder into this node/holder
-        node<K,D>* absorb(key_data<K,D> new_data, split_holder<K,D> &to_absorb);
+        bool absorb(split_holder<K,D> &to_absorb);
+        split_holder<K,D> split(key_data<K,D> &&new_data) override;
 
         // Array of pointers to child nodes
         child_ptr_ptr<K,D> children;
-        size_t child_count;
 };
 
 // CONSTRUCTOR
 template<class K, class D>
 inline node<K,D>::node() :
     holder<K,D>(),
-    children(new std::unique_ptr<node<K,D>>[BSIZE+1]),
-    child_count(0)
+    children(new std::unique_ptr<node<K,D>>[BSIZE+1])
 {
 }
 
@@ -297,10 +310,10 @@ inline node<K,D>::node() :
 template<class K, class D>
 inline node<K,D>::node(const node<K,D> &rhs) :
     holder<K,D>(rhs),
-    children(new std::unique_ptr<node<K,D>>[BSIZE+1]),
-    child_count(rhs.child_count)
+    children(new std::unique_ptr<node<K,D>>[BSIZE+1])
 {
-	for (size_t i = 0; i < child_count; ++i)
+    size_t d_count = this->get_data_count()+1;
+	for (size_t i = 0; i < d_count; ++i)
 	{
 		children[i].reset(new node<K,D>(*rhs.children[i]));
 	}
@@ -310,8 +323,7 @@ inline node<K,D>::node(const node<K,D> &rhs) :
 template<class K, class D>
 inline node<K,D>::node(node<K,D> &&rhs) :
     holder<K,D>(std::move(rhs)),
-    children(std::move(rhs.children)),
-    child_count(rhs.child_count)
+    children(std::move(rhs.children))
 {
 }
 
@@ -323,35 +335,57 @@ inline node<K,D>::~node()
 
 // Insert, returns pointer to the new root
 template<class K, class D>
-node<K,D>* node<K,D>::insert(key_data<K,D> new_data)
+node<K,D>* node<K,D>::insert(key_data<K,D> &&new_data)
 {
     // Make an empty holder for the splitting/absorbing
     split_holder<K,D> to_absorb;
     if (insert(std::move(new_data), to_absorb))
     {
         // TODO handle absorbtion
-        auto new_root = absorb(std::move(new_data), to_absorb);
-        return new_root;
+        auto must_absorb = absorb(to_absorb);
+        if (must_absorb)
+        {
+            auto new_root = new node<K,D>(*to_absorb.push_up);
+            new_root->children[0] = this;
+            new_root->children[1] = to_absorb.new_rhs;
+            return new_root;
+        }
     }
     return this;
 }
 
+// Recursively traverse the tree and insert at the first leaf w/o children.
+// Returns TRUE if our parent has data to absorb, FALSE if otherwise
 template<class K, class D>
-bool node<K,D>::insert(key_data<K,D> new_data, split_holder<K,D> &to_absorb)
+bool node<K,D>::insert(key_data<K,D> &&new_data, split_holder<K,D> &to_absorb)
 {
-    // If we're a leaf and have room, insert here
+    // If we're a leaf, insert here
     if (is_leaf())
     {
+        // If we have room, insert here.
         if (!this->is_full())
         {
             this->push(std::move(new_data));
-            return nullptr;
+            return false;
         }
+        // If we don't have room, split and insert here
         else
         {
-            this->split(std::move(new_data), to_absorb);
+            return this->split(std::move(new_data), to_absorb);
         }
     }
+
+    // If we're not a leaf, then compare and traverse to the next child
+    //TODO
+    auto next_child = this->first_greater(new_data);
+    auto result = children[next_child]->insert(std::move(new_data), to_absorb);
+    // If our child split, then we must absorb and return true if our parent must absorb.
+    if (result)
+    {
+        return absorb(to_absorb);
+    }
+
+
     return false;
 }
 
@@ -359,16 +393,32 @@ bool node<K,D>::insert(key_data<K,D> new_data, split_holder<K,D> &to_absorb)
 // own push up data if it was unable to absorb to_absorb without splitting 
 // itself.
 template<class K, class D>
-node<K,D>* node<K,D>::absorb(key_data<K,D> new_data, split_holder<K,D> &to_absorb)
+bool node<K,D>::absorb(split_holder<K,D> &to_absorb)
 {
     //TODO finish absorb
-	return nullptr;
+    return false;
 }
 
 template<class K, class D>
+split_holder<K,D> node<K,D>::split(key_data<K,D> &&new_data)
+{
+    return split_holder<K,D>();
+}
+
+// Return TRUE if all children ptrs are null. Returns FALSE otherwise.
+// TODO performance: look into the speed benefit of having a child_count data member
+template<class K, class D>
 inline bool node<K,D>::is_leaf() const
 {
-    return child_count == 0;
+    size_t d_count = 0;
+    for (size_t i=0; i<d_count+1; ++i)
+    {
+        if (children[i] != nullptr)
+        {
+            return false;
+        }
+    }
+    return true;
 }
 
 #endif // SENTIMENT_ANALYSIS_BTREE
