@@ -83,6 +83,13 @@ public:
     {
         node<int, int> n;
     }
+
+    void testNodePush(void)
+    {
+        auto *new_node = new node<int, int>();
+        auto new_root = new_node->insert(std::make_pair(0,0));
+        TS_ASSERT(new_node->is_leaf());
+    }
 protected:
 private:
     std::random_device r;

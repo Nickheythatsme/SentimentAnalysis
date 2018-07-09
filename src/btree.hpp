@@ -275,6 +275,7 @@ class node : public holder<K,D>
 {
     public:
         node();
+        node(key_data<K,D> &&new_data);
         node(const node<K,D> &rhs);
         node(node<K,D> &&rhs);
         ~node();
@@ -302,6 +303,14 @@ class node : public holder<K,D>
 template<class K, class D>
 inline node<K,D>::node() :
     holder<K,D>(),
+    children(new std::unique_ptr<node<K,D>>[BSIZE+1])
+{
+}
+
+// CONSTRUCTOR with arguments
+template<class K, class D>
+inline node<K,D>::node(key_data<K,D> &&new_data) :
+    holder<K,D>(std::move(new_data)),
     children(new std::unique_ptr<node<K,D>>[BSIZE+1])
 {
 }
@@ -345,9 +354,10 @@ node<K,D>* node<K,D>::insert(key_data<K,D> &&new_data)
         auto must_absorb = absorb(to_absorb);
         if (must_absorb)
         {
-            auto new_root = new node<K,D>(*to_absorb.push_up);
-            new_root->children[0] = this;
-            new_root->children[1] = to_absorb.new_rhs;
+            auto new_root = new node<K,D>(std::move(*to_absorb.push_up.get()));
+            new_root->children[0].reset(this);
+            // TODO fix the absorb return value. We may need another struct which contains a ptr to a node
+            // new_root->children[1].reset(new node<K,D>(*(to_absorb.new_rhs.release())));
             return new_root;
         }
     }
@@ -371,21 +381,20 @@ bool node<K,D>::insert(key_data<K,D> &&new_data, split_holder<K,D> &to_absorb)
         // If we don't have room, split and insert here
         else
         {
-            return this->split(std::move(new_data), to_absorb);
+            to_absorb = this->split(std::move(new_data));
+            return true;
         }
     }
 
     // If we're not a leaf, then compare and traverse to the next child
     //TODO
-    auto next_child = this->first_greater(new_data);
+    auto next_child = this->first_greater(new_data.first);
     auto result = children[next_child]->insert(std::move(new_data), to_absorb);
     // If our child split, then we must absorb and return true if our parent must absorb.
     if (result)
     {
         return absorb(to_absorb);
     }
-
-
     return false;
 }
 
