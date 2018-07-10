@@ -50,7 +50,7 @@ public:
     {
         TS_TRACE("testing sorting");
 
-        for (size_t t=0; t<1000; ++t)
+        for (size_t t=0; t<1000000; ++t)
         {
             std::uniform_int_distribution<int> uniform_dist(0, 100);
             holder<int, string> h;
