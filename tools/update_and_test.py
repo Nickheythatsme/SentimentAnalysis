@@ -74,16 +74,17 @@ def run_tests():
 
 
 def comment_results(test_results):
-    command = ["git","show-ref"]
+    command = ["git","log","-n 1"]
     logger.info('Running "{}"'.format(command))
     result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     if result.returncode != 0:
         err = result.stderr.decode("utf-8")
         logger.error('git error: ' + err)
         raise Exception("git error: " + err)
+
     # Get the most recent sha code
     message = result.stdout.decode("utf-8")
-    recent_sha = message.split('\n')[0].split(' ')[0]
+    recent_sha = message.split('\n')[0].split(' ')[1]
 
     logger.info("Making POST request...")
     # Make the POST request with the test results

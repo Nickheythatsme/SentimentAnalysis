@@ -17,16 +17,15 @@ public:
 		holder<int, string> h;
 		TS_ASSERT(h.is_full());
 	}
+
 	void testSplit(void)
 	{
 		holder<int, string> h;
-        split_holder<int,string> split_result;
-
 		for (size_t i = 0; i < BSIZE; ++i)
 		{
 			h.push(std::make_pair(i,"test"));
 		}
-		h.split(std::make_pair(BSIZE,"test"), split_result);
+		auto split_result = h.split(std::make_pair(BSIZE,"test"));
 
         // TEST new rhs data by comparing i to the holder
         for (size_t i=(BSIZE/2)+1, j=0; i<=BSIZE; ++i, ++j)
@@ -45,23 +44,6 @@ public:
             TS_ASSERT(result == i);
         }
 	}
-
-    void testSort(void)
-    {
-        TS_TRACE("testing sorting");
-
-        for (size_t t=0; t<1000; ++t)
-        {
-            std::uniform_int_distribution<int> uniform_dist(0, 100);
-            holder<int, string> h;
-
-            for (size_t i=0; i<BSIZE; ++i)
-            {
-                h.push( std::make_pair(uniform_dist(r_engine), "test") );
-            }
-            TS_ASSERT(h.is_sorted(h.data.get(), h.data_count));
-        }
-    }
 
     void testCustomSort(void)
     {
