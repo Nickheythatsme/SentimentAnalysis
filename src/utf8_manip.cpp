@@ -9,7 +9,9 @@ int utf8_manip::character_length(signed char f)
 {
     int i = 0;
     if (f >= 0)
+    {
         return 1;
+    }
 
     while (f < 0)
     {
@@ -35,13 +37,13 @@ int utf8_manip::test_character(const char *str, const char *delims)
 
 int utf8_manip::test_character(const char *str, const char *delims, int s_len)
 {
-    const char *d_str = delims; // delimiter string
-    const char *str_head = str; // save the right character of str
+    auto *d_str = delims; // delimiter string
+    auto *str_head = str; // save the right character of str
 
-    while (*d_str)
+    while ('\0' != *d_str)
     {
         // Find the length of the current delimiter character
-        int d_len = character_length(*d_str);
+        auto d_len = character_length(*d_str);
 
         // Skip comparison if they're of different lengths
         if (d_len == s_len)

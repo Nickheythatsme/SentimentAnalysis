@@ -51,7 +51,7 @@ if (EXISTS ${CXXTEST_DIR})
 		)
 else()
 	message(SEND_ERROR "
-Cxxtest directory not found but is needed for testing. Clone it here:
-cd ${CMAKE_CURRENT_SOURCE_DIR}/test
-git clone https://github.com/CxxTest/cxxtest")
+Cxxtest directory not found but is needed for testing. Clone and move it here:
+git clone https://github.com/CxxTest/cxxtest 
+mv cxxtest ${CMAKE_CURRENT_SOURCE_DIR}")
 endif()
