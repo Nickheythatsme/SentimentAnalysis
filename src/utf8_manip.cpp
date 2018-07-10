@@ -51,12 +51,14 @@ int utf8_manip::test_character(const char *str, const char *delims, int s_len)
 
             // accumulate the differences
             int diff = 0;
-            for (int i=0; i<d_len && 0 == diff; ++i, ++d_str, ++str)
-                diff += *d_str - *str;
+            for (int i = 0; i < d_len && 0 == diff; ++i, ++d_str, ++str) {
+              diff += *d_str - *str;
+            }
 
             // Return 1 if we have a match
-            if (diff == 0)
-                return 1;
+            if (diff == 0) {
+              return 1;
+            }
 
             // reset str to the character we were testing
             str = str_head;
@@ -64,8 +66,9 @@ int utf8_manip::test_character(const char *str, const char *delims, int s_len)
         else
         {
             // Move along the delimiters if we're not comparing this character
-            for(int i=0; i < d_len; ++i)
-                ++d_str;
+            for (int i = 0; i < d_len; ++i) {
+              ++d_str;
+            }
         }
     }
     // Return false if we found no matches
@@ -83,13 +86,14 @@ int utf8_manip::copy_character(const char *str, char *buff, int max_len)
 // Returns false if max_len > char_len
 int utf8_manip::copy_character(const char *str, char *buff, int max_len, int char_len)
 {
-    if (char_len >= max_len) return 0;
+  if (char_len >= max_len) {
+    return 0;
+  }
 
-    for (;char_len >=0 && *str; --char_len)
-    {
-        *buff = *str;
-        ++str;
-        ++buff;
+  for (; char_len >= 0 && *str; --char_len) {
+    *buff = *str;
+    ++str;
+    ++buff;
     }
     *buff = '\0';
     return char_len;

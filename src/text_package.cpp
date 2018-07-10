@@ -32,10 +32,11 @@ std::ostream& operator<<(std::ostream& out, const text_package_error &rhs)
 long text_package::read_file(const string &filename, string &buff)
 {
     std::ifstream fin(filename.c_str());
-    if (!fin)
-        return -1;
-        // TODO should we throw here or return -1?
-        // throw text_package_error("error opening file", "", filename);
+    if (!fin) {
+      return -1;
+    }
+    // TODO should we throw here or return -1?
+    // throw text_package_error("error opening file", "", filename);
 
     // Determine file size
     fin.seekg (0, fin.end);
@@ -53,8 +54,9 @@ long text_package::read_file(const string &filename, string &buff)
     }
 
     // Read in file
-    while(fin.good())
-        buff += fin.get();
+    while (fin.good()) {
+      buff += fin.get();
+    }
     fin.close();
 
     return (long)len;
@@ -86,12 +88,14 @@ size_t text_package::load_files(const string &matching_path)
 #else
     auto globbed = new glob_t;
     glob(matching_path.c_str(), GLOB_NOSORT, nullptr, globbed);
-    for (size_t i=0; i< globbed->gl_pathc; ++i)
-        filenames.emplace_back(globbed->gl_pathv[i]);
+    for (size_t i = 0; i < globbed->gl_pathc; ++i) {
+      filenames.emplace_back(globbed->gl_pathv[i]);
+    }
     globfree(globbed);
 #endif
-    if (filenames.empty())
-        throw text_package_error("No files found.", matching_path, "NULL");
+    if (filenames.empty()) {
+      throw text_package_error("No files found.", matching_path, "NULL");
+    }
     start_loading(std::move(filenames));
     return this->size();
 }
@@ -132,8 +136,9 @@ size_t text_package::start_loading(std::vector<string> &&filenames)
         threads[i].join();
         _bytes += bytes_read[i];
     }
-    for (auto &c : texts)
-        std::vector<string>::push_back(std::move(c));
+    for (auto &c : texts) {
+      std::vector<string>::push_back(std::move(c));
+    }
     return std::vector<string>::size();
 }
 
@@ -153,9 +158,9 @@ void text_package::_load_files(
         bytes += temp_bytes;
         if (temp_bytes <= 0) {
             std::cerr<< "Error loading file: " << filenames[i] << std::endl;
+        } else {
+          texts[i] = std::move(buff);
         }
-        else 
-            texts[i] = std::move(buff);
         buff.clear();
     }
 }
