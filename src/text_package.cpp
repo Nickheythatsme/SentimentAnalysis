@@ -32,11 +32,11 @@ std::ostream& operator<<(std::ostream& out, const text_package_error &rhs)
 long text_package::read_file(const string &filename, string &buff)
 {
     std::ifstream fin(filename.c_str());
+    // TODO should we throw here or return -1?
+    // throw text_package_error("error opening file", "", filename);
     if (!fin) {
       return -1;
     }
-    // TODO should we throw here or return -1?
-    // throw text_package_error("error opening file", "", filename);
 
     // Determine file size
     fin.seekg (0, fin.end);

@@ -46,7 +46,7 @@ class text_package : public std::vector<string>
         text_package(text_package &&rhs) = default;
         explicit text_package(string dirname);
         virtual ~text_package() = default;
-        size_t bytes() {return _bytes;}
+        size_t bytes() const {return _bytes;}
         size_t load_files(const string &dirname);
     private:
         void _load_files(std::vector<string> &filenames, std::vector<string> &texts,
