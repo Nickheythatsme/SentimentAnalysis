@@ -41,9 +41,19 @@ if (EXISTS ${CXXTEST_DIR})
 		)
 
 	#################
-	#Make window test
+	# Make btree test
 	set (SOURCE "test_btree.h")
 	set (TARGET "btree")
+	cxx_test(${TARGET} ${SOURCE})
+	target_link_libraries(
+		${TARGET}
+		vectorize
+		)
+
+	#################
+	# Make holder test
+	set (SOURCE "test_holder.h")
+	set (TARGET "holder")
 	cxx_test(${TARGET} ${SOURCE})
 	target_link_libraries(
 		${TARGET}

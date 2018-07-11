@@ -45,7 +45,7 @@ class node : public holder<K,D>
         bool insert(key_data<K,D> &&new_data, split_node<K,D> &to_absorb);
 
         // Absorb a split_node into this node/holder
-        bool absorb(split_node<K,D> &to_absorb);
+        bool absorb(split_node<K,D> &to_absorb, size_t child_num);
         bool split(key_data<K,D> &&new_data, split_node<K,D> &split_dest);
 
         // Array of pointers to child nodes
@@ -103,8 +103,8 @@ node<K,D>* node<K,D>::insert(key_data<K,D> &&new_data)
     split_node<K,D> to_absorb;
     if (insert(std::move(new_data), to_absorb))
     {
-        // TODO handle absorbtion
-        auto must_absorb = absorb(to_absorb);
+        // Handle absorbtion
+        auto must_absorb = absorb(to_absorb, this->first_greater(new_data.first));
         if (must_absorb)
         {
             auto new_root = new node<K,D>(std::move(*to_absorb.push_up.get()));
@@ -141,13 +141,13 @@ bool node<K,D>::insert(key_data<K,D> &&new_data, split_node<K,D> &to_absorb)
     }
 
     // If we're not a leaf, then compare and traverse to the next child
-    //TODO
     auto next_child = this->first_greater(new_data.first);
     auto result = children[next_child]->insert(std::move(new_data), to_absorb);
+
     // If our child split, then we must absorb and return true if our parent must absorb.
     if (result)
     {
-        return absorb(to_absorb);
+        return absorb(to_absorb, next_child);
     }
     return false;
 }
@@ -156,10 +156,19 @@ bool node<K,D>::insert(key_data<K,D> &&new_data, split_node<K,D> &to_absorb)
 // own push up data if it was unable to absorb to_absorb without splitting 
 // itself.
 template<class K, class D>
-bool node<K,D>::absorb(split_node<K,D> &to_absorb)
+bool node<K,D>::absorb(split_node<K,D> &to_absorb, size_t child_num)
 {
-    //TODO finish absorb
-    return false;
+    bool parent_must_absorb { false };
+    if (this->is_full())
+    {
+        // TODO handle case
+        parent_must_absorb = true;
+    }
+    else
+    {
+        // TODO handle case
+    }
+    return parent_must_absorb;
 }
 
 template<class K, class D>
