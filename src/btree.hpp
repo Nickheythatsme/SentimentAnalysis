@@ -166,7 +166,14 @@ bool node<K,D>::absorb(split_node<K,D> &to_absorb, size_t child_num)
     }
     else
     {
-        // TODO handle case
+		this->push(key_data<K, D>(*to_absorb.push_up.release()));
+		auto dcount = this->get_data_count();
+
+		// Shift children from child_num to end one index down
+		for (size_t i = dcount; i >= child_num; --i)
+		{
+			children[i].reset(children[i - 1].release());
+		}
     }
     return parent_must_absorb;
 }
@@ -177,7 +184,8 @@ bool node<K,D>::split(key_data<K,D> &&new_data, split_node<K,D> &split_dest)
     split_holder<K,D> to_hold;
     holder<K, D>::split(std::move(new_data), to_hold);
 
-    // TODO finish node split
+	// Handle split
+
     return false;
 }
 

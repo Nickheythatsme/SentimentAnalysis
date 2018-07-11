@@ -74,6 +74,8 @@ text_package::text_package(string dirname) :
 size_t text_package::load_files(const string &matching_path)
 {
     std::vector<string> filenames;
+	auto root = matching_path;
+	root.resize(matching_path.size() - 1); // Remove the * from the end
 #ifdef WINDOWS
     auto a_file = new WIN32_FIND_DATA;
     auto handle = FindFirstFile(matching_path.c_str(), a_file);
@@ -83,7 +85,7 @@ size_t text_package::load_files(const string &matching_path)
     while (find_result)
     {
         find_result = FindNextFile(handle, a_file);
-        filenames.emplace_back(a_file->cFileName);
+        filenames.emplace_back(root + a_file->cFileName);
     }
 #else
     auto globbed = new glob_t;
@@ -107,7 +109,7 @@ size_t text_package::start_loading(std::vector<string> &&filenames)
     size_t thread_count = std::thread::hardware_concurrency(); // TODO replace with global config file
     std::cout << "Loading files on " << thread_count << " threads" << std::endl;
     auto bytes_read = new size_t[thread_count];
-    auto* threads = new std::thread[thread_count];
+    auto threads = new std::thread[thread_count];
 
     size_t increment = filenames.size() / thread_count;
     size_t i;

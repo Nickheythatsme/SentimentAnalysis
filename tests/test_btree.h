@@ -9,7 +9,7 @@
 #include <chrono>
 using std::string;
 
-class TestHolder : public CxxTest::TestSuite
+class TestBtree : public CxxTest::TestSuite
 {
 public:
     void testNodeInsert(void)
