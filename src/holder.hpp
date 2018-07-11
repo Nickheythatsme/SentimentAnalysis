@@ -102,8 +102,8 @@ inline holder<K, D>::holder() :
 // CONSTRUCTOR with arguments
 template<class K, class D>
 inline holder<K, D>::holder(key_data<K,D> &&rhs) :
-	data_count(1),
-	data(new key_data<K,D>[BSIZE])
+	data(new key_data<K,D>[BSIZE]),
+	data_count(1)
 {
 	data[0] = std::move(rhs);
 }
@@ -119,10 +119,9 @@ inline holder<K, D>::holder(holder &&rhs) :
 
 template<class K, class D>
 inline holder<K, D>::holder(const holder &rhs) :
-	data(),
-	data_count(new key_data<K,D>[BSIZE])
+	data(new key_data<K,D>[BSIZE]),
+	data_count(rhs.data_count)
 {
-	data = new key_data<K,D>[BSIZE];
 	for (size_t i = 0; i < data_count; ++i)
 	{
 		data[i] = rhs.data[i];

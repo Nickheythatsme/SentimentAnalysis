@@ -29,6 +29,7 @@ class node : public holder<K,D>
     public:
         node();
         node(key_data<K,D> &&new_data);
+		node(holder<K, D> to_hold);
         node(const node<K,D> &rhs);
         node(node<K,D> &&rhs);
         ~node();
@@ -64,6 +65,15 @@ inline node<K,D>::node() :
 template<class K, class D>
 inline node<K,D>::node(key_data<K,D> &&new_data) :
     holder<K,D>(std::move(new_data)),
+    children(new std::unique_ptr<node<K,D>>[BSIZE+1])
+{
+}
+
+// CONSTRUCTOR with arguments
+// COPY CONSTRUCTOR
+template<class K, class D>
+inline node<K,D>::node(holder<K, D> to_hold) :
+    holder<K,D>(std::move(to_hold)),
     children(new std::unique_ptr<node<K,D>>[BSIZE+1])
 {
 }
@@ -107,7 +117,7 @@ node<K,D>* node<K,D>::insert(key_data<K,D> &&new_data)
         auto must_absorb = absorb(to_absorb, this->first_greater(new_data.first));
         if (must_absorb)
         {
-            auto new_root = new node<K,D>(std::move(*to_absorb.push_up.get()));
+            auto new_root = new node<K,D>(std::move(*to_absorb.push_up.release()));
             new_root->children[0].reset(this);
             // TODO fix the absorb return value. We may need another struct which contains a ptr to a node
             // new_root->children[1].reset(new node<K,D>(*(to_absorb.new_rhs.release())));
@@ -158,6 +168,9 @@ bool node<K,D>::insert(key_data<K,D> &&new_data, split_node<K,D> &to_absorb)
 template<class K, class D>
 bool node<K,D>::absorb(split_node<K,D> &to_absorb, size_t child_num)
 {
+	// TODO finish absorb
+	return false;
+
     bool parent_must_absorb { false };
     if (this->is_full())
     {
@@ -183,8 +196,12 @@ bool node<K,D>::split(key_data<K,D> &&new_data, split_node<K,D> &split_dest)
 {
     split_holder<K,D> to_hold;
     holder<K, D>::split(std::move(new_data), to_hold);
+	split_dest.new_rhs.reset(new node<K, D>(*to_hold.new_rhs.release()));
 
-	// Handle split
+	// TODO Handle split
+	for (size_t i = 0; i < this->get_data_count() + 1; ++i)
+	{
+	}
 
     return false;
 }
