@@ -9,7 +9,7 @@ set(LIBRARY_NAME vectorize)
 # Define the sources to be added to the library
 set(SOURCES
     parse.cpp parse.h
-    utf8_manip.cpp utf8_manip.h
+    string_manip.c string_manip.h
     text_package.h text_package.cpp
 	btree.hpp holder.hpp
     )

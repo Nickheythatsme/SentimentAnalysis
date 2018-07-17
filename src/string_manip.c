@@ -23,54 +23,6 @@ int ascii(signed char c)
     return c >= 0;
 }
 
-int test_char(const char *str, const char *delims)
-{
-    // Find the length of the character to test
-    size_t s_len = char_len(*str);
-
-    return test_char_n(str, delims, s_len);
-}
-
-int test_char_n(const char *str, const char *delims, int s_len)
-{
-    const char* d_str = delims; // delimiter string
-    const char* str_head = str; // save the right character of str
-
-    while ('\0' != *d_str)
-    {
-        // Find the length of the current delimiter character
-        size_t d_len = char_len(*d_str);
-
-        // Skip comparison if they're of different lengths
-        if (d_len == s_len)
-        {
-
-            // accumulate the differences
-            int diff = 0;
-            for (int i = 0; i < d_len && 0 == diff; ++i, ++d_str, ++str) {
-              diff += *d_str - *str;
-            }
-
-            // Return 1 if we have a match
-            if (diff == 0) {
-              return 1;
-            }
-
-            // reset str to the character we were testing
-            str = str_head;
-        }
-        else
-        {
-            // Move along the delimiters if we're not comparing this character
-            for (int i = 0; i < d_len; ++i) {
-              ++d_str;
-            }
-        }
-    }
-    // Return false if we found no matches
-    return 0;
-}
-
 // Return pos if delim is in str, (the equivolent to) -1 if it does not exist
 size_t find(const char *str, const char *delim, size_t d_len)
 {
@@ -126,17 +78,8 @@ char* remove_section(size_t start, size_t end, char *str)
     return new_s;
 }
 
-// Replace all occurances of delim in str. Replaces with replace char
-// RETURNS number of occurances of delim that were replaced
-// wrapper
-size_t replace_all(char *str, const char *delim, char replace_c)
-{
-    size_t d_len = strlen(delim);
-    return replace_all_n(str, delim, replace_c, d_len);
-}
-
 // replace_all implementation
-size_t replace_all_n(char *str, const char *delim, char replace_c, size_t d_len)
+size_t _replace_all(char *str, const char *delim, char replace_c, size_t d_len)
 {
     size_t delim_loc = find(str, delim, d_len);
     size_t i;
@@ -154,12 +97,21 @@ size_t replace_all_n(char *str, const char *delim, char replace_c, size_t d_len)
     return delim_count;
 }
 
+// Replace all occurances of delim in str. Replaces with replace char
+// RETURNS number of occurances of delim that were replaced
+// wrapper
+size_t replace_all(char *str, const char *delim, char replace_c)
+{
+    size_t d_len = strlen(delim);
+    return _replace_all(str, delim, replace_c, d_len);
+}
+
 // Remove all occurances of delim, then copy into a new character stringj
 // RETURNS the number of occurrances removed
 size_t remove_all(char *str, const char *delim)
 {
     size_t d_len = strnlen(str, S_MAX);
-    size_t removed = replace_all_n(str, delim, 0x01, d_len);
+    size_t removed = _replace_all(str, delim, 0x01, d_len);
 
     size_t new_s_len = removed * d_len;
     char * new_s = (char*)malloc(sizeof(char) * new_s_len);
@@ -168,3 +120,4 @@ size_t remove_all(char *str, const char *delim)
     return -1;
 
 }
+

@@ -27,7 +27,7 @@ if (EXISTS ${CXXTEST_DIR})
 
 	#################
 	# Make Parse test
-	set (SOURCE "test_parse.h")
+	set (SOURCE "test_string_manip.h")
 	set (TARGET "parse_test")
 
 	# Find required packages

@@ -1,7 +1,6 @@
 #include "parse.h"
 
 // Assign the default delimiters
-char parse::default_delims[] = "@ .?!\t\n";
 s_vector parse::default_delims = {"?"," ",".",",","\"","'","<br>","</br>","< /br>","< br>"};
 
 // CONSTRUCTOR
@@ -35,8 +34,8 @@ parse::parse(const parse &obj) :
 
 // Move constructor
 parse::parse(parse && rhs) :
-    s_vector(std::move(obj)),
-    delims(std::move(obj.delims))
+    s_vector(std::move(rhs)),
+    delims(std::move(rhs.delims))
 {
 }
 
@@ -57,12 +56,8 @@ parse& parse::operator()(const std::string &str)
  */
 parse& parse::operator=(const parse &obj)
 {
-    std::vector<std::string>::operator=(obj);
-
-    delete [] delims;
-    delims = new char[strlen(obj.delims) + 1];
-    strcpy(delims, obj.delims);
-
+    s_vector::operator=(obj);
+    delims = obj.delims;
 	return *this;
 }
 
@@ -71,9 +66,8 @@ parse& parse::operator=(const parse &obj)
  */
 parse& parse::operator=(parse &&rhs)
 {
-    std::vector<std::string>::operator=(std::move(rhs));
-    delims = rhs.delims;
-    rhs.delims = nullptr;
+    s_vector::operator=(std::move(rhs));
+    delims = std::move(rhs.delims);
 
     return *this;
 }
@@ -81,53 +75,8 @@ parse& parse::operator=(parse &&rhs)
 // Parse the UTF8 string and split it based on the delimiters
 long parse::_parse(const char *str)
 {
-	int buff_index=0, char_len;
-	char* buff = new char[MAX_LEN];
-    char* buff_head = buff;
-
-
-	while (*str) {
-		char_len = manip.character_length(*str);
-        if (!manip.test_character(str, delims, char_len) && char_len < MAX_LEN)
-		{
-            manip.copy_character(str, buff, MAX_LEN-char_len, char_len);
-            auto increment = sizeof(char) * char_len;
-
-            // move to the next char
-            str += increment; 
-            buff += increment;
-            buff_index += 1;
-		}
-        else
-		{
-            // Test the length of the word, add it if passed
-			if (buff_index >= MIN_LEN) {
-                *buff = '\0';
-				this->emplace_back(std::string(buff_head));
-            }
-            buff = buff_head;
-            buff_index = 0;
-
-            // Skip this character since we know it's bad
-            str += sizeof(char) * char_len; // move to the next char
-
-            // Find the new char len
-            char_len = manip.character_length(*str);
-
-            // Keep moving until we find a good character
-            while(*str && manip.test_character(str, delims, char_len))
-            {
-                str += sizeof(char) * char_len; // move to the next char
-
-                // Find the new char len
-                char_len = manip.character_length(*str);
-            }
-		}
-	}
-    if (buff_index >= MIN_LEN) {
-        this->emplace_back(std::string(buff_head));
-    }
-    delete [] buff_head;
-	return (long) this->size();
+    // TODO this has been moved to string_manip.c
+    // call the functions there to parse str
+    return -1;
 }
 

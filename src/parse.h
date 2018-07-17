@@ -1,8 +1,10 @@
 #include <vector>
 #include <iostream>
 #include <string>
-#include <cassert>
-#include "utf8_manip.h"
+
+extern "C" {
+    #include "string_manip.h"
+}
 
 #ifndef VECTORIZE_PARSE_
 #define VECTORIZE_PARSE_
