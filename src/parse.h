@@ -31,21 +31,18 @@ class parse : public s_vector
 {
 public:
 	parse();
-	explicit parse(const char* delims);
-	explicit parse(const char* delims, const std::string &str);
+	explicit parse(s_vector _delims);
+	explicit parse(s_vector _delims, const std::string &to_parse);
+	parse(parse&& rhs);
 	parse(const parse &obj);
-	explicit parse(parse&& rhs);
-	~parse();
 	parse& operator()(const std::string &str);
 	parse& operator=(const parse &obj);
 	parse& operator=(parse &&rhs);
 protected:
 private:
     long _parse(const char *str);
-
-    static char default_delims[];
-    char *delims;
-    utf8_manip manip;
+    s_vector delims;
+    static s_vector default_delims;
 };
 
 #endif // VECTORIZE_PARSE_

@@ -2,55 +2,42 @@
 
 // Assign the default delimiters
 char parse::default_delims[] = "@ .?!\t\n";
+s_vector parse::default_delims = {"?"," ",".",",","\"","'","<br>","</br>","< /br>","< br>"};
 
 // CONSTRUCTOR
 parse::parse() :
-	std::vector<std::string>()
+	s_vector(),
+    delims(parse::default_delims)
 {
-    delims = new char[strlen(parse::default_delims) + 1];
-    strcpy(delims, parse::default_delims);
 }
 
 // CONSTRUCTOR with arguments 
-parse::parse(const char* _delims) :
-	std::vector<std::string>()
+parse::parse(s_vector _delims) :
+	s_vector(),
+    delims(std::move(_delims))
 {
-    delims = new char[strlen(_delims) + 1];
-    strcpy(delims, _delims);
 }
 
 // CONSTRUCTOR with arguments
-parse::parse(const char* _delims, const std::string &str) :
-	std::vector<std::string>()
+parse::parse(s_vector _delims, const std::string &str) :
+	s_vector(),
+    delims(std::move(_delims))
 {
-    delims = new char[strlen(_delims) + 1];
-    strcpy(delims, _delims);
     this->operator()(str);
 }
 
 // COPY CONSTRUCTOR
 parse::parse(const parse &obj) :
-	std::vector<std::string>(obj)
+    s_vector(obj),
+    delims(obj.delims)
 {
-    delims = new char[strlen(obj.delims) + 1];
-    strcpy(delims, obj.delims);
 }
 
 // Move constructor
 parse::parse(parse && rhs) :
-	std::vector<std::string>(std::move(rhs))
+    s_vector(std::move(obj)),
+    delims(std::move(obj.delims))
 {
-    delims = rhs.delims;
-    rhs.delims = nullptr;
-}
-
-// DESTRUCTOR
-parse::~parse()
-{
-    if (delims) {
-        delete[] delims;
-        delims = nullptr;
-    }
 }
 
 

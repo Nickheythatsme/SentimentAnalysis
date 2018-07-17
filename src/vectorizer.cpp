@@ -5,7 +5,7 @@
 #include "btree.hpp"
 #include "text_package.h"
 
-#ifdef __WIND32 | __WIN64
+#ifdef __WIND32
 #define DIR_DELIM '\\'
 #else
 #define DIR_DELIM '/'
