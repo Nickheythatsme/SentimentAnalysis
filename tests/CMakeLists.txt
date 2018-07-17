@@ -26,9 +26,9 @@ if (EXISTS ${CXXTEST_DIR})
 	endfunction(cxx_test)
 
 	#################
-	# Make Parse test
+    # Make String Manip test
 	set (SOURCE "test_string_manip.h")
-	set (TARGET "parse_test")
+	set (TARGET "string_manip_test")
 
 	# Find required packages
 	find_package (Threads REQUIRED)

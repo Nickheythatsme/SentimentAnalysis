@@ -23,21 +23,32 @@ int ascii(signed char c)
     return c >= 0;
 }
 
+// lowercases all ascii letters
+void lower(char *s)
+{
+    while(*s)
+    {
+        if (*s >= 'A' && *s <= 'Z')
+        {
+            *s += 32;
+        }
+    }
+}
+
 // Return pos if delim is in str, (the equivolent to) -1 if it does not exist
 size_t find(const char *str, const char *delim, size_t d_len)
 {
-    size_t s_len = strnlen(str, S_MAX);
-    size_t i;
-
-    for (i=0; i<s_len; ++i)
+    size_t i=0;
+    while (*str)
     {
         if (!strncmp(str, delim, d_len))
         {
-            return i;
+            return i; 
         }
         ++str;
+        ++i;
     }
-    return -1;
+    return S_FAIL;
 }
 
 // Replace all chars from start to end with the delmiter character
@@ -55,46 +66,23 @@ char* replace(size_t start, size_t end, char *str, char delim)
     return current;
 }
 
-// Remove all chars from start to end, then copy into a new character string
-// RETURNS a ptr to the new string
-char* remove_section(size_t start, size_t end, char *str)
-{
-    size_t s_len = strnlen(str, S_MAX) + 1;
-    size_t s_len_diff = end - start;
-    char *new_s = (char *) malloc(sizeof(char) * (s_len - s_len_diff));
-    size_t i;
-
-    for (i=0; i<start; ++i)
-    {
-        *new_s = str[i];
-        ++new_s;
-    }
-
-    for (i=end; i<s_len; ++i)
-    {
-        *new_s = str[i];
-        ++new_s;
-    }
-    return new_s;
-}
-
 // replace_all implementation
 size_t _replace_all(char *str, const char *delim, char replace_c, size_t d_len)
 {
-    size_t delim_loc = find(str, delim, d_len);
     size_t i;
-    size_t delim_count = 0;
+    size_t result = find(str, delim, d_len);
 
-    while (delim_loc != S_FAIL)
+    if (result == S_FAIL)
     {
-        str = &str[delim_loc];
-        for (i=0; i<d_len; ++i)
-        {
-            *str = replace_c;
-        }
-        ++delim_count;
+        return 0;
     }
-    return delim_count;
+
+    for (i=result; i<result + d_len; ++i)
+    {
+        str[i] = replace_c;
+    }
+
+    return _replace_all(str, delim, replace_c, d_len) + 1;
 }
 
 // Replace all occurances of delim in str. Replaces with replace char
@@ -108,16 +96,42 @@ size_t replace_all(char *str, const char *delim, char replace_c)
 
 // Remove all occurances of delim, then copy into a new character stringj
 // RETURNS the number of occurrances removed
-size_t remove_all(char *str, const char *delim)
+char* remove_all(const char *str, const char *delim)
 {
-    size_t d_len = strnlen(str, S_MAX);
-    size_t removed = _replace_all(str, delim, 0x01, d_len);
+    size_t d_len = strnlen(delim, S_MAX);
+    size_t count = 0;
+    size_t result = find(str, delim, d_len);
+    const char *str_head = str;
 
-    size_t new_s_len = removed * d_len;
-    char * new_s = (char*)malloc(sizeof(char) * new_s_len);
+    while (result != S_FAIL)
+    {
+        ++count;
+        str += sizeof(char) * result + 1;
+        result = find(str, delim, d_len);
+    }
 
-    // TODO finish copying over select parts of str into new_s
-    return -1;
-
+    size_t new_s_bytes = sizeof(char) * (strnlen(str_head, S_MAX) + 1 - (count * d_len));
+    char * new_s = (char*)malloc(new_s_bytes);
+    _remove_all(str_head, delim, d_len, new_s);
+    return new_s;
 }
 
+// Remove all implementation
+void _remove_all(const char *str, const char *delim, size_t d_len, char *dest)
+{
+    while (!strncmp(str, delim, d_len))
+    {
+        str += sizeof(char) * d_len;
+    }
+    while(*str)
+    {
+        *dest = *str;
+        ++str; ++dest;
+        while (!strncmp(str, delim, d_len))
+        {
+            str += sizeof(char) * d_len;
+        }
+    }
+    *dest = '\0';
+    return;
+}
