@@ -26,17 +26,19 @@ if (EXISTS ${CXXTEST_DIR})
 	endfunction(cxx_test)
 
 	#################
-    # Make String Manip test
-	set (SOURCE "test_string_manip.h")
-	set (TARGET "string_manip_test")
+    # Make parse test
+	set (SOURCE "test_parse.h")
+	set (TARGET "parse_test")
 
 	# Find required packages
 	find_package (Threads REQUIRED)
+    set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
+    set(THREADS_PREFER_PTHREAD_FLAG TRUE)
 
 	cxx_test(${TARGET} ${SOURCE})
 	target_link_libraries(
 		${TARGET}
-		${CMAKE_THREAD_LIBS_INIT}
+        Threads::Threads
 		vectorize
 		)
 

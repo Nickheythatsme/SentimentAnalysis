@@ -1,16 +1,14 @@
 #include <vector>
-#include <iostream>
 #include <string>
-
-extern "C" {
-    #include "string_manip.h"
-}
+#include <cstring>
+#include <mutex>
+#include <thread>
 
 #ifndef VECTORIZE_PARSE_
 #define VECTORIZE_PARSE_
 
-#define MAX_LEN 1024
-#define MIN_LEN 3
+#define STRING_MAX 800000
+#define STRING_MIN 3
 
 /*
  * So for UTF-8 encoding:
@@ -29,20 +27,32 @@ extern "C" {
 
 using s_vector=std::vector<std::string>;
 
+// used to identify locations of delimiters which will later be removed/ignored
+struct delim_location
+{
+	size_t start; // starting position of the section to trim
+	size_t end; // one past the ending location. 
+};
+
 class parse : public s_vector
 {
 public:
 	parse();
 	explicit parse(s_vector _delims);
-	explicit parse(s_vector _delims, std::string to_parse);
 	parse(parse&& rhs);
 	parse(const parse &obj);
-	parse& operator()(const std::string &str);
+    std::string operator()(const std::string &str);
 	parse& operator=(const parse &obj);
-	parse& operator=(parse &&rhs);
+	parse& operator=(parse&& rhs);
 protected:
 private:
-    long _parse(const char *str);
+    std::string _parse(const char *str);
+	size_t identify(const char *str, const char *delim, size_t delim_len, size_t index);
+	void insert_sorted(delim_location &&to_insert);
+    std::string make_string(const char* str);
+
+	std::vector<delim_location> to_trim;
+	std::mutex to_trim_mut;
     s_vector delims;
     static s_vector default_delims;
 };
