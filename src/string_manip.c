@@ -51,52 +51,36 @@ size_t find(const char *str, const char *delim, size_t d_len)
     return S_FAIL;
 }
 
-// Replace all chars from start to end with the delmiter character
-// RETURNS a ptr to the next char (after the replacement)
-char* replace(size_t start, size_t end, char *str, char delim)
+size_t find_all(const char *str, const char *delim, size_t d_len, struct remove_loc **locations)
 {
-    size_t i;
-    char *current = &str[start];
-
-    for (i=start; i<end && *current; ++i)
-    {
-        *current = delim;
-        ++current;
-    }
-    return current;
-}
-
-// replace_all implementation
-size_t _replace_all(char *str, const char *delim, char replace_c, size_t d_len)
-{
-    size_t i;
     size_t result = find(str, delim, d_len);
 
-    if (result == S_FAIL)
+    if (S_FAIL == result)
     {
+        *locations = NULL;
         return 0;
     }
+    *locations = (struct remove_loc*) malloc(sizeof(struct remove_loc));
+    (*locations)->len = d_len;
+    (*locations)->pos = result;
 
-    for (i=result; i<result + d_len; ++i)
-    {
-        str[i] = replace_c;
-    }
-
-    return _replace_all(str, delim, replace_c, d_len) + 1;
+    return find_all(&str[result + 1], delim, d_len, &(*locations)->next) + d_len;
 }
 
-// Replace all occurances of delim in str. Replaces with replace char
-// RETURNS number of occurances of delim that were replaced
-// wrapper
-size_t replace_all(char *str, const char *delim, char replace_c)
+void sort_lll(struct remove_loc **head)
 {
-    size_t d_len = strlen(delim);
-    return _replace_all(str, delim, replace_c, d_len);
+    if (!*head->next) return;
+    if (*head->next->loc < *head->loc)
+    {
+        // TODO finish sort
+        struct remove_loc *temp = *head->next;
+        *head->next = *head->next->next;
+    }
 }
 
 // Remove all occurances of delim, then copy into a new character stringj
 // RETURNS the number of occurrances removed
-char* remove_all(const char *str, const char *delim)
+char* remove(const char *str, const char *delim)
 {
     size_t d_len = strnlen(delim, S_MAX);
     size_t count = 0;
@@ -112,12 +96,12 @@ char* remove_all(const char *str, const char *delim)
 
     size_t new_s_bytes = sizeof(char) * (strnlen(str_head, S_MAX) + 1 - (count * d_len));
     char * new_s = (char*)malloc(new_s_bytes);
-    _remove_all(str_head, delim, d_len, new_s);
+    _remove(str_head, delim, d_len, new_s);
     return new_s;
 }
 
 // Remove all implementation
-void _remove_all(const char *str, const char *delim, size_t d_len, char *dest)
+void _remove(const char *str, const char *delim, size_t d_len, char *dest)
 {
     while (!strncmp(str, delim, d_len))
     {
@@ -134,4 +118,36 @@ void _remove_all(const char *str, const char *delim, size_t d_len, char *dest)
     }
     *dest = '\0';
     return;
+}
+
+char* remove_all(const char *str, const char **delims, size_t delim_count)
+{
+    size_t bytes_replaced = 0;
+    size_t str_len = strnlen(str, S_MAX);
+    size_t i;
+    struct remove_loc *head;
+
+    for (i=0; i<delim_count; ++i)
+    {
+        bytes_replaced += find_all(str, delims[i], strnlen(delims[i], S_MAX), &head);
+    }
+    char * new_s = (char *)malloc(sizeof(char) * (str_len - bytes_replaced + 1));
+
+    struct remove_loc *current = head;
+    while (current)
+    {
+        printf("len: %lu\tLocation: %lu\n", current->len, current->pos);
+        current = current->next;
+    }
+    printf("bytes replaced: %lu\n", bytes_replaced);
+
+    return NULL;
+}
+
+int main(int argc, char **argv)
+{
+    char to_test[] = "this is an example phrase! test is an example here!";
+    printf("%s\n", to_test);
+    remove_all(to_test, &(argv[1]), argc - 1);
+    return 0;
 }

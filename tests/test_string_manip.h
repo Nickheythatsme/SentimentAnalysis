@@ -29,49 +29,15 @@ class TestStringManip : public CxxTest::TestSuite
             TS_TRACE("count: " + std::to_string(count));
             TS_ASSERT(count == 2);
         }
-		void testReplaceAll()
-		{
-            char example[] = "this is my this is my this is my example!!!YO!";
-            auto result = replace_all(example, "this", 'a');
-            TS_ASSERT(result == 3);
-		}
-        void testRemoveAll()
+        void testRemove()
         {
-            char* result = remove_all(example.c_str(), "some");
-            string message {"remove_all result: "};
+            char* result = remove(example.c_str(), "some");
+            string message {"remove result: "};
             message += result;
 
             TS_TRACE(message.c_str());
             TS_ASSERT(strcmp(result, "This is  example text!  Okay? 'Here we are,' I can't imagine!") == 0);
             delete [] result;
-        }
-        void testRemoveAllTimed()
-        {
-            string filename {"../tests/text_samples/big.txt"};
-            ifstream fin(filename);
-            string contents;
-            char delim[] = "a";
-
-            if (!fin)
-            {
-                TS_TRACE("unable to find file: " + filename);
-                return;
-            }
-
-            while( fin.good() && contents.size() < 1000000)
-            {
-                contents += fin.get();
-            }
-
-            TS_TRACE("Read " + std::to_string(contents.size()) + " bytes");
-
-            // Start timing
-            auto start = std::chrono::high_resolution_clock::now();
-            auto result = remove_all(contents.c_str(), delim);
-            auto end = std::chrono::high_resolution_clock::now();
-
-            std::chrono::duration<double, std::micro> elapsed = end - start;
-            TS_TRACE("test completed in " + std::to_string(elapsed.count()) + " us");
         }
     protected:
     private:

@@ -34,7 +34,7 @@ class parse : public s_vector
 public:
 	parse();
 	explicit parse(s_vector _delims);
-	explicit parse(s_vector _delims, const std::string &to_parse);
+	explicit parse(s_vector _delims, std::string to_parse);
 	parse(parse&& rhs);
 	parse(const parse &obj);
 	parse& operator()(const std::string &str);

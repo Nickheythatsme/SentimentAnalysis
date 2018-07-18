@@ -8,6 +8,13 @@
 #define S_FAIL -1lu
 #define REPLACE_DELIM 0x7f
 
+struct remove_loc
+{
+    size_t len;
+    size_t pos;
+    struct remove_loc *next;
+};
+
 /**** UTF MANIPULATION functions ****/
 
 // Returns true if it is a regular ascii
@@ -26,20 +33,13 @@ void lower(char *s);
 // Returns starting location of delim if found
 // OR S_FAIL if not found
 size_t find(const char *str, const char *delim, size_t d_len);
-
-// Replace all chars from start to end with the delmiter character
-// RETURNS a ptr to the next char (after the replacement)
-char* replace(size_t start, size_t end, char *str, char delim);
-
-// Replace all occurances of delim in str. Replaces with replace char
-// RETURNS number of occurances of delim that were replaced
-size_t replace_all(char *str, const char *delim, char replace_c);
-// replace_all implementation
-size_t _replace_all(char *str, const char *delim, char replace_c, size_t d_len);
+size_t find_all(const char *str, const char *delim, size_t d_len, struct remove_loc **locations);
 
 // Remove all occurances of delim, then copy into a new character string
 // RETURNS the number of occurrances removed
-char* remove_all(const char *str, const char *delim);
-void _remove_all(const char *str, const char *delim, size_t d_len, char *dest);
+char* remove(const char *str, const char *delim);
+void _remove(const char *str, const char *delim, size_t d_len, char *dest);
+
+char* remove_all(const char *str, const char **delim, size_t delim_count);
 
 #endif // SENTIMENTANALYSIS_STRING_MANIP_

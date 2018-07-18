@@ -18,11 +18,11 @@ parse::parse(s_vector _delims) :
 }
 
 // CONSTRUCTOR with arguments
-parse::parse(s_vector _delims, const std::string &str) :
+parse::parse(s_vector _delims, std::string str) :
 	s_vector(),
     delims(std::move(_delims))
 {
-    this->operator()(str);
+    this->operator()(std::move(str));
 }
 
 // COPY CONSTRUCTOR
@@ -68,15 +68,11 @@ parse& parse::operator=(parse &&rhs)
 {
     s_vector::operator=(std::move(rhs));
     delims = std::move(rhs.delims);
-
     return *this;
 }
 
 // Parse the UTF8 string and split it based on the delimiters
 long parse::_parse(const char *str)
 {
-    // TODO this has been moved to string_manip.c
-    // call the functions there to parse str
     return -1;
 }
-
