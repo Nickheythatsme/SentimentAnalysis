@@ -37,9 +37,10 @@ parse::parse(parse && rhs) :
  * Parses the string inside the parenthesis and adds the parsed words to this
  * object (in it's vector)
  */
-std::string parse::operator()(const std::string &str)
+parse& parse::operator()(const std::string &str)
 {
-    return _parse(str.c_str());
+    _parse(str.c_str());
+    return *this;
 }
 
 /*
@@ -63,7 +64,7 @@ parse& parse::operator=(parse &&rhs)
 }
 
 // Parse the UTF8 string and split it based on the delimiters
-std::string parse::_parse(const char *str)
+size_t parse::_parse(const char *str)
 {
 
     // TODO make global config file for thread count and other data
@@ -146,11 +147,12 @@ void parse::insert_sorted(delim_location &&to_insert)
     to_trim.insert(current, std::move(to_insert));
 }
 
-// Copy all of the non marked spots of the string into the new string dest
-std::string parse::make_string(const char *str)
+// Moves all the strings into the vector, eliminates delimiters
+size_t parse::make_string(const char *str)
 {
     std::string dest;
     std::lock_guard<std::mutex> guard(to_trim_mut);
+    size_t count = 0;
     auto to_trim_current = to_trim.begin();
 
     size_t i=0;
@@ -161,6 +163,8 @@ std::string parse::make_string(const char *str)
             dest += str[i];
             ++i;
         }
+        this->emplace_back(std::move(dest));
+        ++count;
         while (i >= to_trim_current->start && i < to_trim_current->end)
         {
             ++i;
@@ -172,5 +176,7 @@ std::string parse::make_string(const char *str)
         dest += str[i];
         ++i;
     }
-    return dest;
+    this->emplace_back(std::move(dest));
+    ++count;
+    return count;
 }

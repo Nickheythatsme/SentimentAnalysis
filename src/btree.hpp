@@ -206,20 +206,12 @@ bool node<K,D>::split(key_data<K,D> &&new_data, split_node<K,D> &split_dest)
     return false;
 }
 
-// Return TRUE if all children ptrs are null. Returns FALSE otherwise.
-// TODO performance: look into the speed benefit of having a child_count data member
+// Return TRUE if we have no children. 
+// Since children are filled in children[0] first, we only need to test that index
 template<class K, class D>
 inline bool node<K,D>::is_leaf() const
 {
-    size_t d_count = 0;
-    for (size_t i=0; i<d_count+1; ++i)
-    {
-        if (children[i] != nullptr)
-        {
-            return false;
-        }
-    }
-    return true;
+    return nullptr == children[0];
 }
 
 #endif // SENTIMENT_ANALYSIS_BTREE

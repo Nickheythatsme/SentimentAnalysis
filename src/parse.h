@@ -41,15 +41,15 @@ public:
 	explicit parse(s_vector _delims);
 	parse(parse&& rhs);
 	parse(const parse &obj);
-    std::string operator()(const std::string &str);
+    parse& operator()(const std::string &str);
 	parse& operator=(const parse &obj);
 	parse& operator=(parse&& rhs);
 protected:
 private:
-    std::string _parse(const char *str);
+    size_t _parse(const char *str);
 	size_t identify(const char *str, const char *delim, size_t delim_len, size_t index);
 	void insert_sorted(delim_location &&to_insert);
-    std::string make_string(const char* str);
+    size_t make_string(const char* str);
 
 	std::vector<delim_location> to_trim;
 	std::mutex to_trim_mut;

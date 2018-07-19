@@ -106,8 +106,7 @@ size_t text_package::start_loading(std::vector<string> &&filenames)
 {
     // Make an array of the number of files we have
     std::vector<string> texts {filenames.size()};
-    size_t thread_count = std::thread::hardware_concurrency(); // TODO replace with global config file
-    std::cout << "Loading files on " << thread_count << " threads" << std::endl;
+    size_t thread_count = std::min(std::thread::hardware_concurrency(), (unsigned int) filenames.size() );
     auto bytes_read = new size_t[thread_count];
     auto threads = new std::thread[thread_count];
 

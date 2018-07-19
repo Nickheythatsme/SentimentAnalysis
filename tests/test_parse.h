@@ -21,9 +21,12 @@ class TestStringManip : public CxxTest::TestSuite
             auto result = parser(example);
             for (const auto & d : delims)
             {
-                if (result.find(d) != std::string::npos)
+                for (const auto & word : result)
                 {
-                    TS_ASSERT("delimiter found in result");
+                    if (word.find(d) != std::string::npos)
+                    {
+                        TS_ASSERT("delimiter found in result");
+                    }
                 }
             }
         }
