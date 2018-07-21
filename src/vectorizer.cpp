@@ -1,3 +1,12 @@
+/*
+ * Nicholas Grout
+ *
+ * This is the culmination of the vectorizer.
+ * Give this program a pattern to match (wildcard, etc) and it will
+ * read all files matching that pattern, or give it a single file.
+ *
+ * It will currently just parse text
+ */
 #include <iostream>
 #include <map>
 #include <string>
@@ -5,12 +14,6 @@
 #include "parse.h"
 #include "btree.hpp"
 #include "text_package.h"
-
-#ifdef __WIND32
-#define DIR_DELIM '\\'
-#else
-#define DIR_DELIM '/'
-#endif
 
 using namespace std;
 
