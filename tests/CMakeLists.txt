@@ -3,7 +3,7 @@ message("Including tests")
 
 set(CXXTEST_DIR "${CMAKE_CURRENT_SOURCE_DIR}/cxxtest")
 
-# Check if the cxxtest director exists
+# Check if the cxxtest directory exists
 if (EXISTS ${CXXTEST_DIR})
 
 	# Include cxxtest and find cxxtestgen executable
